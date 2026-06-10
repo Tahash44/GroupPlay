@@ -1,0 +1,803 @@
+openapi: 3.1.0
+info:
+  title: Spy Game API
+  version: 1.0.0
+  description: Complete API Documentation
+
+servers:
+  - url: https://api.example.com
+
+tags:
+  - name: Authentication
+  - name: Profile
+  - name: Friends
+  - name: Game Sessions
+  - name: Timer
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+
+    ErrorResponse:
+      type: object
+      properties:
+        detail:
+          type: string
+
+    RegisterRequest:
+      type: object
+      required:
+        - username
+        - email
+        - password
+      properties:
+        username:
+          type: string
+          minLength: 3
+          maxLength: 50
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+          minLength: 8
+
+    LoginRequest:
+      type: object
+      required:
+        - username
+        - password
+      properties:
+        username:
+          type: string
+        password:
+          type: string
+
+    TokenRefreshRequest:
+      type: object
+      required:
+        - refresh_token
+      properties:
+        refresh_token:
+          type: string
+
+    TokenResponse:
+      type: object
+      properties:
+        access_token:
+          type: string
+        refresh_token:
+          type: string
+
+    AccessTokenResponse:
+      type: object
+      properties:
+        access_token:
+          type: string
+
+    ProfileResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+        username:
+          type: string
+        email:
+          type: string
+
+    ProfileUpdateRequest:
+      type: object
+      properties:
+        username:
+          type: string
+        email:
+          type: string
+          format: email
+
+    ChangePasswordRequest:
+      type: object
+      required:
+        - old_password
+        - new_password
+      properties:
+        old_password:
+          type: string
+        new_password:
+          type: string
+          minLength: 8
+
+    Friend:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+
+    FriendCreateRequest:
+      type: object
+      required:
+        - name
+      properties:
+        name:
+          type: string
+
+    FriendUpdateRequest:
+      type: object
+      required:
+        - name
+      properties:
+        name:
+          type: string
+
+    SessionStatus:
+      type: string
+      enum:
+        - CREATED
+        - ROLE_REVEAL
+        - IN_PROGRESS
+        - VOTING
+        - SPY_GUESS
+        - FINISHED
+
+    PlayerInput:
+      type: object
+      properties:
+        friend_id:
+          type: integer
+        name:
+          type: string
+      oneOf:
+        - required:
+            - friend_id
+        - required:
+            - name
+
+    CreateSessionRequest:
+      type: object
+      required:
+        - game_type
+        - timer_duration
+        - spy_count
+        - players
+      properties:
+        game_type:
+          type: string
+          enum:
+            - spy
+        timer_duration:
+          type: integer
+          minimum: 60
+          maximum: 3600
+        spy_count:
+          type: integer
+          minimum: 1
+        players:
+          type: array
+          minItems: 4
+          items:
+            $ref: '#/components/schemas/PlayerInput'
+
+    CreateSessionResponse:
+      type: object
+      properties:
+        session_id:
+          type: integer
+        status:
+          $ref: '#/components/schemas/SessionStatus'
+
+    PendingPlayersResponse:
+      type: object
+      properties:
+        pending_players:
+          type: array
+          items:
+            type: string
+
+    RevealRoleRequest:
+      type: object
+      required:
+        - player_name
+      properties:
+        player_name:
+          type: string
+
+    SpyRoleResponse:
+      type: object
+      properties:
+        role:
+          type: string
+          enum:
+            - spy
+
+    CivilianRoleResponse:
+      type: object
+      properties:
+        role:
+          type: string
+          enum:
+            - civilian
+        location:
+          type: string
+
+    TimerResponse:
+      type: object
+      properties:
+        remaining_seconds:
+          type: integer
+        status:
+          $ref: '#/components/schemas/SessionStatus'
+
+    VoteRequest:
+      type: object
+      required:
+        - voted_player_id
+      properties:
+        voted_player_id:
+          type: integer
+
+    VoteResultResponse:
+      type: object
+      properties:
+        status:
+          type: string
+          enum:
+            - SPY_GUESS
+            - FINISHED
+        winner:
+          type: string
+          nullable: true
+          enum:
+            - spy
+            - civilians
+
+    SpyGuessRequest:
+      type: object
+      required:
+        - location_guess
+      properties:
+        location_guess:
+          type: string
+
+    GameResultResponse:
+      type: object
+      properties:
+        status:
+          type: string
+          enum:
+            - FINISHED
+        winner:
+          type: string
+          enum:
+            - spy
+            - civilians
+
+    GameHistoryItem:
+      type: object
+      properties:
+        id:
+          type: integer
+        game_type:
+          type: string
+        played_at:
+          type: string
+          format: date-time
+        winner:
+          type: string
+        player_count:
+          type: integer
+
+    SessionDetail:
+      type: object
+      properties:
+        id:
+          type: integer
+        game_type:
+          type: string
+        status:
+          $ref: '#/components/schemas/SessionStatus'
+        location:
+          type: string
+        winner:
+          type: string
+        played_at:
+          type: string
+          format: date-time
+        players:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: integer
+              name:
+                type: string
+              role:
+                type: string
+
+    LogoutRequest:
+      type: object
+      required:
+        - refresh_token
+      properties:
+        refresh_token:
+          type: string
+
+paths:
+
+  /auth/register/:
+    post:
+      tags:
+        - Authentication
+      summary: Register
+      operationId: registerUser
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegisterRequest'
+      responses:
+        '201':
+          description: Registered
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TokenResponse'
+        '400':
+          description: Validation error / Already exists
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /auth/login/:
+    post:
+      tags:
+        - Authentication
+      summary: Login
+      operationId: loginUser
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+      responses:
+        '200':
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TokenResponse'
+        '401':
+          description: Invalid credentials
+
+  /auth/token/refresh/:
+    post:
+      tags:
+        - Authentication
+      summary: Refresh JWT Token
+      operationId: refreshToken
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TokenRefreshRequest'
+      responses:
+        '200':
+          description: New access token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AccessTokenResponse'
+
+  /auth/profile/:
+    get:
+      tags:
+        - Profile
+      summary: Get Profile
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Profile Information
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProfileResponse'
+
+    patch:
+      tags:
+        - Profile
+      summary: Update Profile
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProfileUpdateRequest'
+      responses:
+        '200':
+          description: Updated Profile
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProfileResponse'
+        '400':
+          description: Duplicate username/email
+
+  /auth/change-password/:
+    post:
+      tags:
+        - Profile
+      summary: Change Password
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ChangePasswordRequest'
+      responses:
+        '200':
+          description: Password Changed
+        '400':
+          description: Wrong password
+
+  /friends/:
+    get:
+      tags:
+        - Friends
+      summary: List Friends
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: query
+          name: search
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Friend List
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Friend'
+
+    post:
+      tags:
+        - Friends
+      summary: Create Friend
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FriendCreateRequest'
+      responses:
+        '201':
+          description: Friend Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Friend'
+        '400':
+          description: Validation Error
+
+  /friends/{id}/:
+    patch:
+      tags:
+        - Friends
+      summary: Update Friend
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FriendUpdateRequest'
+      responses:
+        '200':
+          description: Updated
+
+    delete:
+      tags:
+        - Friends
+      summary: Delete Friend
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Deleted
+        '404':
+          description: Friend not found
+
+  /games/sessions/:
+    post:
+      tags:
+        - Game Sessions
+      summary: Create Spy Session
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateSessionRequest'
+      responses:
+        '201':
+          description: Session Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateSessionResponse'
+        '400':
+          description: Validation Error
+
+    get:
+      tags:
+        - Game Sessions
+      summary: Session History
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: query
+          name: status
+          schema:
+            type: string
+            enum:
+              - FINISHED
+      responses:
+        '200':
+          description: Session History
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/GameHistoryItem'
+
+  /games/sessions/{id}/:
+    get:
+      tags:
+        - Game Sessions
+      summary: Session Detail
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Full Session Detail
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SessionDetail'
+
+  /games/sessions/{id}/reveal/:
+    get:
+      tags:
+        - Game Sessions
+      summary: Pending Players
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Players Waiting For Reveal
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PendingPlayersResponse'
+
+    post:
+      tags:
+        - Game Sessions
+      summary: Reveal Player Role
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RevealRoleRequest'
+      responses:
+        '200':
+          description: Role Revealed
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: '#/components/schemas/SpyRoleResponse'
+                  - $ref: '#/components/schemas/CivilianRoleResponse'
+
+  /games/sessions/{id}/timer/:
+    get:
+      tags:
+        - Timer
+      summary: Get Timer Status
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Timer Information
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TimerResponse'
+
+  /games/sessions/{id}/timer/pause/:
+    post:
+      tags:
+        - Timer
+      summary: Pause Timer
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Timer Paused
+
+  /games/sessions/{id}/timer/resume/:
+    post:
+      tags:
+        - Timer
+      summary: Resume Timer
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Timer Resumed
+
+  /games/sessions/{id}/timer/stop/:
+    post:
+      tags:
+        - Timer
+      summary: Stop Timer Early
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Status Changed To Voting
+
+  /games/sessions/{id}/vote/:
+    post:
+      tags:
+        - Game Sessions
+      summary: Vote Player
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VoteRequest'
+      responses:
+        '200':
+          description: Vote Result
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VoteResultResponse'
+
+  /games/sessions/{id}/spy-guess/:
+    post:
+      tags:
+        - Game Sessions
+      summary: Spy Guess Location
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SpyGuessRequest'
+      responses:
+        '200':
+          description: Final Result
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GameResultResponse'
+        '409':
+          description: Session Not In SPY_GUESS State
+
+  /auth/logout/:
+    post:
+      tags:
+        - Authentication
+      summary: Logout
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LogoutRequest'
+      responses:
+        '200':
+          description: Logged Out
+        '400':
+          description: Invalid Refresh Token

@@ -1,6 +1,6 @@
 openapi: 3.1.0
 info:
-  title: Spy Game API
+  title: GroupPlay API
   version: 1.0.0
   description: Complete API Documentation
 

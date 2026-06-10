@@ -1,0 +1,55 @@
+erDiagram
+    USER {
+        int id PK
+        string username
+        string password_hash
+        string name
+    }
+
+    FRIEND {
+        int id PK
+        int user_id FK
+        bool is_deleted
+        string name
+
+    }
+
+    GAME_SESSION {
+        int id PK
+        int host_id FK
+        string game_type
+        string status
+        datetime timer_started_at
+        int timer_elapsed
+        int timer_duration
+        json winner
+        datetime created_at
+    }
+
+    PLAYER {
+        int id PK
+        int session_id FK
+        string name
+    }
+
+    SPY_GAME_STATE {
+        int id PK
+        string location
+        int spy_count
+    }
+
+    SPY_PLAYER_STATE {
+        int id PK
+        int player_id FK
+        int session_id FK
+        string role
+        bool role_revealed
+        bool is_spy
+    }
+
+    USER ||--o{ FRIEND : "has"
+    USER ||--o{ GAME_SESSION : "hosts"
+    GAME_SESSION ||--o{ PLAYER : "contains"
+    GAME_SESSION ||--o| SPY_GAME_STATE : "spy game"
+    SPY_GAME_STATE ||--o{ SPY_PLAYER_STATE : "spy roles"
+    PLAYER ||--o| SPY_PLAYER_STATE : "spy detail"

@@ -539,7 +539,7 @@ paths:
         '404':
           description: Friend not found
 
-  /games/sessions/:
+  /games/spy/sessions/:
     post:
       tags:
         - Game Sessions
@@ -585,7 +585,7 @@ paths:
                 items:
                   $ref: '#/components/schemas/GameHistoryItem'
 
-  /games/sessions/{id}/:
+  /games/spy/sessions/{id}/:
     get:
       tags:
         - Game Sessions
@@ -606,7 +606,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/SessionDetail'
 
-  /games/sessions/{id}/reveal/:
+  /games/spy/sessions/{id}/reveal/:
     get:
       tags:
         - Game Sessions
@@ -655,7 +655,7 @@ paths:
                   - $ref: '#/components/schemas/SpyRoleResponse'
                   - $ref: '#/components/schemas/CivilianRoleResponse'
 
-  /games/sessions/{id}/timer/:
+  /games/spy/sessions/{id}/timer/:
     get:
       tags:
         - Timer
@@ -676,7 +676,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/TimerResponse'
 
-  /games/sessions/{id}/timer/pause/:
+  /games/spy/sessions/{id}/timer/pause/:
     post:
       tags:
         - Timer
@@ -693,7 +693,7 @@ paths:
         '200':
           description: Timer Paused
 
-  /games/sessions/{id}/timer/resume/:
+  /games/spy/sessions/{id}/timer/resume/:
     post:
       tags:
         - Timer
@@ -710,7 +710,7 @@ paths:
         '200':
           description: Timer Resumed
 
-  /games/sessions/{id}/timer/stop/:
+  /games/spy/sessions/{id}/timer/stop/:
     post:
       tags:
         - Timer
@@ -727,7 +727,7 @@ paths:
         '200':
           description: Status Changed To Voting
 
-  /games/sessions/{id}/vote/:
+  /games/spy/sessions/{id}/vote/:
     post:
       tags:
         - Game Sessions
@@ -754,7 +754,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/VoteResultResponse'
 
-  /games/sessions/{id}/spy-guess/:
+  /games/spy/sessions/{id}/spy-guess/:
     post:
       tags:
         - Game Sessions

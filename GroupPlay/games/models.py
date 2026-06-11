@@ -3,14 +3,6 @@ from django.db import models
 
 
 class GameSession(models.Model):
-    class Status(models.TextChoices):
-        CREATED = "CREATED"
-        ROLE_REVEAL = "ROLE_REVEAL"
-        IN_PROGRESS = "IN_PROGRESS"
-        VOTING = "VOTING"
-        SPY_GUESS = "SPY_GUESS"
-        FINISHED = "FINISHED"
-
     class GameType(models.TextChoices):
         SPY = "spy"
 
@@ -20,14 +12,6 @@ class GameSession(models.Model):
         related_name="hosted_sessions",
     )
     game_type = models.CharField(max_length=50, choices=GameType.choices)
-    status = models.CharField(
-        max_length=20,
-        choices=Status.choices,
-        default=Status.CREATED,
-    )
-    timer_started_at = models.DateTimeField(null=True, blank=True)
-    timer_elapsed = models.IntegerField(default=0)
-    timer_duration = models.IntegerField()  # in seconds
     winner = models.JSONField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
 

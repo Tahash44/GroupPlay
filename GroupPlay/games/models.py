@@ -1,3 +1,58 @@
+from django.conf import settings
 from django.db import models
 
-# Create your models here.
+
+class GameSession(models.Model):
+    class Status(models.TextChoices):
+        CREATED = "CREATED"
+        ROLE_REVEAL = "ROLE_REVEAL"
+        IN_PROGRESS = "IN_PROGRESS"
+        VOTING = "VOTING"
+        SPY_GUESS = "SPY_GUESS"
+        FINISHED = "FINISHED"
+
+    class GameType(models.TextChoices):
+        SPY = "spy"
+
+    host = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="hosted_sessions",
+    )
+    game_type = models.CharField(max_length=50, choices=GameType.choices)
+    status = models.CharField(
+        max_length=20,
+        choices=Status.choices,
+        default=Status.CREATED,
+    )
+    timer_started_at = models.DateTimeField(null=True, blank=True)
+    timer_elapsed = models.IntegerField(default=0)
+    timer_duration = models.IntegerField()  # in seconds
+    winner = models.JSONField(null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Session #{self.id} ({self.game_type}) — {self.status}"
+
+
+class Player(models.Model):
+    session = models.ForeignKey(
+        GameSession,
+        on_delete=models.CASCADE,
+        related_name="players",
+    )
+    friend = models.ForeignKey(
+        "accounts.Friend",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="player_entries",
+    )
+    name = models.CharField(max_length=255)
+
+    def save(self, *args, **kwargs):
+        self.name = self.friend.name
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        return f"{self.name} in Session #{self.session_id}"

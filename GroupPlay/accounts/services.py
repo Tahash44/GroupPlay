@@ -6,7 +6,7 @@ from rest_framework_simplejwt.tokens import RefreshToken
 class AuthService:
 
     @staticmethod
-    def register(username: str, email: str, password: str) -> dict:
+    def register(username: str, email: str, password: str, name: str = "") -> dict:
         """Create a new user and return JWT tokens."""
         from accounts.models import User
 
@@ -14,6 +14,7 @@ class AuthService:
             username=username,
             email=email,
             password=password,
+            name=name,
         )
         return AuthService._generate_tokens(user)
 
@@ -51,3 +52,27 @@ class AuthService:
             "access_token": str(refresh.access_token),
             "refresh_token": str(refresh),
         }
+
+
+class ProfileService:
+
+    @staticmethod
+    def get_profile(user):
+        """Return user profile data."""
+        return user
+
+    @staticmethod
+    def update_profile(user, data: dict):
+        """Update username and/or email. Returns updated user."""
+        for field, value in data.items():
+            setattr(user, field, value)
+        user.save()
+        return user
+
+    @staticmethod
+    def change_password(user, old_password: str, new_password: str) -> None:
+        """Change user password. Raises ValueError if old password is wrong."""
+        if not user.check_password(old_password):
+            raise ValueError("Old password is incorrect.")
+        user.set_password(new_password)
+        user.save()

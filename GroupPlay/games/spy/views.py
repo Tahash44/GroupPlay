@@ -10,8 +10,13 @@ from games.spy.serializers import (
     SpySessionCreateSerializer,
     SpySessionResponseSerializer,
     SpySessionDetailSerializer,
+    TimerResponseSerializer,
+    TimerPauseResponseSerializer,
+    TimerResumeResponseSerializer,
+    TimerStopResponseSerializer,
 )
 from games.spy.services import SpyGameService
+from games.spy.services import SpyTimerService
 
 
 from .services import SpyRevealService
@@ -86,3 +91,59 @@ class SpySessionRevealView(APIView):
         )
 
         return Response(result)
+
+class SpySessionTimerView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, id):
+        session = get_object_or_404(
+            GameSession.objects.filter(game_type=GameSession.GameType.SPY),
+            id=id
+        )
+
+        result = SpyTimerService.get_timer_status(session)
+        serializer = TimerResponseSerializer(result)
+
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+class SpySessionTimerPauseView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, id):
+        session = get_object_or_404(
+            GameSession.objects.filter(game_type=GameSession.GameType.SPY),
+            id=id
+        )
+
+        result = SpyTimerService.pause_timer(session)
+        serializer = TimerPauseResponseSerializer(result)
+
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+class SpySessionTimerResumeView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, id):
+        session = get_object_or_404(
+            GameSession.objects.filter(game_type=GameSession.GameType.SPY),
+            id=id
+        )
+
+        result = SpyTimerService.resume_timer(session)
+        serializer = TimerResumeResponseSerializer(result)
+
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+class SpySessionTimerStopView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, id):
+        session = get_object_or_404(
+            GameSession.objects.filter(game_type=GameSession.GameType.SPY),
+            id=id
+        )
+
+        result = SpyTimerService.stop_timer(session)
+        serializer = TimerStopResponseSerializer(result)
+
+        return Response(serializer.data, status=status.HTTP_200_OK)

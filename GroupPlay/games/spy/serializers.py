@@ -110,3 +110,34 @@ class SpyRoleResponseSerializer(serializers.Serializer):
 class CivilianRoleResponseSerializer(serializers.Serializer):
     role = serializers.CharField()
     location = serializers.CharField()
+
+class TimerResponseSerializer(serializers.Serializer):
+    timer_duration = serializers.IntegerField()
+    timer_elapsed = serializers.IntegerField()
+    timer_started_at = serializers.DateTimeField(allow_null=True)
+    remaining_time = serializers.IntegerField()
+    is_running = serializers.BooleanField()
+
+class TimerPauseResponseSerializer(serializers.Serializer):
+    message = serializers.CharField()
+    timer_duration = serializers.IntegerField()
+    timer_elapsed = serializers.IntegerField()
+    timer_started_at = serializers.DateTimeField(allow_null=True)
+    remaining_time = serializers.IntegerField()
+    is_running = serializers.BooleanField()
+
+class TimerResumeResponseSerializer(serializers.Serializer):
+    message = serializers.CharField()
+    timer_duration = serializers.IntegerField()
+    timer_elapsed = serializers.IntegerField()
+    timer_started_at = serializers.DateTimeField()
+    remaining_time = serializers.IntegerField()
+    is_running = serializers.BooleanField()
+
+
+class TimerStopResponseSerializer(serializers.Serializer):
+    message = serializers.CharField()
+    status = serializers.CharField()
+    timer_duration = serializers.IntegerField()
+    timer_elapsed = serializers.IntegerField()
+    is_running = serializers.BooleanField()

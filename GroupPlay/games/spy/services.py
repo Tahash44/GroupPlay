@@ -2,8 +2,8 @@ import random
 from django.db import transaction
 from games.models import GameSession, Player
 from games.spy.models import SpyGameState, SpyPlayerState, Location
-
-
+from django.utils import timezone
+from rest_framework.exceptions import ValidationError
 
 class SpyGameService:
     @staticmethod
@@ -102,4 +102,122 @@ class SpyRevealService:
             "role": player_state.role_en,
             "location": spy_game.location.name_en
         }
+
+class SpyTimerService:
+    @staticmethod
+    def get_timer_status(session):
+        spy_game = SpyGameState.objects.get(session=session)
+
+        elapsed = spy_game.timer_elapsed or 0
+
+        if spy_game.timer_started_at:
+            delta = timezone.now() - spy_game.timer_started_at
+            elapsed += int(delta.total_seconds())
+
+        remaining_time = max(spy_game.timer_duration - elapsed, 0)
+
+        return {
+            "timer_duration": spy_game.timer_duration,
+            "timer_elapsed": elapsed,
+            "timer_started_at": spy_game.timer_started_at,
+            "remaining_time": remaining_time,
+            "is_running": spy_game.timer_started_at is not None and remaining_time > 0,
+        }
+
+class SpyTimerService:
+    @staticmethod
+    def get_timer_status(session):
+        spy_game = SpyGameState.objects.get(session=session)
+
+        elapsed = spy_game.timer_elapsed or 0
+
+        if spy_game.timer_started_at:
+            delta = timezone.now() - spy_game.timer_started_at
+            elapsed += int(delta.total_seconds())
+
+        remaining_time = max(spy_game.timer_duration - elapsed, 0)
+
+        return {
+            "timer_duration": spy_game.timer_duration,
+            "timer_elapsed": elapsed,
+            "timer_started_at": spy_game.timer_started_at,
+            "remaining_time": remaining_time,
+            "is_running": spy_game.timer_started_at is not None and remaining_time > 0,
+        }
+
+    @staticmethod
+    def pause_timer(session):
+        spy_game = SpyGameState.objects.get(session=session)
+
+        if spy_game.timer_started_at:
+            delta = timezone.now() - spy_game.timer_started_at
+            spy_game.timer_elapsed += int(delta.total_seconds())
+            spy_game.timer_started_at = None
+            spy_game.save(update_fields=["timer_elapsed", "timer_started_at"])
+
+        remaining_time = max(spy_game.timer_duration - spy_game.timer_elapsed, 0)
+
+        return {
+            "message": "Timer paused",
+            "timer_duration": spy_game.timer_duration,
+            "timer_elapsed": spy_game.timer_elapsed,
+            "timer_started_at": spy_game.timer_started_at,
+            "remaining_time": remaining_time,
+            "is_running": False,
+        }
+
+    @staticmethod
+    def resume_timer(session):
+        spy_game = SpyGameState.objects.get(session=session)
+
+        if spy_game.timer_started_at:
+            raise ValidationError("Timer is already running.")
+
+        if spy_game.timer_elapsed >= spy_game.timer_duration:
+            raise ValidationError("Timer has already finished.")
+
+        spy_game.timer_started_at = timezone.now()
+        spy_game.save(update_fields=["timer_started_at"])
+
+        remaining_time = max(
+            spy_game.timer_duration - spy_game.timer_elapsed,
+            0
+        )
+
+        return {
+            "message": "Timer resumed",
+            "timer_duration": spy_game.timer_duration,
+            "timer_elapsed": spy_game.timer_elapsed,
+            "timer_started_at": spy_game.timer_started_at,
+            "remaining_time": remaining_time,
+            "is_running": True,
+        }
+
+    @staticmethod
+    def stop_timer(session):
+        spy_game = SpyGameState.objects.get(session=session)
+
+
+        if spy_game.timer_started_at:
+            delta = timezone.now() - spy_game.timer_started_at
+            spy_game.timer_elapsed += int(delta.total_seconds())
+
+        spy_game.timer_started_at = None
+        spy_game.status = SpyGameState.Status.VOTING
+
+        spy_game.save(update_fields=[
+            "timer_elapsed",
+            "timer_started_at",
+            "status"
+        ])
+
+        return {
+            "message": "Status changed to voting",
+            "status": spy_game.status,
+            "timer_duration": spy_game.timer_duration,
+            "timer_elapsed": spy_game.timer_elapsed,
+            "is_running": False,
+        }
+
+
 

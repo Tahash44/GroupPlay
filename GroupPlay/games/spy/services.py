@@ -15,22 +15,27 @@ class SpyGameService:
             game_type=GameSession.GameType.SPY
         )
 
-
         location = Location.objects.order_by('?').first()
         if not location:
-
             location = Location.objects.create(name_en="Secret Base", name_fa="پایگاه مخفی")
-
 
         spy_state = SpyGameState.objects.create(
             session=session,
             location=location,
             spy_count=spy_count,
-            timer_duration=timer_duration
+            timer_duration=timer_duration,
+            status=SpyGameState.Status.ROLE_REVEAL
         )
 
-
         players_list = []
+
+        host_player = Player.objects.create(
+            session=session,
+            friend_id=None,
+            name=host.name or host.username
+        )
+        players_list.append(host_player)
+
         for p in player_data:
             player = Player.objects.create(
                 session=session,
@@ -38,7 +43,6 @@ class SpyGameService:
                 name=p.get('name', '')
             )
             players_list.append(player)
-
 
         spy_players = random.sample(players_list, k=spy_count)
 
@@ -90,17 +94,30 @@ class SpyRevealService:
         player_state.role_revealed = True
         player_state.save()
 
+        all_revealed = not SpyPlayerState.objects.filter(
+            session=session,
+            role_revealed=False
+        ).exists()
+
+        if all_revealed:
+            spy_game = SpyGameState.objects.get(session=session)
+            spy_game.status = SpyGameState.Status.IN_PROGRESS
+            spy_game.timer_started_at = timezone.now()
+            spy_game.save(update_fields=["status", "timer_started_at"])
+
         spy_game = SpyGameState.objects.get(session=session)
 
         if player_state.is_spy:
             return {
                 "role": "spy",
-                "location": None
+                "location": None,
+                "status": spy_game.status
             }
 
         return {
             "role": player_state.role_en,
-            "location": spy_game.location.name_en
+            "location": spy_game.location.name_en,
+            "status": spy_game.status
         }
 
 class SpyTimerService:

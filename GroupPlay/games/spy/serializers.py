@@ -20,7 +20,8 @@ class SpySessionCreateSerializer(serializers.Serializer):
     players = PlayerInputSerializer(many=True, min_length=3)
 
     def validate(self, attrs):
-        players_count = len(attrs["players"])
+        players_data = attrs["players"]
+        players_count = len(players_data)
         spy_count = attrs["spy_count"]
 
         if spy_count >= players_count:
@@ -28,7 +29,16 @@ class SpySessionCreateSerializer(serializers.Serializer):
                 "spy_count must be less than number of players."
             )
 
+        friend_ids = [p.get("friend_id") for p in players_data if p.get("friend_id") is not None]
+        if len(friend_ids) != len(set(friend_ids)):
+            raise serializers.ValidationError("Duplicate friend_ids are not allowed.")
+
+        names = [p.get("name").strip().lower() for p in players_data if p.get("name")]
+        if len(names) != len(set(names)):
+            raise serializers.ValidationError("Duplicate player names are not allowed.")
+
         return attrs
+
 
 
 class SpySessionResponseSerializer(serializers.ModelSerializer):

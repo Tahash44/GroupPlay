@@ -15,14 +15,17 @@ from games.spy.serializers import (
     TimerResumeResponseSerializer,
     TimerStopResponseSerializer,
 )
-from games.spy.services import SpyGameService
-from games.spy.services import SpyTimerService
+from games.spy.services import SpyGameService,SpyVoteService, SpyGuessService,SpyTimerService
 
-
+from .models import SpyGameState
 from .services import SpyRevealService
 from .serializers import (
     PendingPlayerSerializer,
-    RevealRoleRequestSerializer
+    RevealRoleRequestSerializer,
+    VoteRequestSerializer,
+    VoteResultResponseSerializer,
+    SpyGuessRequestSerializer,
+    GameResultResponseSerializer,
 )
 
 class SpySessionCreateView(APIView):
@@ -43,6 +46,15 @@ class SpySessionCreateView(APIView):
         response_serializer = SpySessionResponseSerializer(session)
 
         return Response(response_serializer.data, status=status.HTTP_201_CREATED)
+
+    def get(self, request):
+        sessions = GameSession.objects.filter(
+            host=request.user,
+            game_type=GameSession.GameType.SPY
+        ).order_by("-created_at")
+
+        serializer = SpySessionDetailSerializer(sessions, many=True)
+        return Response(serializer.data)
 
 from django.shortcuts import get_object_or_404
 from rest_framework.generics import RetrieveAPIView
@@ -147,3 +159,51 @@ class SpySessionTimerStopView(APIView):
         serializer = TimerStopResponseSerializer(result)
 
         return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+
+class SpySessionVoteView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, id):
+        session = get_object_or_404(
+            GameSession.objects.filter(game_type=GameSession.GameType.SPY),
+            id=id
+        )
+
+        serializer = VoteRequestSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        result = SpyVoteService.vote(
+            session=session,
+            voted_player_id=serializer.validated_data["voted_player_id"],
+        )
+
+        return Response(VoteResultResponseSerializer(result).data, status=status.HTTP_200_OK)
+
+
+class SpySessionGuessView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, id):
+        session = get_object_or_404(
+            GameSession.objects.filter(game_type=GameSession.GameType.SPY),
+            id=id
+        )
+
+        spy_game = SpyGameState.objects.get(session=session)
+        if spy_game.status != SpyGameState.Status.SPY_GUESS:
+            return Response(
+                {"detail": "Session is not in SPY_GUESS state."},
+                status=status.HTTP_409_CONFLICT
+            )
+
+        serializer = SpyGuessRequestSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        result = SpyGuessService.guess_location(
+            session=session,
+            location_name=serializer.validated_data["location"],
+        )
+
+        return Response(GameResultResponseSerializer(result).data, status=status.HTTP_200_OK)

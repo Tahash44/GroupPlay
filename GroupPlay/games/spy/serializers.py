@@ -93,10 +93,8 @@ class SpySessionDetailSerializer(serializers.ModelSerializer):
         return SpyPlayerDetailSerializer(players, many=True).data
 
     def get_winner(self, obj):
-        spy_game_state = SpyGameState.objects.filter(session=obj).first()
-        if spy_game_state and getattr(spy_game_state, "winner", None):
-            winner = spy_game_state.winner
-            return getattr(winner, "id", winner)
+        if obj.winner:
+            return obj.winner
         return None
 
 
@@ -151,3 +149,26 @@ class TimerStopResponseSerializer(serializers.Serializer):
     timer_duration = serializers.IntegerField()
     timer_elapsed = serializers.IntegerField()
     is_running = serializers.BooleanField()
+
+class VoteRequestSerializer(serializers.Serializer):
+    voted_player_id = serializers.IntegerField()
+
+
+class VoteResultResponseSerializer(serializers.Serializer):
+    result = serializers.CharField()
+    spy_can_guess = serializers.BooleanField()
+    voted_player = serializers.CharField()
+    status = serializers.CharField()
+    winner = serializers.ListField(child=serializers.IntegerField())
+
+
+class SpyGuessRequestSerializer(serializers.Serializer):
+    location = serializers.CharField()
+
+
+
+class GameResultResponseSerializer(serializers.Serializer):
+    correct = serializers.BooleanField()
+    location = serializers.CharField()
+    winner = serializers.ListField(child=serializers.IntegerField())
+    status = serializers.CharField()

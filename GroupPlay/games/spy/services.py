@@ -238,3 +238,84 @@ class SpyTimerService:
 
 
 
+class SpyVoteService:
+
+    @staticmethod
+    def vote(session, voted_player_id):
+        spy_game = SpyGameState.objects.get(session=session)
+
+        if spy_game.status != SpyGameState.Status.VOTING:
+            raise ValidationError("Session is not in VOTING state.")
+
+        try:
+            voted_player = Player.objects.get(id=voted_player_id, session=session)
+        except Player.DoesNotExist:
+            raise ValidationError(f"Player {voted_player_id} not found in this session.")
+
+        voted_state = SpyPlayerState.objects.get(player=voted_player, session=session)
+
+        if voted_state.is_spy:
+            spy_game.status = SpyGameState.Status.SPY_GUESS
+            spy_game.save(update_fields=["status"])
+            return {
+                "result": "spy_caught",
+                "spy_can_guess": True,
+                "voted_player": voted_player.name,
+                "status": spy_game.status,
+                "winner": [],
+            }
+        else:
+            spy_player_ids = list(
+                SpyPlayerState.objects.filter(session=session, is_spy=True)
+                .values_list("player_id", flat=True)
+            )
+            spy_game.status = SpyGameState.Status.FINISHED
+            spy_game.save(update_fields=["status"])
+            session.winner = spy_player_ids
+            session.save(update_fields=["winner"])
+            return {
+                "result": "wrong_vote",
+                "spy_can_guess": False,
+                "voted_player": voted_player.name,
+                "status": spy_game.status,
+                "winner": spy_player_ids,
+            }
+
+
+class SpyGuessService:
+
+    @staticmethod
+    def guess_location(session, location_name):
+        spy_game = SpyGameState.objects.get(session=session)
+
+        if spy_game.status != SpyGameState.Status.SPY_GUESS:
+            raise ValidationError("Session is not in SPY_GUESS state.")
+
+        correct = (
+                location_name.strip().lower() == spy_game.location.name_en.strip().lower()
+                or location_name.strip() == spy_game.location.name_fa.strip()
+        )
+
+        if correct:
+            winner_ids = list(
+                SpyPlayerState.objects.filter(session=session, is_spy=True)
+                .values_list("player_id", flat=True)
+            )
+        else:
+            winner_ids = list(
+                SpyPlayerState.objects.filter(session=session, is_spy=False)
+                .values_list("player_id", flat=True)
+            )
+
+        spy_game.status = SpyGameState.Status.FINISHED
+        spy_game.save(update_fields=["status"])
+
+        session.winner = winner_ids
+        session.save(update_fields=["winner"])
+
+        return {
+            "correct": correct,
+            "location": spy_game.location.name_en,
+            "winner": winner_ids,
+            "status": spy_game.status,
+        }

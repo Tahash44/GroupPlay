@@ -4,6 +4,7 @@ from games.models import GameSession, Player
 from games.spy.models import SpyGameState, SpyPlayerState, Location
 
 
+
 class SpyGameService:
     @staticmethod
     @transaction.atomic
@@ -59,3 +60,46 @@ class SpyGameService:
             )
 
         return session
+
+
+
+
+class SpyRevealService:
+
+    @staticmethod
+    def get_pending_players(session):
+        states = SpyPlayerState.objects.filter(
+            session=session,
+            role_revealed=False
+        )
+
+        return [state.player for state in states]
+
+    @staticmethod
+    def reveal_role(session, player_id):
+        player = Player.objects.get(id=player_id, session=session)
+
+        player_state = SpyPlayerState.objects.get(
+            player=player,
+            session=session
+        )
+
+        if player_state.role_revealed:
+            raise ValueError("Role already revealed")
+
+        player_state.role_revealed = True
+        player_state.save()
+
+        spy_game = SpyGameState.objects.get(session=session)
+
+        if player_state.is_spy:
+            return {
+                "role": "spy",
+                "location": None
+            }
+
+        return {
+            "role": player_state.role_en,
+            "location": spy_game.location.name_en
+        }
+

@@ -1,6 +1,6 @@
 from rest_framework import serializers
-from games.models import GameSession
-
+from games.models import GameSession, Player
+from games.spy.models import SpyGameState, SpyPlayerState
 
 class PlayerInputSerializer(serializers.Serializer):
     friend_id = serializers.IntegerField(required=False, allow_null=True)
@@ -38,3 +38,75 @@ class SpySessionResponseSerializer(serializers.ModelSerializer):
         model = GameSession
         fields = ["id", "status", "created_at"]
         read_only_fields = ["id", "status", "created_at"]
+
+class SpyPlayerDetailSerializer(serializers.ModelSerializer):
+    role = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Player
+        fields = ['id', 'name', 'role']
+
+    def get_role(self, obj):
+
+        spy_player_state = SpyPlayerState.objects.filter(player=obj).first()
+        if spy_player_state:
+
+            return spy_player_state.role_fa # یا role_en
+        return None
+
+class SpySessionDetailSerializer(serializers.ModelSerializer):
+    status = serializers.SerializerMethodField()
+    location = serializers.SerializerMethodField()
+    players = serializers.SerializerMethodField()
+    winner = serializers.SerializerMethodField()
+
+    class Meta:
+        model = GameSession
+        fields = ["id", "game_type", "status", "location", "winner", "players"]
+
+    def get_status(self, obj):
+        spy_game_state = SpyGameState.objects.filter(session=obj).first()
+        if spy_game_state:
+            return getattr(spy_game_state, "status", None)
+        return None
+
+    def get_location(self, obj):
+        spy_game_state = SpyGameState.objects.filter(session=obj).first()
+        if spy_game_state and spy_game_state.location:
+            return getattr(spy_game_state.location, "name_fa", None) or getattr(
+                spy_game_state.location, "name_en", None
+            )
+        return None
+
+    def get_players(self, obj):
+        players = obj.players.all()
+        return SpyPlayerDetailSerializer(players, many=True).data
+
+    def get_winner(self, obj):
+        spy_game_state = SpyGameState.objects.filter(session=obj).first()
+        if spy_game_state and getattr(spy_game_state, "winner", None):
+            winner = spy_game_state.winner
+            return getattr(winner, "id", winner)
+        return None
+
+
+
+
+class PendingPlayerSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Player
+        fields = ["id", "name"]
+
+
+class RevealRoleRequestSerializer(serializers.Serializer):
+    player_id = serializers.IntegerField()
+
+
+class SpyRoleResponseSerializer(serializers.Serializer):
+    role = serializers.CharField()
+    location = serializers.CharField(allow_null=True)
+
+
+class CivilianRoleResponseSerializer(serializers.Serializer):
+    role = serializers.CharField()
+    location = serializers.CharField()

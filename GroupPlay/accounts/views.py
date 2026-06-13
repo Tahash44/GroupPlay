@@ -133,13 +133,13 @@ class FriendDetailAPIView(APIView):
     def get(self, request, pk):
         friend = FriendsService.get_friend(pk, request.user)
         if not friend:
-            return Response({"detail": "مخاطب یافت نشد."}, status=status.HTTP_404_NOT_FOUND)
+            return Response({"detail": "Friend not found."}, status=status.HTTP_404_NOT_FOUND)
         return Response(FriendSerializer(friend).data)
 
     def put(self, request, pk):
         friend = FriendsService.get_friend(pk, request.user)
         if not friend:
-            return Response({"detail": "مخاطب یافت نشد."}, status=status.HTTP_404_NOT_FOUND)
+            return Response({"detail": "Friend not found."}, status=status.HTTP_404_NOT_FOUND)
         serializer = FriendSerializer(friend, data=request.data, partial=True)
         if serializer.is_valid():
             serializer.save()
@@ -149,6 +149,6 @@ class FriendDetailAPIView(APIView):
     def delete(self, request, pk):
         friend = FriendsService.get_friend(pk, request.user)
         if not friend:
-            return Response({"detail": "مخاطب یافت نشد."}, status=status.HTTP_404_NOT_FOUND)
+            return Response({"detail": "Friend not found."}, status=status.HTTP_404_NOT_FOUND)
         FriendsService.delete_friend(friend)
         return Response(status=status.HTTP_204_NO_CONTENT)

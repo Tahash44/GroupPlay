@@ -9,19 +9,14 @@ erDiagram
     FRIEND {
         int id PK
         int user_id FK
-        bool is_deleted
         string name
-
+        bool is_deleted
     }
 
     GAME_SESSION {
         int id PK
         int host_id FK
         string game_type
-        string status
-        datetime timer_started_at
-        int timer_elapsed
-        int timer_duration
         json winner
         datetime created_at
     }
@@ -29,13 +24,19 @@ erDiagram
     PLAYER {
         int id PK
         int session_id FK
+        int friend_id FK
         string name
     }
 
     SPY_GAME_STATE {
         int id PK
+        int session_id FK
+        string status
         string location
         int spy_count
+        datetime timer_started_at
+        int timer_elapsed
+        int timer_duration
     }
 
     SPY_PLAYER_STATE {
@@ -50,6 +51,7 @@ erDiagram
     USER ||--o{ FRIEND : "has"
     USER ||--o{ GAME_SESSION : "hosts"
     GAME_SESSION ||--o{ PLAYER : "contains"
-    GAME_SESSION ||--o| SPY_GAME_STATE : "spy game"
-    SPY_GAME_STATE ||--o{ SPY_PLAYER_STATE : "spy roles"
-    PLAYER ||--o| SPY_PLAYER_STATE : "spy detail"
+    GAME_SESSION ||--|| SPY_GAME_STATE : "spy game"
+    GAME_SESSION ||--o{ SPY_PLAYER_STATE : "spy player states"
+    PLAYER ||--|| SPY_PLAYER_STATE : "spy detail"
+    FRIEND ||--o{ PLAYER : "player entries"

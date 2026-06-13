@@ -2,7 +2,7 @@ from django.test import TestCase
 
 from accounts.models import Friend, User
 from games.models import GameSession, Player
-from games.spy.models import SpyGameState, SpyPlayerState
+from games.spy.models import Location, SpyGameState, SpyPlayerState
 
 
 class SpyGameStateModelTest(TestCase):
@@ -16,9 +16,13 @@ class SpyGameStateModelTest(TestCase):
             host=self.user,
             game_type=GameSession.GameType.SPY,
         )
+        self.location = Location.objects.create(
+            name_en="Hospital",
+            name_fa="بیمارستان",
+        )
         self.spy_state = SpyGameState.objects.create(
             session=self.session,
-            location="Hospital",
+            location=self.location,
             spy_count=1,
             timer_duration=300,
         )
@@ -29,7 +33,7 @@ class SpyGameStateModelTest(TestCase):
     def test_spy_state_str(self):
         self.assertEqual(
             str(self.spy_state),
-            f"SpyState for Session #{self.session.id} — Hospital",
+            f"SpyState for Session #{self.session.id}",
         )
 
     def test_spy_state_linked_to_session(self):
@@ -62,6 +66,15 @@ class SpyPlayerStateModelTest(TestCase):
             host=self.user,
             game_type=GameSession.GameType.SPY,
         )
+        self.location = Location.objects.create(
+            name_en="Hospital",
+            name_fa="بیمارستان",
+        )
+        self.spy_state = SpyGameState.objects.create(
+            session=self.session,
+            location=self.location,
+            spy_count=1,
+        )
         self.friend = Friend.objects.create(user=self.user, name="Sarah")
         self.player = Player.objects.create(
             session=self.session,
@@ -70,7 +83,8 @@ class SpyPlayerStateModelTest(TestCase):
         self.spy_player = SpyPlayerState.objects.create(
             player=self.player,
             session=self.session,
-            role="civilian",
+            role_en="Hospital",
+            role_fa="بیمارستان",
             is_spy=False,
         )
 

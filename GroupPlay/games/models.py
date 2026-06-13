@@ -35,7 +35,8 @@ class Player(models.Model):
     name = models.CharField(max_length=255)
 
     def save(self, *args, **kwargs):
-        self.name = self.friend.name
+        if self.friend is not None:
+            self.name = self.friend.name
         super().save(*args, **kwargs)
 
     def __str__(self):

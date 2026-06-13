@@ -3,11 +3,9 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework import  permissions
-from django.shortcuts import get_object_or_404
-from .models import Friend
-from .serializers import FriendSerializer
 
-from accounts.serializers import (
+
+from .serializers import (
     ChangePasswordSerializer,
     LoginSerializer,
     LogoutSerializer,
@@ -15,8 +13,9 @@ from accounts.serializers import (
     ProfileUpdateSerializer,
     RegisterSerializer,
     TokenRefreshSerializer,
+    FriendSerializer
 )
-from accounts.services import AuthService, ProfileService
+from .services import AuthService, ProfileService,FriendsService
 
 
 class RegisterView(APIView):
@@ -117,8 +116,7 @@ class FriendListCreateAPIView(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
     def get(self, request):
-        friends = Friend.objects.filter(user=request.user, is_deleted=False)
-        serializer = FriendSerializer(friends, many=True)
+        serializer = FriendSerializer(FriendsService.get_friends(request.user), many=True)
         return Response(serializer.data)
 
     def post(self, request):
@@ -132,23 +130,16 @@ class FriendListCreateAPIView(APIView):
 class FriendDetailAPIView(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
-    def get_object(self, pk, user):
-        try:
-            return Friend.objects.get(pk=pk, user=user, is_deleted=False)
-        except Friend.DoesNotExist:
-            return None
-
     def get(self, request, pk):
-        friend = self.get_object(pk, request.user)
+        friend = FriendsService.get_friend(pk, request.user)
         if not friend:
-            return Response({"detail": "مخاطب یافت نشد."}, status=status.HTTP_404_NOT_FOUND)
-        serializer = FriendSerializer(friend)
-        return Response(serializer.data)
+            return Response({"detail": "Friend not found."}, status=status.HTTP_404_NOT_FOUND)
+        return Response(FriendSerializer(friend).data)
 
     def put(self, request, pk):
-        friend = self.get_object(pk, request.user)
+        friend = FriendsService.get_friend(pk, request.user)
         if not friend:
-            return Response({"detail": "مخاطب یافت نشد."}, status=status.HTTP_404_NOT_FOUND)
+            return Response({"detail": "Friend not found."}, status=status.HTTP_404_NOT_FOUND)
         serializer = FriendSerializer(friend, data=request.data, partial=True)
         if serializer.is_valid():
             serializer.save()
@@ -156,11 +147,8 @@ class FriendDetailAPIView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def delete(self, request, pk):
-        friend = self.get_object(pk, request.user)
+        friend = FriendsService.get_friend(pk, request.user)
         if not friend:
-            return Response({"detail": "مخاطب یافت نشد."}, status=status.HTTP_404_NOT_FOUND)
-        # Soft Delete
-        friend.is_deleted = True
-        friend.save()
+            return Response({"detail": "Friend not found."}, status=status.HTTP_404_NOT_FOUND)
+        FriendsService.delete_friend(friend)
         return Response(status=status.HTTP_204_NO_CONTENT)
-

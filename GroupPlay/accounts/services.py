@@ -2,13 +2,13 @@ from django.contrib.auth import authenticate
 from rest_framework_simplejwt.exceptions import TokenError
 from rest_framework_simplejwt.tokens import RefreshToken
 
+from accounts.models import User,Friend
 
 class AuthService:
 
     @staticmethod
     def register(username: str, email: str, password: str, name: str = "") -> dict:
         """Create a new user and return JWT tokens."""
-        from accounts.models import User
 
         user = User.objects.create_user(
             username=username,
@@ -76,3 +76,18 @@ class ProfileService:
             raise ValueError("Old password is incorrect.")
         user.set_password(new_password)
         user.save()
+
+class FriendsService:
+
+    @staticmethod
+    def get_friends(user):
+        return Friend.objects.filter(user=user, is_deleted=False)
+
+    @staticmethod
+    def get_friend(pk, user):
+        return Friend.objects.filter(pk=pk, user=user, is_deleted=False).first()
+
+    @staticmethod
+    def delete_friend(friend):
+        friend.is_deleted = True
+        friend.save()

@@ -1,0 +1,74 @@
+@import url('https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700;800&display=swap');
+
+/* ── رنگ‌ها و متغیرهای اصلی ── */
+:root {
+  --bg:            #F5F0E8;   /* پس‌زمینه اصلی */
+  --header:        #FFFFFF;   /* هدر */
+  --accent:        #CB78AC;   /* رنگ اصلی (صورتی/بنفش) */
+  --accent-dark:   #b05f93;
+  --accent-light:  #f0d6e8;
+  --accent-glow:   rgba(203, 120, 172, 0.18);
+
+  --surface:       #FFFFFF;
+  --border:        #E8E2D9;
+  --text:          #3A3240;
+  --text-muted:    #8C7F9A;
+  --text-light:    #B4A9C0;
+
+  --error:         #D64C4C;
+  --error-bg:      #FDF2F2;
+  --success:       #4CAF82;
+
+  --radius-sm:  8px;
+  --radius-md:  14px;
+  --radius-lg:  22px;
+  --radius-full: 9999px;
+
+  --shadow-card: 0 8px 32px rgba(58, 50, 64, 0.10);
+  --shadow-btn:  0 4px 14px rgba(203, 120, 172, 0.40);
+
+  --font: 'Vazirmatn', sans-serif;
+  --ease: 180ms ease;
+}
+
+/* ── ریست موبایل‌محور ── */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  -webkit-tap-highlight-color: transparent; /* حذف flash آبی روی موبایل */
+}
+
+html {
+  font-size: 16px;
+  -webkit-font-smoothing: antialiased;
+  /* جلوگیری از zoom روی input در iOS */
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  font-family: var(--font);
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.6;
+  min-height: 100vh;
+  min-height: 100dvh; /* برای مرورگرهای موبایل که نوار آدرس فضا می‌گیره */
+  overscroll-behavior: none;
+}
+
+#root {
+  min-height: 100vh;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* جلوگیری از zoom روی input در iPhone */
+input, select, textarea {
+  font-size: 16px !important;
+}
+
+button {
+  -webkit-user-select: none;
+  user-select: none;
+}

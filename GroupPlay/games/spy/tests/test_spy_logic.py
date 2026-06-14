@@ -60,8 +60,8 @@ class SpyGameLogicTest(TestCase):
         self.assertEqual(spy_state.spy_count, spy_count)
         self.assertEqual(spy_state.timer_duration, timer_duration)
 
-        self.assertEqual(Player.objects.filter(session=session).count(), 3)
-        self.assertEqual(SpyPlayerState.objects.filter(session=session).count(), 3)
+        self.assertEqual(Player.objects.filter(session=session).count(), 4)
+        self.assertEqual(SpyPlayerState.objects.filter(session=session).count(), 4)
 
         spies = SpyPlayerState.objects.filter(session=session, is_spy=True)
         self.assertEqual(spies.count(), spy_count)

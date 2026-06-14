@@ -30,7 +30,11 @@ api.interceptors.response.use(
   async (error) => {
     const original = error.config;
 
-    if (error.response?.status === 401 && !original._retry) {
+    const isAuthRequest = original.url?.includes('/auth/login') ||
+                          original.url?.includes('/auth/register') ||
+                          original.url?.includes('/auth/token/refresh');
+
+    if (error.response?.status === 401 && !original._retry && !isAuthRequest) {
       const refresh = localStorage.getItem('refresh_token');
       if (!refresh) {
         logout();

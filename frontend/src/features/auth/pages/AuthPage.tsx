@@ -48,6 +48,12 @@ function parseError(err: unknown): Record<string, string> {
   for (const [k, v] of Object.entries(data)) {
     out[k] = Array.isArray(v) ? (v[0] as string) : String(v);
   }
+
+  if (out.detail) {
+    out.general = out.detail;
+    delete out.detail;
+  }
+
   if (!Object.keys(out).length) out.general = 'خطایی رخ داد. دوباره تلاش کنید.';
   return out;
 }

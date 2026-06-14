@@ -1,0 +1,324 @@
+/* ── کل صفحه ── */
+.auth-root {
+  min-height: 100vh;
+  min-height: 100dvh;
+  background: var(--bg);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  direction: rtl;
+  padding: 32px 20px 24px;
+  gap: 0;
+}
+
+/* ── بخش بالا: برند ── */
+.auth-top {
+  width: 100%;
+  max-width: 420px;
+  text-align: center;
+  margin-bottom: 28px;
+}
+
+.auth-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.auth-logo-wrap {
+  border-radius: 9px;
+  box-shadow: 0 4px 14px rgba(203, 120, 172, 0.35);
+}
+
+.auth-brand-name {
+  font-size: 22px;
+  font-weight: 800;
+  color: var(--text);
+  letter-spacing: -0.4px;
+}
+
+/* چیپ‌های بازی */
+.auth-game-chips {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 14px;
+}
+
+.chip {
+  background: white;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-full);
+  padding: 6px 14px;
+  font-size: 13px;
+  color: var(--text-muted);
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.auth-tagline {
+  font-size: 14px;
+  color: var(--text-muted);
+  line-height: 1.6;
+}
+
+/* ── کارت فرم ── */
+.auth-card {
+  width: 100%;
+  max-width: 420px;
+  background: white;
+  border-radius: var(--radius-lg);
+  padding: 28px 24px;
+  box-shadow: var(--shadow-card);
+  border: 1px solid var(--border);
+}
+
+/* تب‌ها */
+.auth-tabs {
+  display: flex;
+  background: var(--bg);
+  border-radius: var(--radius-md);
+  padding: 4px;
+  margin-bottom: 24px;
+}
+
+.auth-tab {
+  flex: 1;
+  border: none;
+  background: transparent;
+  padding: 10px;
+  border-radius: 10px;
+  font-family: var(--font);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: all var(--ease);
+}
+
+.auth-tab--active {
+  background: white;
+  color: var(--accent);
+  box-shadow: 0 2px 8px rgba(58, 50, 64, 0.08);
+}
+
+/* عنوان */
+.auth-title {
+  font-size: 22px;
+  font-weight: 800;
+  color: var(--text);
+  margin-bottom: 4px;
+  letter-spacing: -0.3px;
+}
+
+.auth-sub {
+  font-size: 14px;
+  color: var(--text-muted);
+  margin-bottom: 22px;
+}
+
+/* بنر خطا */
+.auth-error-banner {
+  background: var(--error-bg);
+  color: var(--error);
+  border: 1px solid rgba(214, 76, 76, 0.2);
+  border-radius: var(--radius-sm);
+  padding: 10px 14px;
+  font-size: 13px;
+  margin-bottom: 16px;
+  text-align: right;
+}
+
+/* ── فیلد ── */
+.field {
+  margin-bottom: 16px;
+}
+
+.field-label {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 6px;
+}
+
+.optional {
+  color: var(--text-light);
+  font-weight: 400;
+}
+
+.field-wrap {
+  display: flex;
+  align-items: center;
+  background: #FAFAF8;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-md);
+  transition: border-color var(--ease), box-shadow var(--ease);
+  overflow: hidden;
+}
+
+.field-wrap:focus-within {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-glow);
+  background: white;
+}
+
+.field-wrap--err {
+  border-color: var(--error);
+}
+
+.field-wrap--err:focus-within {
+  box-shadow: 0 0 0 3px rgba(214, 76, 76, 0.12);
+}
+
+.field-icon {
+  padding: 0 12px;
+  color: var(--text-light);
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.field-wrap:focus-within .field-icon {
+  color: var(--accent);
+}
+
+.field-input {
+  flex: 1;
+  border: none;
+  outline: none;
+  background: transparent;
+  font-family: var(--font);
+  font-size: 15px !important; /* override global — جلوگیری از zoom iOS */
+  color: var(--text);
+  padding: 13px 4px 13px 0;
+  min-width: 0;
+}
+
+.field-input::placeholder {
+  color: var(--text-light);
+  font-size: 14px;
+}
+
+.field-input--pass {
+  padding-left: 0;
+}
+
+.field-eye {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0 12px;
+  color: var(--text-light);
+  display: flex;
+  align-items: center;
+  transition: color var(--ease);
+  flex-shrink: 0;
+  height: 100%;
+}
+
+.field-eye:hover { color: var(--accent); }
+
+.field-err {
+  margin-top: 5px;
+  font-size: 12px;
+  color: var(--error);
+}
+
+/* ── دکمه ارسال ── */
+.btn-submit {
+  width: 100%;
+  margin-top: 8px;
+  padding: 14px;
+  background: var(--accent);
+  color: white;
+  border: none;
+  border-radius: var(--radius-md);
+  font-family: var(--font);
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: var(--shadow-btn);
+  transition: background var(--ease), transform var(--ease), box-shadow var(--ease), opacity var(--ease);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  /* لمس بهتر روی موبایل */
+  min-height: 52px;
+}
+
+.btn-submit:hover:not(:disabled) {
+  background: var(--accent-dark);
+  box-shadow: 0 6px 20px rgba(203, 120, 172, 0.5);
+}
+
+.btn-submit:active:not(:disabled) {
+  transform: scale(0.98);
+}
+
+.btn-submit:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+/* اسپینر لودینگ */
+.spinner {
+  width: 20px;
+  height: 20px;
+  border: 2.5px solid rgba(255, 255, 255, 0.3);
+  border-top-color: white;
+  border-radius: 50%;
+  animation: spin 0.65s linear infinite;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* لینک سوئیچ */
+.auth-switch-text {
+  text-align: center;
+  margin-top: 20px;
+  font-size: 14px;
+  color: var(--text-muted);
+}
+
+.auth-switch-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--accent);
+  font-weight: 700;
+  font-family: var(--font);
+  font-size: 14px;
+  padding: 0;
+  transition: color var(--ease);
+}
+
+.auth-switch-btn:hover { color: var(--accent-dark); text-decoration: underline; }
+
+/* ── فوتر ── */
+.auth-footer {
+  margin-top: 24px;
+  font-size: 12px;
+  color: var(--text-light);
+  text-align: center;
+  letter-spacing: 0.3px;
+}
+
+/* ── دسکتاپ: وقتی صفحه بزرگ‌تر شد ── */
+@media (min-width: 640px) {
+  .auth-root {
+    justify-content: center;
+    padding: 40px 24px;
+  }
+
+  .auth-card {
+    padding: 36px 32px;
+  }
+
+  .auth-title {
+    font-size: 26px;
+  }
+}

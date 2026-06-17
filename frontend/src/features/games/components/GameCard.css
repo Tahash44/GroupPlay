@@ -1,0 +1,75 @@
+@import '../../../shared/styles/sketch.css';
+
+.game-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  align-items: flex-start;
+  text-align: right;
+  background: var(--color-surface);
+  padding: 0;
+  border: none; /* sketch-border خودش حاشیه رو می‌سازه */
+  overflow: hidden;
+  cursor: pointer;
+}
+
+.game-card--large { grid-column: span 2; grid-row: span 2; }
+.game-card--tall { grid-column: span 1; grid-row: span 2; }
+.game-card--wide { grid-column: span 2; grid-row: span 1; }
+.game-card--small { grid-column: span 1; grid-row: span 1; }
+
+.game-card-badge {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  z-index: 2;
+  background: var(--color-primary);
+  color: var(--color-on-primary);
+  font-family: var(--font-vazir);
+  font-size: 12px;
+  font-weight: 700;
+  padding: 4px 12px;
+  border-radius: 9999px;
+  border: 2px solid var(--color-ink-charcoal);
+}
+
+.game-card-icon {
+  position: absolute;
+  top: 16px;
+  left: 16px;
+  font-size: 56px;
+  color: var(--color-on-surface-variant);
+  opacity: 0.35;
+}
+
+.game-card--small .game-card-icon,
+.game-card--wide .game-card-icon {
+  font-size: 36px;
+}
+
+.game-card-text {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  padding: 16px;
+  background: linear-gradient(to top, var(--color-paper-base) 45%, transparent);
+}
+
+.game-card-title {
+  font-family: var(--font-bricolage);
+  font-size: 22px;
+  font-weight: 600;
+  color: var(--color-ink-charcoal);
+  margin: 0 0 4px;
+}
+
+.game-card-desc {
+  font-family: var(--font-vazir);
+  font-size: 13px;
+  color: var(--color-on-surface-variant);
+  margin: 0;
+}
+
+.game-card--small .game-card-title { font-size: 15px; margin-bottom: 2px; }
+.game-card--small .game-card-desc { font-size: 11px; }

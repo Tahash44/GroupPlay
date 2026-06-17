@@ -5,55 +5,39 @@ import { authService } from '../services/authService';
 import { useAuth } from '../../../shared/context/AuthContext';
 import './AuthPage.css';
 
-/* ── آیکون‌ها (SVG داخلی، بدون نیاز به پکیج اضافه) ── */
-const IconUser = () => (
-  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
-    <circle cx="12" cy="7" r="4"/>
-  </svg>
+/* ── آیکون‌ها (Material Symbols از طریق span) ── */
+const Icon = ({ name }: { name: string }) => (
+  <span className="field-icon material-symbols-outlined" aria-hidden="true">{name}</span>
 );
-const IconMail = () => (
-  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <rect x="2" y="4" width="20" height="16" rx="2"/>
-    <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/>
-  </svg>
+
+const IconEye = ({ off }: { off?: boolean }) => (
+  <span className="material-symbols-outlined" aria-hidden="true" style={{ fontSize: 20 }}>
+    {off ? 'visibility_off' : 'visibility'}
+  </span>
 );
-const IconLock = () => (
-  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <rect x="3" y="11" width="18" height="11" rx="2"/>
-    <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
-  </svg>
-);
-const IconEye = ({ off }: { off?: boolean }) => off ? (
-  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/>
-    <line x1="1" y1="1" x2="23" y2="23"/>
-  </svg>
-) : (
-  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
-    <circle cx="12" cy="12" r="3"/>
-  </svg>
-);
-const IconName = () => (
-  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6z"/>
+
+/* ── المان‌های تزئینی پس‌زمینه ── */
+const DecoTL = () => (
+  <svg className="auth-deco auth-deco--tl" width="100" height="100" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M10,50 Q30,10 50,50 T90,50" stroke="#262626" strokeWidth="2" strokeLinecap="round" strokeDasharray="5,5" fill="none"/>
   </svg>
 );
 
-/* ── کمک‌رسان: خطاهای بک‌اند رو تبدیل به فارسی کن ── */
+const DecoBR = () => (
+  <svg className="auth-deco auth-deco--br" width="80" height="80" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <circle cx="40" cy="40" r="30" stroke="#a9171e" strokeWidth="3" strokeDasharray="10,5" fill="none" style={{ transform: 'rotate(-10deg)', transformOrigin: 'center' }}/>
+    <circle cx="42" cy="38" r="30" stroke="#262626" strokeWidth="1" fill="none"/>
+  </svg>
+);
+
+/* ── کمک‌رسان: خطاهای بک‌اند رو به فارسی تبدیل کن ── */
 function parseError(err: unknown): Record<string, string> {
   const data = (err as { response?: { data?: Record<string, unknown> } })?.response?.data ?? {};
   const out: Record<string, string> = {};
   for (const [k, v] of Object.entries(data)) {
     out[k] = Array.isArray(v) ? (v[0] as string) : String(v);
   }
-
-  if (out.detail) {
-    out.general = out.detail;
-    delete out.detail;
-  }
-
+  if (out.detail) { out.general = out.detail; delete out.detail; }
   if (!Object.keys(out).length) out.general = 'خطایی رخ داد. دوباره تلاش کنید.';
   return out;
 }
@@ -135,59 +119,23 @@ export default function AuthPage() {
   return (
     <div className="auth-root">
 
-      {/* ─── بخش بالایی: برند + بازی‌ها ─── */}
-      <div className="auth-top">
-        <div className="auth-brand">
-          <div className="auth-logo-wrap">
-            <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
-              <rect width="32" height="32" rx="9" fill="#CB78AC"/>
-              <circle cx="16" cy="12" r="4.5" fill="white" fillOpacity="0.92"/>
-              <path d="M6 26c0-5.523 4.477-10 10-10s10 4.477 10 10" stroke="white" strokeWidth="2.2" strokeLinecap="round" strokeOpacity="0.92"/>
-            </svg>
-          </div>
-          <span className="auth-brand-name">BaziGardan</span>
-        </div>
+      {/* ─── تزئینات پس‌زمینه ─── */}
+      <DecoTL />
+      <DecoBR />
 
-        <div className="auth-game-chips">
-          <span className="chip">🕵️ جاسوس</span>
-          <span className="chip">🎭 مافیا</span>
-          <span className="chip">🎪 پانتومیم</span>
-        </div>
 
-        <p className="auth-tagline">گرداننده هوشمند بازی‌های گروهی حضوری</p>
-      </div>
 
       {/* ─── کارت فرم ─── */}
       <div className="auth-card">
 
-        {/* تب‌های login / register */}
-        <div className="auth-tabs">
-          <button
-            className={`auth-tab ${isLogin ? 'auth-tab--active' : ''}`}
-            onClick={() => navigate('/auth/login')}
-            type="button"
-          >
-            ورود
-          </button>
-          <button
-            className={`auth-tab ${!isLogin ? 'auth-tab--active' : ''}`}
-            onClick={() => navigate('/auth/register')}
-            type="button"
-          >
-            ثبت‌نام
-          </button>
-        </div>
 
-        <h2 className="auth-title">
-          {isLogin ? 'خوش برگشتی 👋' : 'بیا شروع کنیم ✨'}
-        </h2>
-        <p className="auth-sub">
-          {isLogin ? 'وارد حسابت بشو' : 'یه حساب رایگان بساز'}
-        </p>
+
+<h2 className="auth-title">بازی‌گردان</h2>
+<p className="auth-sub">ورود به دنیای بازی‌ها!</p>
 
         {/* خطای کلی */}
         {errors.general && (
-          <div className="auth-error-banner">
+          <div className="auth-error-banner" role="alert">
             ⚠️ {errors.general}
           </div>
         )}
@@ -196,10 +144,11 @@ export default function AuthPage() {
 
           {/* نام کاربری */}
           <div className="field">
-            <label className="field-label">نام کاربری</label>
+            <label className="field-label" htmlFor="username">نام کاربری</label>
             <div className={`field-wrap ${errors.username ? 'field-wrap--err' : ''}`}>
-              <span className="field-icon"><IconUser /></span>
+              <Icon name="alternate_email" />
               <input
+                id="username"
                 className="field-input"
                 type="text"
                 placeholder="مثلاً: ali_game"
@@ -215,10 +164,11 @@ export default function AuthPage() {
           {/* ایمیل — فقط ثبت‌نام */}
           {!isLogin && (
             <div className="field">
-              <label className="field-label">ایمیل</label>
+              <label className="field-label" htmlFor="email">ایمیل</label>
               <div className={`field-wrap ${errors.email ? 'field-wrap--err' : ''}`}>
-                <span className="field-icon"><IconMail /></span>
+                <Icon name="mail" />
                 <input
+                  id="email"
                   className="field-input"
                   type="email"
                   placeholder="you@example.com"
@@ -235,10 +185,13 @@ export default function AuthPage() {
           {/* نام نمایشی — فقط ثبت‌نام */}
           {!isLogin && (
             <div className="field">
-              <label className="field-label">نام نمایشی <span className="optional">(اختیاری)</span></label>
-              <div className={`field-wrap ${errors.name ? 'field-wrap--err' : ''}`}>
-                <span className="field-icon"><IconName /></span>
+              <label className="field-label" htmlFor="displayname">
+                نام نمایشی <span className="optional">(اختیاری)</span>
+              </label>
+              <div className="field-wrap">
+                <Icon name="person" />
                 <input
+                  id="displayname"
                   className="field-input"
                   type="text"
                   placeholder="اسمی که بقیه می‌بینن"
@@ -251,11 +204,12 @@ export default function AuthPage() {
 
           {/* رمز عبور */}
           <div className="field">
-            <label className="field-label">رمز عبور</label>
+            <label className="field-label" htmlFor="password">رمز عبور</label>
             <div className={`field-wrap ${errors.password ? 'field-wrap--err' : ''}`}>
-              <span className="field-icon"><IconLock /></span>
+              <Icon name="lock" />
               <input
-                className="field-input field-input--pass"
+                id="password"
+                className="field-input"
                 type={showPass ? 'text' : 'password'}
                 placeholder={isLogin ? 'رمز عبورت' : 'حداقل ۸ کاراکتر'}
                 autoComplete={isLogin ? 'current-password' : 'new-password'}
@@ -268,6 +222,7 @@ export default function AuthPage() {
                 className="field-eye"
                 onClick={() => setShowPass(v => !v)}
                 tabIndex={-1}
+                aria-label={showPass ? 'مخفی کردن رمز' : 'نمایش رمز'}
               >
                 <IconEye off={showPass} />
               </button>
@@ -282,7 +237,7 @@ export default function AuthPage() {
             disabled={loading}
           >
             {loading
-              ? <span className="spinner" />
+              ? <span className="spinner" aria-label="در حال بارگذاری" />
               : (isLogin ? 'ورود به حساب' : 'ساختن حساب')
             }
           </button>

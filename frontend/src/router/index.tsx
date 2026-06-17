@@ -1,7 +1,7 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { useAuth } from '../shared/context/AuthContext';
 import AuthPage from '../features/auth/pages/AuthPage';
-
+import LogoutButton from '../features/auth/components/LogoutButton';
 /*
   این فایل تعیین می‌کنه هر آدرس (URL) کدوم صفحه رو نشون بده.
   مثلاً /auth/login → صفحه ورود
@@ -28,9 +28,11 @@ export default function AppRouter() {
           path="/dashboard"
           element={
             <PrivateRoute>
-              <div style={{ padding: 40, fontFamily: 'Vazirmatn, sans-serif' }}>
-                داشبورد — به زودی 🎮
-              </div>
+                <div style={{ padding: 40, fontFamily: 'Vazirmatn, sans-serif' }}>
+                    داشبورد — به زودی 🎮
+                    <br/>
+                <LogoutButton />
+                </div>
             </PrivateRoute>
           }
         />

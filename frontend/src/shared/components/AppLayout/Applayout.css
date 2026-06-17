@@ -1,0 +1,233 @@
+@import '../../styles/sketch.css';
+
+.app-layout {
+  min-height: 100vh;
+  background-color: var(--color-paper-base);
+  color: var(--color-on-surface);
+  padding-bottom: 88px; /* فضای نوار پایین موبایل */
+}
+
+@media (min-width: 1024px) {
+  .app-layout {
+    padding-bottom: 0;
+    padding-right: 256px;
+  }
+}
+
+/* ───────── نوار بالا (موبایل) ───────── */
+.app-topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  padding: 12px 20px;
+  background: var(--color-paper-base);
+  border-bottom: 2px solid rgba(38, 38, 38, 0.2);
+  box-shadow: 4px 4px 0px 0px rgba(38, 38, 38, 0.1);
+}
+
+@media (min-width: 1024px) {
+  .app-topbar { display: none; }
+}
+
+.app-brand {
+  font-family: var(--font-bricolage);
+  font-weight: 700;
+  font-size: 22px;
+  color: var(--color-primary);
+}
+
+.app-topbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.app-icon-btn {
+  background: none;
+  border: none;
+  padding: 8px;
+  border-radius: 9999px;
+  color: var(--color-on-surface-variant);
+  cursor: pointer;
+}
+.app-icon-btn:hover { background: var(--color-surface-container-low); }
+
+.app-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 9999px;
+  border: 2px solid var(--color-ink-charcoal);
+  background: var(--color-secondary-container);
+  color: var(--color-on-secondary-container);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-bricolage);
+  font-weight: 700;
+}
+
+.app-avatar--lg {
+  width: 48px;
+  height: 48px;
+  font-size: 18px;
+}
+
+/* ───────── نوار کناری (دسکتاپ) ───────── */
+.app-sidenav {
+  display: none;
+}
+
+@media (min-width: 1024px) {
+  .app-sidenav {
+    display: flex;
+    flex-direction: column;
+    position: fixed;
+    top: 0;
+    right: 0;
+    height: 100%;
+    width: 256px;
+    padding: 16px;
+    gap: 16px;
+    background: var(--color-paper-base);
+    border-left: 2px solid rgba(38, 38, 38, 0.2);
+    box-shadow: -8px 0px 0px 0px rgba(38, 38, 38, 0.05);
+    z-index: 40;
+  }
+}
+
+.app-host-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px;
+}
+
+.app-host-name {
+  font-family: var(--font-vazir);
+  font-weight: 700;
+  font-size: 14px;
+}
+
+.app-host-sub {
+  font-family: var(--font-vazir);
+  font-size: 13px;
+  color: var(--color-on-surface-variant);
+}
+
+.app-nav-links {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex: 1;
+}
+
+.app-nav-link {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  border-radius: 12px;
+  color: var(--color-on-surface-variant);
+  font-family: var(--font-vazir);
+  font-size: 15px;
+  text-decoration: none;
+  cursor: pointer;
+  transition: transform 0.15s ease;
+}
+.app-nav-link:hover { transform: translateX(-2px); }
+
+.app-nav-link--active {
+  background: var(--color-secondary-container);
+  color: var(--color-on-secondary-container);
+  border: 2px solid var(--color-ink-charcoal);
+}
+
+.app-nav-link--soon {
+  opacity: 0.55;
+  cursor: default;
+}
+.app-nav-link--soon:hover { transform: none; }
+
+.app-new-game-btn {
+  width: 100%;
+  background: var(--color-primary);
+  color: var(--color-on-primary);
+  border: 2px solid var(--color-ink-charcoal);
+  border-radius: 4px 12px 6px 14px;
+  box-shadow: 6px 6px 0px 0px rgba(38, 38, 38, 0.1);
+  padding: 12px;
+  font-family: var(--font-vazir);
+  font-weight: 700;
+  font-size: 14px;
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+.app-new-game-btn:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: 8px 8px 0px 0px rgba(38, 38, 38, 0.15);
+}
+
+.app-logout-wrap {
+  text-align: center;
+  padding-top: 4px;
+}
+
+/* ───────── نوار پایین (موبایل) ───────── */
+.app-bottomnav {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  position: fixed;
+  bottom: 0;
+  right: 0;
+  left: 0;
+  z-index: 50;
+  padding: 8px 16px 16px;
+  background: var(--color-paper-base);
+  border-top: 2px solid rgba(38, 38, 38, 0.2);
+  box-shadow: 0 -4px 0px 0px rgba(38, 38, 38, 0.1);
+  border-radius: 24px 24px 0 0;
+}
+
+@media (min-width: 1024px) {
+  .app-bottomnav { display: none; }
+}
+
+.app-bottomnav-link {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  color: var(--color-on-surface-variant);
+  font-family: var(--font-vazir);
+  font-size: 12px;
+  font-weight: 700;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.app-bottomnav-link--active {
+  color: var(--color-primary);
+  background: rgba(255, 236, 139, 0.35);
+  border-radius: 9999px;
+  padding: 4px 16px;
+}
+
+.app-bottomnav-link--soon {
+  opacity: 0.5;
+  cursor: default;
+}
+
+/* ───────── محتوای اصلی ───────── */
+.app-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+@media (min-width: 768px) {
+  .app-content { padding: 40px; }
+}

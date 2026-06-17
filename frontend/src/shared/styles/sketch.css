@@ -1,0 +1,58 @@
+/*
+  توکن‌های رنگ و فونت مشترک سیستم طراحی «بازی‌گردان»
+  + کلاس‌های کمکی برای افکت «طرح دستی روی کاغذ» (sketch)
+  این فایل رو هر کامپوننتی که نیاز به این افکت‌ها داره import می‌کنه.
+*/
+
+@import url('https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@400;600;700&family=Vazirmatn:wght@400;700&display=swap');
+
+:root {
+  --color-primary: #a9171e;
+  --color-on-primary: #ffffff;
+  --color-secondary: #3b6188;
+  --color-secondary-container: #acd2ff;
+  --color-on-secondary-container: #345a81;
+  --color-ink-charcoal: #262626;
+  --color-paper-base: #fdfcf8;
+  --color-surface: #fff8f7;
+  --color-surface-dim: #efd4d1;
+  --color-surface-container-low: #fff0ef;
+  --color-surface-container: #ffe9e7;
+  --color-surface-container-high: #fee2df;
+  --color-on-surface: #271817;
+  --color-on-surface-variant: #5a403e;
+  --color-outline: #8e706d;
+  --color-outline-variant: #e3bebb;
+  --color-pencil-highlight: #ffec8b;
+  --color-blueprint-fill: #e6f0f7;
+
+  --font-vazir: 'Vazirmatn', sans-serif;
+  --font-bricolage: 'Bricolage Grotesque', sans-serif;
+}
+
+/* پس‌زمینه‌ی بافت کاغذ (نقطه‌چین کم‌رنگ) */
+.paper-texture {
+  background-image: radial-gradient(var(--color-surface-dim) 1px, transparent 1px);
+  background-size: 24px 24px;
+}
+
+/* حاشیه‌ی «دست‌کشیده»‌ی نامتقارن */
+.sketch-border {
+  border: 2px solid var(--color-ink-charcoal);
+  border-radius: 4px 12px 6px 14px;
+}
+
+/* سایه‌ی صاف آفست (به جای سایه‌ی نرم معمولی) */
+.sketch-shadow {
+  box-shadow: 6px 6px 0px 0px rgba(38, 38, 38, 0.1);
+}
+
+/* افکت هاور: کمی جابه‌جایی + سایه‌ی بزرگ‌تر */
+.sketch-hover {
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.sketch-hover:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: 8px 8px 0px 0px rgba(38, 38, 38, 0.15);
+}

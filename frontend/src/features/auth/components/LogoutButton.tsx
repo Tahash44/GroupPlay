@@ -1,5 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../../shared/context/AuthContext';
+import './LogoutButton.css';
 
 export default function LogoutButton() {
   const { logout } = useAuth();
@@ -11,8 +12,8 @@ export default function LogoutButton() {
   };
 
   return (
-    <button onClick={handleLogout}>
-      خروج 🚪
+    <button className="logout-btn" onClick={handleLogout}>
+      خروج
     </button>
   );
 }

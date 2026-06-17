@@ -7,6 +7,7 @@
 .games-header {
   display: flex;
   justify-content: space-between;
+  flex-direction: row-reverse;
   align-items: flex-end;
   margin-bottom: 32px;
   padding-bottom: 16px;
@@ -97,3 +98,4 @@
 @keyframes games-spin {
   to { transform: rotate(360deg); }
 }
+

@@ -151,11 +151,11 @@ export default function AuthPage() {
                 id="username"
                 className="field-input"
                 type="text"
-                placeholder="مثلاً: ali_game"
+                placeholder={isLogin ? 'نام کاربریت چیه؟' : 'یه نام مستعار جدید بساز'}
                 autoComplete="username"
                 value={form.username}
                 onChange={update('username')}
-                dir="ltr"
+                dir="rtl"
               />
             </div>
             {errors.username && <p className="field-err">{errors.username}</p>}
@@ -171,11 +171,11 @@ export default function AuthPage() {
                   id="email"
                   className="field-input"
                   type="email"
-                  placeholder="you@example.com"
+                  placeholder="ایمیلت رو وارد کن"
                   autoComplete="email"
                   value={form.email}
                   onChange={update('email')}
-                  dir="ltr"
+                  dir="rtl"
                 />
               </div>
               {errors.email && <p className="field-err">{errors.email}</p>}
@@ -194,7 +194,7 @@ export default function AuthPage() {
                   id="displayname"
                   className="field-input"
                   type="text"
-                  placeholder="اسمی که بقیه می‌بینن"
+                  placeholder="مثلاً علی"
                   value={form.name}
                   onChange={update('name')}
                 />
@@ -211,11 +211,11 @@ export default function AuthPage() {
                 id="password"
                 className="field-input"
                 type={showPass ? 'text' : 'password'}
-                placeholder={isLogin ? 'رمز عبورت' : 'حداقل ۸ کاراکتر'}
+                placeholder={isLogin ? 'رمز عبورت چیه؟' : 'حداقل ۸ کاراکتر، هر چی سخت‌تر بهتر'}
                 autoComplete={isLogin ? 'current-password' : 'new-password'}
                 value={form.password}
                 onChange={update('password')}
-                dir="ltr"
+                dir="rtl"
               />
               <button
                 type="button"

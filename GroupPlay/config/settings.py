@@ -141,7 +141,15 @@ USE_TZ = True
 
 STATIC_URL = "static/"
 
+# در محیط dev همه‌ی پورت‌های localhost مجاز هستن
+# وقتی Vite پورت 5173 اشغاله، پورت بعدی رو می‌گیره
+CORS_ALLOW_ALL_ORIGINS = DEBUG
+
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",
     "http://127.0.0.1:5173",
+    "http://localhost:5174",
+    "http://localhost:5175",
+    "http://localhost:5176",
+    "http://localhost:5177",
 ]

@@ -1,5 +1,5 @@
-import { type ReactNode } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { type ReactNode, useState, useRef, useEffect } from 'react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import LogoutButton from '../../../features/auth/components/LogoutButton';
 import './AppLayout.css';
@@ -7,7 +7,7 @@ import './AppLayout.css';
 interface NavItem {
   label: string;
   icon: string;
-  path: string | null; // null یعنی صفحه‌ش هنوز ساخته نشده
+  path: string | null;
 }
 
 const NAV_ITEMS: NavItem[] = [
@@ -17,29 +17,131 @@ const NAV_ITEMS: NavItem[] = [
   { label: 'تاریخچه', icon: 'history', path: null },
 ];
 
+function UserMenu({
+  name,
+  username,
+  onNavigate,
+}: {
+  name?: string;
+  username?: string;
+  onNavigate: (path: string) => void;
+}) {
+  return (
+    <div className="app-user-menu">
+      <div className="app-user-menu-header">
+        <div className="app-user-menu-name">{name || username || 'کاربر'}</div>
+      </div>
+      <div className="app-user-menu-divider" />
+
+      {/* پروفایل — فعال */}
+      <button
+        type="button"
+        className="app-user-menu-item"
+        onClick={() => onNavigate('/profile')}
+      >
+        <span className="material-symbols-outlined">person</span>
+        پروفایل
+      </button>
+
+      {/* تنظیمات — به زودی */}
+      <span className="app-user-menu-item app-user-menu-item--soon">
+        <span className="material-symbols-outlined">settings</span>
+        تنظیمات
+      </span>
+
+      {/* اعلان‌ها — به زودی */}
+      <span className="app-user-menu-item app-user-menu-item--soon">
+        <span className="material-symbols-outlined">notifications</span>
+        اعلان‌ها
+      </span>
+
+      <div className="app-user-menu-divider" />
+      <div className="app-user-menu-logout">
+        <LogoutButton />
+      </div>
+    </div>
+  );
+}
+
 export default function AppLayout({ children }: { children: ReactNode }) {
   const { user } = useAuth();
   const location = useLocation();
+  const navigate = useNavigate();
+
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [desktopMenuOpen, setDesktopMenuOpen] = useState(false);
+
+  const mobileMenuRef = useRef<HTMLDivElement>(null);
+  const desktopMenuRef = useRef<HTMLDivElement>(null);
 
   const initial = (user?.name || user?.username || '؟').charAt(0);
 
+  useEffect(() => {
+    function handleClickOutside(e: MouseEvent) {
+      if (mobileMenuRef.current && !mobileMenuRef.current.contains(e.target as Node)) {
+        setMobileMenuOpen(false);
+      }
+      if (desktopMenuRef.current && !desktopMenuRef.current.contains(e.target as Node)) {
+        setDesktopMenuOpen(false);
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  function handleMenuNavigate(path: string) {
+    setMobileMenuOpen(false);
+    setDesktopMenuOpen(false);
+    navigate(path);
+  }
+
   return (
     <div className="app-layout paper-texture">
-      {/* نوار بالا — موبایل */}
+
+      {/* ───── نوار بالا — موبایل ───── */}
       <header className="app-topbar">
         <div className="app-brand">بازی‌گردان</div>
         <div className="app-topbar-actions">
-          <button type="button" className="app-icon-btn" title="به زودی">
-            <span className="material-symbols-outlined">settings</span>
-          </button>
-          <div className="app-avatar" aria-hidden="true">{initial}</div>
+          <div className="app-avatar-wrapper app-avatar-wrapper--mobile" ref={mobileMenuRef}>
+            <button
+              type="button"
+              className="app-avatar"
+              aria-label="منوی کاربر"
+              onClick={() => setMobileMenuOpen(prev => !prev)}
+            >
+              {initial}
+            </button>
+            {mobileMenuOpen && (
+              <UserMenu
+                name={user?.name}
+                username={user?.username}
+                onNavigate={handleMenuNavigate}
+              />
+            )}
+          </div>
         </div>
       </header>
 
-      {/* نوار کناری — دسکتاپ */}
+      {/* ───── نوار کناری — دسکتاپ ───── */}
       <nav className="app-sidenav">
-        <div className="app-host-info">
-          <div className="app-avatar app-avatar--lg" aria-hidden="true">{initial}</div>
+        <div className="app-host-info" ref={desktopMenuRef}>
+          <div className="app-avatar-wrapper app-avatar-wrapper--desktop">
+            <button
+              type="button"
+              className="app-avatar app-avatar--lg"
+              aria-label="منوی کاربر"
+              onClick={() => setDesktopMenuOpen(prev => !prev)}
+            >
+              {initial}
+            </button>
+            {desktopMenuOpen && (
+              <UserMenu
+                name={user?.name}
+                username={user?.username}
+                onNavigate={handleMenuNavigate}
+              />
+            )}
+          </div>
           <div>
             <div className="app-host-name">{user?.name || user?.username || 'میزبان بازی'}</div>
             <div className="app-host-sub">مدیریت دورهمی</div>
@@ -80,7 +182,7 @@ export default function AppLayout({ children }: { children: ReactNode }) {
         </div>
       </nav>
 
-      {/* نوار پایین — موبایل */}
+      {/* ───── نوار پایین — موبایل ───── */}
       <nav className="app-bottomnav">
         <Link
           to="/dashboard"
@@ -89,14 +191,20 @@ export default function AppLayout({ children }: { children: ReactNode }) {
           <span className="material-symbols-outlined">sports_esports</span>
           بازی‌ها
         </Link>
+
         <span className="app-bottomnav-link app-bottomnav-link--soon">
           <span className="material-symbols-outlined">group</span>
           دوستان
         </span>
-        <span className="app-bottomnav-link app-bottomnav-link--soon">
+
+        {/* پروفایل — فعال */}
+        <Link
+          to="/profile"
+          className={`app-bottomnav-link ${location.pathname === '/profile' ? 'app-bottomnav-link--active' : ''}`}
+        >
           <span className="material-symbols-outlined">person</span>
           پروفایل
-        </span>
+        </Link>
       </nav>
 
       <main className="app-content">{children}</main>

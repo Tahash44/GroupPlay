@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import GameCard from '../components/GameCard';
 import { gamesService } from '../services/gamesService';
+// @ts-ignore
 import type { Game } from '../types/games.types';
 import './GamesListPage.css';
 
@@ -21,16 +22,6 @@ export default function GamesListPage() {
 
   return (
     <div className="games-page">
-      <div className="games-header">
-        <div>
-          <h1 className="games-title">انتخاب بازی</h1>
-          <p className="games-subtitle">بازی امشب چیه؟</p>
-        </div>
-        <button type="button" className="games-search-btn sketch-border" title="به زودی">
-          <span className="material-symbols-outlined">search</span>
-        </button>
-      </div>
-
       {loading ? (
         <div className="games-loading">
           <span className="games-spinner" aria-label="در حال بارگذاری" />

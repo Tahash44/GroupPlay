@@ -1,216 +1,190 @@
 import { useState } from 'react';
 import { useAuth } from '../../../shared/context/AuthContext';
+import { profileService } from '../services/profileService';
+import LogoutButton from '../../../features/auth/components/LogoutButton';
 import './ProfilePage.css';
 
-type Tab = 'info' | 'stats' | 'history';
-
-const MOCK_HISTORY = [
-  { id: 1, game: 'مافیا', role: 'میزبان', players: 8, result: 'win', date: '۱۴۰۳/۰۳/۱۲' },
-  { id: 2, game: 'اسپای', role: 'بازیکن', players: 6, result: 'lose', date: '۱۴۰۳/۰۳/۰۸' },
-  { id: 3, game: 'پانتومیم', role: 'میزبان', players: 10, result: 'win', date: '۱۴۰۳/۰۲/۲۸' },
-  { id: 4, game: 'اسم فامیل', role: 'بازیکن', players: 5, result: 'win', date: '۱۴۰۳/۰۲/۲۰' },
-  { id: 5, game: 'مافیا', role: 'بازیکن', players: 9, result: 'lose', date: '۱۴۰۳/۰۲/۱۵' },
-];
-
-const STATS = [
-  { label: 'بازی‌ها', value: '۲۴', icon: 'sports_esports' },
-  { label: 'برد', value: '۱۶', icon: 'emoji_events' },
-  { label: 'میزبانی', value: '۹', icon: 'supervisor_account' },
-  { label: 'دوستان', value: '۱۲', icon: 'group' },
-];
-
 export default function ProfilePage() {
-  const { user } = useAuth();
-  const [activeTab, setActiveTab] = useState<Tab>('info');
-  const [editMode, setEditMode] = useState(false);
+  const { user, setUser } = useAuth();
+
   const [nameValue, setNameValue] = useState(user?.name || '');
+  const [usernameValue, setUsernameValue] = useState(user?.username || '');
   const [emailValue, setEmailValue] = useState(user?.email || '');
 
+  const [showPasswordFields, setShowPasswordFields] = useState(false);
+  const [oldPassword, setOldPassword] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [showNewPassword, setShowNewPassword] = useState(false);
+
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState<string | null>(null);
+
   const initial = (user?.name || user?.username || '؟').charAt(0).toUpperCase();
-  const winRate = Math.round((16 / 24) * 100);
+
+  const handleSave = async () => {
+    setSaving(true);
+    setError(null);
+    setSuccess(null);
+
+    try {
+      const updated = await profileService.updateProfile({
+        name: nameValue,
+        username: usernameValue,
+        email: emailValue,
+      });
+      setUser(updated);
+
+      if (showPasswordFields && newPassword) {
+        if (!oldPassword) {
+          setError('برای تغییر رمز، رمز فعلی را هم وارد کنید');
+          setSaving(false);
+          return;
+        }
+        await profileService.changePassword({
+          old_password: oldPassword,
+          new_password: newPassword,
+        });
+        setOldPassword('');
+        setNewPassword('');
+        setShowPasswordFields(false);
+      }
+
+      setSuccess('تغییرات با موفقیت ذخیره شد');
+    } catch (err: any) {
+      setError(
+        err?.response?.data?.detail ||
+        'خطایی رخ داد، دوباره تلاش کنید'
+      );
+    } finally {
+      setSaving(false);
+    }
+  };
 
   return (
     <div className="profile-page">
 
-      {/* ── هدر پروفایل ── */}
-      <div className="profile-hero sketch-border sketch-shadow">
-        <div className="profile-avatar-wrap">
+      {/* ── آواتار ── */}
+      <div className="profile-avatar-section">
+        <div className="profile-avatar-frame">
           <div className="profile-avatar">{initial}</div>
-          <div className="profile-avatar-ring" />
         </div>
-        <div className="profile-hero-info">
-          <h1 className="profile-name">{user?.name || user?.username || 'کاربر'}</h1>
-          <span className="profile-username">@{user?.username}</span>
-          <span className="profile-badge">
-            <span className="material-symbols-outlined">military_tech</span>
-            میزبان حرفه‌ای
-          </span>
-        </div>
+        <p className="profile-avatar-hint">تغییر تصویر نمایه به‌زودی</p>
       </div>
 
-      {/* ── آمار سریع ── */}
-      <div className="profile-stats-row">
-        {STATS.map(s => (
-          <div key={s.label} className="profile-stat-card sketch-border">
-            <span className="material-symbols-outlined profile-stat-icon">{s.icon}</span>
-            <span className="profile-stat-value">{s.value}</span>
-            <span className="profile-stat-label">{s.label}</span>
+      {/* ── فیلدها ── */}
+      <div className="profile-fields">
+
+        <div className="profile-field">
+          <label className="profile-field-label">نام و نام خانوادگی</label>
+          <div className="profile-field-input-wrap">
+            <span className="material-symbols-outlined profile-field-icon">person</span>
+            <input
+              className="profile-field-input"
+              value={nameValue}
+              onChange={e => setNameValue(e.target.value)}
+              placeholder="نام خود را وارد کنید..."
+            />
           </div>
-        ))}
-      </div>
+        </div>
 
-      {/* ── تب‌ها ── */}
-      <div className="profile-tabs">
-        {(['info', 'stats', 'history'] as Tab[]).map(tab => (
+        <div className="profile-field">
+          <label className="profile-field-label">نام کاربری</label>
+          <div className="profile-field-input-wrap">
+            <span className="material-symbols-outlined profile-field-icon">alternate_email</span>
+            <input
+              className="profile-field-input"
+              value={usernameValue}
+              onChange={e => setUsernameValue(e.target.value)}
+              placeholder="نام کاربری..."
+            />
+          </div>
+        </div>
+
+        <div className="profile-field">
+          <label className="profile-field-label">ایمیل</label>
+          <div className="profile-field-input-wrap">
+            <span className="material-symbols-outlined profile-field-icon">mail</span>
+            <input
+              className="profile-field-input"
+              type="email"
+              value={emailValue}
+              onChange={e => setEmailValue(e.target.value)}
+              placeholder="ایمیل..."
+            />
+          </div>
+        </div>
+
+        {!showPasswordFields ? (
           <button
-            key={tab}
             type="button"
-            className={`profile-tab ${activeTab === tab ? 'profile-tab--active' : ''}`}
-            onClick={() => setActiveTab(tab)}
+            className="profile-change-password-link"
+            onClick={() => setShowPasswordFields(true)}
           >
-            {tab === 'info' && 'اطلاعات'}
-            {tab === 'stats' && 'عملکرد'}
-            {tab === 'history' && 'تاریخچه'}
+            <span className="material-symbols-outlined">lock</span>
+            تغییر رمز عبور
           </button>
-        ))}
+        ) : (
+          <>
+            <div className="profile-field">
+              <label className="profile-field-label">رمز عبور فعلی</label>
+              <div className="profile-field-input-wrap">
+                <span className="material-symbols-outlined profile-field-icon">lock</span>
+                <input
+                  className="profile-field-input"
+                  type="password"
+                  value={oldPassword}
+                  onChange={e => setOldPassword(e.target.value)}
+                  placeholder="رمز فعلی..."
+                />
+              </div>
+            </div>
+
+            <div className="profile-field">
+              <label className="profile-field-label">رمز عبور جدید</label>
+              <div className="profile-field-input-wrap">
+                <span className="material-symbols-outlined profile-field-icon">lock</span>
+                <input
+                  className="profile-field-input"
+                  type={showNewPassword ? 'text' : 'password'}
+                  value={newPassword}
+                  onChange={e => setNewPassword(e.target.value)}
+                  placeholder="رمز جدید..."
+                />
+                <button
+                  type="button"
+                  className="profile-field-toggle-visibility"
+                  onClick={() => setShowNewPassword(v => !v)}
+                >
+                  <span className="material-symbols-outlined">
+                    {showNewPassword ? 'visibility_off' : 'visibility'}
+                  </span>
+                </button>
+              </div>
+            </div>
+          </>
+        )}
       </div>
 
-      {/* ── محتوای تب‌ها ── */}
+      {error && <p className="profile-message profile-message--error">{error}</p>}
+      {success && <p className="profile-message profile-message--success">{success}</p>}
 
-      {activeTab === 'info' && (
-        <div className="profile-panel sketch-border">
-          <div className="profile-panel-header">
-            <h2 className="profile-panel-title">اطلاعات حساب</h2>
-            <button
-              type="button"
-              className="profile-edit-btn"
-              onClick={() => setEditMode(e => !e)}
-            >
-              <span className="material-symbols-outlined">
-                {editMode ? 'close' : 'edit'}
-              </span>
-              {editMode ? 'انصراف' : 'ویرایش'}
-            </button>
-          </div>
+      {/* ── دکمه‌های اقدام ── */}
+      <div className="profile-actions">
+        <button
+          type="button"
+          className="profile-save-btn"
+          onClick={handleSave}
+          disabled={saving}
+        >
+          <span className="material-symbols-outlined">save</span>
+          <span>{saving ? 'در حال ذخیره...' : 'ذخیره تغییرات'}</span>
+        </button>
 
-          <div className="profile-fields">
-            <div className="profile-field">
-              <label className="profile-field-label">نام نمایشی</label>
-              {editMode ? (
-                <input
-                  className="profile-field-input sketch-border"
-                  value={nameValue}
-                  onChange={e => setNameValue(e.target.value)}
-                  placeholder="نام نمایشی"
-                />
-              ) : (
-                <span className="profile-field-value">{user?.name || '—'}</span>
-              )}
-            </div>
-
-            <div className="profile-field">
-              <label className="profile-field-label">نام کاربری</label>
-              <span className="profile-field-value profile-field-value--muted">
-                @{user?.username}
-              </span>
-            </div>
-
-            <div className="profile-field">
-              <label className="profile-field-label">ایمیل</label>
-              {editMode ? (
-                <input
-                  className="profile-field-input sketch-border"
-                  value={emailValue}
-                  onChange={e => setEmailValue(e.target.value)}
-                  placeholder="ایمیل"
-                  type="email"
-                />
-              ) : (
-                <span className="profile-field-value">{user?.email || '—'}</span>
-              )}
-            </div>
-          </div>
-
-          {editMode && (
-            <button type="button" className="profile-save-btn sketch-border sketch-shadow">
-              <span className="material-symbols-outlined">check</span>
-              ذخیره تغییرات
-            </button>
-          )}
+        <div className="profile-logout-wrap">
+          <LogoutButton />
         </div>
-      )}
-
-      {activeTab === 'stats' && (
-        <div className="profile-panel sketch-border">
-          <h2 className="profile-panel-title">عملکرد کلی</h2>
-
-          {/* نرخ برد */}
-          <div className="profile-winrate">
-            <div className="profile-winrate-label">
-              <span>نرخ برد</span>
-              <span className="profile-winrate-value">{winRate}٪</span>
-            </div>
-            <div className="profile-winrate-bar">
-              <div
-                className="profile-winrate-fill"
-                style={{ width: `${winRate}%` }}
-              />
-            </div>
-          </div>
-
-          {/* بازی محبوب */}
-          <div className="profile-fav-game sketch-border">
-            <span className="material-symbols-outlined">favorite</span>
-            <div>
-              <div className="profile-fav-label">بازی محبوب</div>
-              <div className="profile-fav-name">مافیا</div>
-            </div>
-            <span className="profile-fav-count">۸ بار بازی</span>
-          </div>
-
-          {/* سری آمار */}
-          <div className="profile-stat-grid">
-            <div className="profile-stat-item">
-              <span className="profile-stat-item-num">۳</span>
-              <span className="profile-stat-item-lbl">برد متوالی</span>
-            </div>
-            <div className="profile-stat-item">
-              <span className="profile-stat-item-num">۱۰</span>
-              <span className="profile-stat-item-lbl">بیشترین بازیکن</span>
-            </div>
-            <div className="profile-stat-item">
-              <span className="profile-stat-item-num">۴۵</span>
-              <span className="profile-stat-item-lbl">دقیقه میانگین</span>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {activeTab === 'history' && (
-        <div className="profile-panel sketch-border">
-          <h2 className="profile-panel-title">آخرین بازی‌ها</h2>
-          <div className="profile-history-list">
-            {MOCK_HISTORY.map(item => (
-              <div key={item.id} className={`profile-history-item profile-history-item--${item.result}`}>
-                <div className="profile-history-result-dot" />
-                <div className="profile-history-main">
-                  <span className="profile-history-game">{item.game}</span>
-                  <span className="profile-history-meta">
-                    {item.role} · {item.players} نفر
-                  </span>
-                </div>
-                <div className="profile-history-right">
-                  <span className="profile-history-badge">
-                    {item.result === 'win' ? 'برد' : 'باخت'}
-                  </span>
-                  <span className="profile-history-date">{item.date}</span>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-
+      </div>
     </div>
   );
 }

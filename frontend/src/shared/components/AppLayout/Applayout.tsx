@@ -33,7 +33,6 @@ function UserMenu({
       </div>
       <div className="app-user-menu-divider" />
 
-      {/* پروفایل — فعال */}
       <button
         type="button"
         className="app-user-menu-item"
@@ -43,13 +42,11 @@ function UserMenu({
         پروفایل
       </button>
 
-      {/* تنظیمات — به زودی */}
       <span className="app-user-menu-item app-user-menu-item--soon">
         <span className="material-symbols-outlined">settings</span>
         تنظیمات
       </span>
 
-      {/* اعلان‌ها — به زودی */}
       <span className="app-user-menu-item app-user-menu-item--soon">
         <span className="material-symbols-outlined">notifications</span>
         اعلان‌ها
@@ -68,19 +65,13 @@ export default function AppLayout({ children }: { children: ReactNode }) {
   const location = useLocation();
   const navigate = useNavigate();
 
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [desktopMenuOpen, setDesktopMenuOpen] = useState(false);
-
-  const mobileMenuRef = useRef<HTMLDivElement>(null);
   const desktopMenuRef = useRef<HTMLDivElement>(null);
 
   const initial = (user?.name || user?.username || '؟').charAt(0);
 
   useEffect(() => {
     function handleClickOutside(e: MouseEvent) {
-      if (mobileMenuRef.current && !mobileMenuRef.current.contains(e.target as Node)) {
-        setMobileMenuOpen(false);
-      }
       if (desktopMenuRef.current && !desktopMenuRef.current.contains(e.target as Node)) {
         setDesktopMenuOpen(false);
       }
@@ -90,7 +81,6 @@ export default function AppLayout({ children }: { children: ReactNode }) {
   }, []);
 
   function handleMenuNavigate(path: string) {
-    setMobileMenuOpen(false);
     setDesktopMenuOpen(false);
     navigate(path);
   }
@@ -102,23 +92,9 @@ export default function AppLayout({ children }: { children: ReactNode }) {
       <header className="app-topbar">
         <div className="app-brand">بازی‌گردان</div>
         <div className="app-topbar-actions">
-          <div className="app-avatar-wrapper app-avatar-wrapper--mobile" ref={mobileMenuRef}>
-            <button
-              type="button"
-              className="app-avatar"
-              aria-label="منوی کاربر"
-              onClick={() => setMobileMenuOpen(prev => !prev)}
-            >
-              {initial}
-            </button>
-            {mobileMenuOpen && (
-              <UserMenu
-                name={user?.name}
-                username={user?.username}
-                onNavigate={handleMenuNavigate}
-              />
-            )}
-          </div>
+          <Link to="/profile" className="app-avatar" aria-label="پروفایل">
+            {initial}
+          </Link>
         </div>
       </header>
 
@@ -197,7 +173,6 @@ export default function AppLayout({ children }: { children: ReactNode }) {
           دوستان
         </span>
 
-        {/* پروفایل — فعال */}
         <Link
           to="/profile"
           className={`app-bottomnav-link ${location.pathname === '/profile' ? 'app-bottomnav-link--active' : ''}`}

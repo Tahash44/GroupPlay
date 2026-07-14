@@ -12,7 +12,7 @@ interface NavItem {
 
 const NAV_ITEMS: NavItem[] = [
   { label: 'پیش‌خوان', icon: 'dashboard', path: '/dashboard' },
-  { label: 'دوستان', icon: 'group', path: null },
+  { label: 'دوستان', icon: 'group', path: '/friends' },
   { label: 'تنظیمات بازی', icon: 'sports_esports', path: null },
   { label: 'تاریخچه', icon: 'history', path: null },
 ];
@@ -168,10 +168,13 @@ export default function AppLayout({ children }: { children: ReactNode }) {
           بازی‌ها
         </Link>
 
-        <span className="app-bottomnav-link app-bottomnav-link--soon">
+        <Link
+          to="/friends"
+          className={`app-bottomnav-link ${location.pathname === '/friends' ? 'app-bottomnav-link--active' : ''}`}
+        >
           <span className="material-symbols-outlined">group</span>
           دوستان
-        </span>
+        </Link>
 
         <Link
           to="/profile"

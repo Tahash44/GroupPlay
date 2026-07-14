@@ -1,0 +1,171 @@
+@import '../../../shared/styles/sketch.css';
+
+/* ───────── Overlay ───────── */
+.friend-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(38, 38, 38, 0.45);
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  z-index: 200;
+  animation: friendModalFadeIn 0.15s ease;
+}
+
+@media (min-width: 768px) {
+  .friend-modal-overlay {
+    align-items: center;
+  }
+}
+
+@keyframes friendModalFadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+/* ───────── Sheet / Panel ───────── */
+.friend-modal-sheet {
+  width: 100%;
+  max-width: 420px;
+  background: var(--color-paper-base);
+  border: 2px solid var(--color-ink-charcoal);
+  border-bottom: none;
+  border-radius: 20px 20px 0 0;
+  padding: 20px 20px calc(20px + env(safe-area-inset-bottom));
+  box-shadow: 0 -8px 0px 0px rgba(38, 38, 38, 0.08);
+  animation: friendModalSlideUp 0.2s ease;
+}
+
+@media (min-width: 768px) {
+  .friend-modal-sheet {
+    border-bottom: 2px solid var(--color-ink-charcoal);
+    border-radius: 4px 16px 8px 16px;
+    box-shadow: 8px 8px 0px 0px rgba(38, 38, 38, 0.12);
+  }
+}
+
+@keyframes friendModalSlideUp {
+  from { transform: translateY(24px); opacity: 0; }
+  to   { transform: translateY(0); opacity: 1; }
+}
+
+.friend-modal-handle {
+  width: 40px;
+  height: 4px;
+  border-radius: 9999px;
+  background: var(--color-outline-variant);
+  margin: 0 auto 16px;
+}
+
+@media (min-width: 768px) {
+  .friend-modal-handle { display: none; }
+}
+
+.friend-modal-title {
+  font-family: var(--font-bricolage);
+  font-weight: 700;
+  font-size: 19px;
+  color: var(--color-on-surface);
+  margin-bottom: 16px;
+}
+
+/* ───────── Field ───────── */
+.friend-modal-field-wrap {
+  position: relative;
+  border-bottom: 2px solid var(--color-ink-charcoal);
+  border-radius: 0 0 12px 12px / 0 0 4px 4px;
+  display: flex;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.friend-modal-field-icon {
+  position: absolute;
+  left: 8px;
+  font-size: 18px;
+  color: var(--color-outline);
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+.friend-modal-input {
+  width: 100%;
+  background: transparent;
+  border: none;
+  outline: none;
+  padding: 12px 36px 12px 4px;
+  font-family: var(--font-vazir);
+  font-size: 16px;
+  color: var(--color-on-surface);
+}
+
+.friend-modal-input::placeholder {
+  color: var(--color-outline-variant);
+}
+
+.friend-modal-error {
+  margin: 4px 0 4px 4px;
+  font-family: var(--font-vazir);
+  font-size: 13px;
+  color: var(--color-primary);
+}
+
+/* ───────── Actions ───────── */
+.friend-modal-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.friend-modal-btn {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 13px;
+  border: 2px solid var(--color-ink-charcoal);
+  border-radius: 4px 12px 6px 14px;
+  font-family: var(--font-vazir);
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.friend-modal-btn:hover:not(:disabled) {
+  transform: translate(-2px, -2px);
+  box-shadow: 6px 6px 0px 0px rgba(38, 38, 38, 0.15);
+}
+
+.friend-modal-btn:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+.friend-modal-btn--cancel {
+  background: var(--color-surface);
+  color: var(--color-on-surface-variant);
+}
+
+.friend-modal-btn--primary {
+  background: var(--color-primary);
+  color: var(--color-on-primary);
+}
+
+.friend-modal-btn--danger {
+  background: var(--color-primary);
+  color: var(--color-on-primary);
+}
+
+.friend-modal-delete-text {
+  font-family: var(--font-vazir);
+  font-size: 14px;
+  color: var(--color-on-surface-variant);
+  line-height: 1.7;
+}
+
+.friend-modal-delete-name {
+  font-weight: 700;
+  color: var(--color-on-surface);
+}

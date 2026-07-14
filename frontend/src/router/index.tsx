@@ -5,6 +5,7 @@ import AppLayout from '../shared/components/AppLayout/Applayout';
 import GamesListPage from '../features/games/pages/GamesListPage';
 import GameDetailPage from '../features/games/pages/GameDetailPage';
 import ProfilePage from '../features/profile/pages/ProfilePage';
+import FriendsPage from '../features/friends/pages/FriendsPage';
 
 function PrivateRoute({ children }: { children: React.ReactNode }) {
   const { isAuthenticated, isLoading } = useAuth();
@@ -56,6 +57,15 @@ export default function AppRouter() {
             </PrivateRoute>
           }
         />
+
+          <Route
+              path="/friends"
+              element={
+                <PrivateRoute>
+                  <FriendsPage />
+                </PrivateRoute>
+          }
+          />
 
         <Route path="*" element={<Navigate to="/auth/login" replace />} />
       </Routes>

@@ -1,0 +1,54 @@
+@import '../../../../shared/styles/sketch.css';
+
+.spy-count-title {
+  font-family: var(--font-vazir);
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--color-on-surface);
+  padding: 0 4px 16px;
+}
+
+.spy-count-control {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 24px;
+  padding: 16px 0;
+  background: rgba(230, 240, 247, 0.3);
+  border-radius: 12px;
+}
+
+.spy-count-btn {
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #fff;
+  cursor: pointer;
+}
+
+.spy-count-btn:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.spy-count-btn:not(:disabled):active {
+  background: var(--color-surface-dim);
+}
+
+.spy-count-value {
+  width: 80px;
+  height: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #fff;
+}
+
+.spy-count-value span {
+  font-family: var(--font-bricolage);
+  font-size: 36px;
+  font-weight: 700;
+  color: var(--color-primary);
+}

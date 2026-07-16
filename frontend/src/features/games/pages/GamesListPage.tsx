@@ -18,8 +18,13 @@ export default function GamesListPage() {
       .finally(() => setLoading(false));
   }, []);
 
-  const openGame = (game: Game) => navigate(`/games/${game.id}`);
-
+const openGame = (game: Game) => {
+  if (game.id === 'spy') {
+    navigate('/games/spy/new');
+    return;
+  }
+  navigate(`/games/${game.id}`); // بقیه‌ی بازی‌ها فعلاً placeholder
+};
   return (
     <div className="games-page">
       {loading ? (

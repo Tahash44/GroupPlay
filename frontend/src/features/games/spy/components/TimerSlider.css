@@ -1,0 +1,48 @@
+@import '../../../../shared/styles/sketch.css';
+
+.timer-slider-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 4px 16px;
+}
+
+.timer-slider-title {
+  font-family: var(--font-vazir);
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--color-on-surface);
+}
+
+.timer-slider-value {
+  font-family: var(--font-bricolage);
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--color-primary);
+}
+
+.timer-slider-box {
+  background: #fff;
+  padding: 24px 16px;
+  position: relative;
+}
+
+.timer-slider-input {
+  width: 100%;
+  height: 8px;
+  border-radius: 8px;
+  background: rgba(38, 38, 38, 0.1);
+  appearance: none;
+  cursor: pointer;
+  accent-color: var(--color-primary);
+}
+
+.timer-slider-marks {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 12px;
+  font-family: var(--font-vazir);
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--color-on-surface-variant);
+}

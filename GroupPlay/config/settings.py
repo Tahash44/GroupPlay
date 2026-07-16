@@ -25,7 +25,12 @@ SECRET_KEY = "django-insecure-7l6fddb4(a+q*!5wdymh*p-^9i23vdruwde$hvs=9%b8(v04=-
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['192.168.1.6', 'localhost', '127.0.0.1']
+ALLOWED_HOSTS = [
+    "localhost",
+    "127.0.0.1",
+    "192.168.1.6",
+    "web"
+]
 
 
 # Application definition
@@ -145,16 +150,11 @@ USE_TZ = True
 
 STATIC_URL = "static/"
 
-# در محیط dev همه‌ی پورت‌های localhost مجاز هستن
-# وقتی Vite پورت 5173 اشغاله، پورت بعدی رو می‌گیره
-CORS_ALLOW_ALL_ORIGINS = DEBUG
+CORS_ALLOW_ALL_ORIGINS = True
 
-CORS_ALLOWED_ORIGINS = [
-    "http://localhost:5173",
-    "http://127.0.0.1:5173",
-    'http://192.168.1.6:5173',
-    "http://localhost:5174",
-    "http://localhost:5175",
-    "http://localhost:5176",
-    "http://localhost:5177",
-]
+from datetime import timedelta
+
+SIMPLE_JWT = {
+    "ACCESS_TOKEN_LIFETIME": timedelta(hours=1),
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=7),
+}

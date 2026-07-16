@@ -1,19 +1,35 @@
 services:
   web:
     build: .
+    container_name: groupplay-backend
+
+    command: >
+      python manage.py runserver 0.0.0.0:8000
+
     ports:
       - "8000:8000"
+
     volumes:
       - .:/app
+
+    restart: unless-stopped
 
   frontend:
     build:
       context: ./frontend
-      dockerfile: Dockerfile
+
+    container_name: groupplay-frontend
+
+    command: npm run dev
+
     ports:
       - "5173:5173"
+
     volumes:
       - ./frontend:/app
       - /app/node_modules
+
     depends_on:
       - web
+
+    restart: unless-stopped

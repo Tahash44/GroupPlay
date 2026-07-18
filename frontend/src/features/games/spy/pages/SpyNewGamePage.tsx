@@ -16,7 +16,7 @@ export default function SpyNewGamePage() {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const maxSpyCount = Math.max(1, players.length - 1);
+ const maxSpyCount = Math.max(1, Math.floor(players.length / 3));
 
   // اگه با کم شدن بازیکن‌ها تعداد جاسوس از حد مجاز رد شد، خودکار اصلاحش کن
   useEffect(() => {

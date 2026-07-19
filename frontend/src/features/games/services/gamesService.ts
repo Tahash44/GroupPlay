@@ -1,4 +1,4 @@
-import type { Game } from '../types/games.types';
+import type { Game } from '../types/game.types';
 
 /*
   فعلاً API بازی‌ها آماده نیست، پس لیست رو موقتاً به صورت mock نگه می‌داریم.

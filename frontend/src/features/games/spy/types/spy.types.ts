@@ -33,5 +33,5 @@ export interface SelectedPlayer {
 }
 
 export const MIN_PLAYERS = 4;
-export const TIMER_MIN_MINUTES = 3;
+export const TIMER_MIN_MINUTES = 1;
 export const TIMER_MAX_MINUTES = 15;

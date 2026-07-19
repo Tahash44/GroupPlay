@@ -22,7 +22,7 @@ class SpySessionCreateSerializer(serializers.Serializer):
     def validate(self, attrs):
         players_data = attrs["players"]
         players_count = len(players_data)
-        spy_count = attrs["spy_count"] + 1 #Host
+        spy_count = attrs["spy_count"]
 
         if spy_count >= players_count:
             raise serializers.ValidationError(

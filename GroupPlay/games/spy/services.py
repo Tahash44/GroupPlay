@@ -29,13 +29,6 @@ class SpyGameService:
 
         players_list = []
 
-        host_player = Player.objects.create(
-            session=session,
-            friend_id=None,
-            name=host.name or host.username
-        )
-        players_list.append(host_player)
-
         for p in player_data:
             player = Player.objects.create(
                 session=session,

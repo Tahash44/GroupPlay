@@ -7,7 +7,7 @@ interface TimerSliderProps {
 }
 
 const toFarsiDigits = (n: number) => new Intl.NumberFormat('fa-IR').format(n);
-const marks = [3, 6, 9, 12, 15];
+const marks = [1, 3, 6, 9, 12, 15];
 
 export default function TimerSlider({ minutes, onChange }: TimerSliderProps) {
   return (

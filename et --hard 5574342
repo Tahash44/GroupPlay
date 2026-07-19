@@ -1,0 +1,74 @@
+[33mcf8a18b[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mdev[m[33m)[m HEAD@{0}: pull --no-stat -v --progress origin main: Merge made by the 'ort' strategy.
+[33m5574342[m[33m ([m[1;32mmerge[m[33m)[m HEAD@{1}: checkout: moving from frontend-temp to dev
+[33m6408fab[m[33m ([m[1;31morigin/frontend-temp[m[33m, [m[1;31morigin/dev[m[33m, [m[1;32mfrontend-temp[m[33m)[m HEAD@{2}: commit: fix some security problems
+[33m6804e2b[m[33m ([m[1;32mfrontend-arshia[m[33m)[m HEAD@{3}: pull --no-stat -v --progress origin frontend-temp: Fast-forward
+[33m277d5cf[m HEAD@{4}: checkout: moving from frontend-arshia to frontend-temp
+[33m6804e2b[m[33m ([m[1;32mfrontend-arshia[m[33m)[m HEAD@{5}: commit: create profile management page
+[33mb457fff[m[33m ([m[1;31morigin/frontend-arshia[m[33m)[m HEAD@{6}: checkout: moving from frontend-temp to frontend-arshia
+[33m277d5cf[m HEAD@{7}: commit: add pic to game card
+[33m8ce88a5[m HEAD@{8}: commit: game page file
+[33mdc2ee68[m HEAD@{9}: commit: create games front demo
+[33m60ec924[m HEAD@{10}: commit: fix auth placeholder
+[33md7de57d[m HEAD@{11}: commit: new auth pages
+[33m5574342[m[33m ([m[1;32mmerge[m[33m)[m HEAD@{12}: checkout: moving from dev to frontend-temp
+[33m5574342[m[33m ([m[1;32mmerge[m[33m)[m HEAD@{13}: pull --no-stat -v --progress origin dev: Fast-forward
+[33mc0683eb[m HEAD@{14}: checkout: moving from merge to dev
+[33m5574342[m[33m ([m[1;32mmerge[m[33m)[m HEAD@{15}: pull --no-stat -v --progress origin dev: Merge made by the 'ort' strategy.
+[33m0e49711[m[33m ([m[1;31morigin/merge[m[33m, [m[1;32mfeature/frontend[m[33m)[m HEAD@{16}: checkout: moving from feature/frontend to merge
+[33m0e49711[m[33m ([m[1;31morigin/merge[m[33m, [m[1;32mfeature/frontend[m[33m)[m HEAD@{17}: commit: fix frontend permission problem
+[33m5c87a12[m[33m ([m[1;31morigin/feature/frontend[m[33m)[m HEAD@{18}: checkout: moving from dev to feature/frontend
+[33mc0683eb[m HEAD@{19}: commit: create vote and game history api
+[33m4b91ccf[m HEAD@{20}: checkout: moving from mehrad to dev
+[33m1e625e5[m[33m ([m[1;31morigin/mehrad[m[33m, [m[1;32mmehrad[m[33m)[m HEAD@{21}: pull --no-stat -v --progress origin dev: Merge made by the 'ort' strategy.
+[33mee0f4a5[m HEAD@{22}: checkout: moving from dev to mehrad
+[33m4b91ccf[m HEAD@{23}: commit: fix migration problem timer
+[33md017d4e[m HEAD@{24}: checkout: moving from mehrad to dev
+[33mee0f4a5[m HEAD@{25}: commit: fix migration problem timer
+[33md017d4e[m HEAD@{26}: checkout: moving from dev to mehrad
+[33md017d4e[m HEAD@{27}: checkout: moving from mehrad to dev
+[33md017d4e[m HEAD@{28}: checkout: moving from dev to mehrad
+[33md017d4e[m HEAD@{29}: checkout: moving from mehrad to dev
+[33md017d4e[m HEAD@{30}: checkout: moving from dev to mehrad
+[33md017d4e[m HEAD@{31}: checkout: moving from mehrad to dev
+[33md017d4e[m HEAD@{32}: checkout: moving from dev to mehrad
+[33md017d4e[m HEAD@{33}: checkout: moving from mehrad to dev
+[33md017d4e[m HEAD@{34}: checkout: moving from dev to mehrad
+[33md017d4e[m HEAD@{35}: pull --no-stat -v --progress origin dev: Fast-forward
+[33m1e4aa19[m HEAD@{36}: checkout: moving from mehrad to dev
+[33md017d4e[m HEAD@{37}: pull --no-stat -v --progress origin dev: Merge made by the 'ort' strategy.
+[33m96d2fd7[m HEAD@{38}: checkout: moving from dev to mehrad
+[33m1e4aa19[m HEAD@{39}: checkout: moving from mehrad to dev
+[33m96d2fd7[m HEAD@{40}: commit: fix migration problem timer
+[33m8dc8627[m HEAD@{41}: pull --no-stat -v --progress origin mehrad: Fast-forward
+[33m0f3118e[m HEAD@{42}: checkout: moving from dev to mehrad
+[33m1e4aa19[m HEAD@{43}: commit: fix migration problem
+[33m0f3118e[m HEAD@{44}: pull --no-stat -v --progress origin dev: Fast-forward
+[33mfeb2835[m HEAD@{45}: checkout: moving from mehrad to dev
+[33m0f3118e[m HEAD@{46}: commit: merge game session api in dev
+[33m3b2bf97[m HEAD@{47}: pull --no-stat -v --progress origin mehrad: Fast-forward
+[33mfeb2835[m HEAD@{48}: checkout: moving from dev to mehrad
+[33mfeb2835[m HEAD@{49}: pull --no-stat -v --progress origin dev: Fast-forward
+[33m7db911e[m HEAD@{50}: reset: moving to HEAD
+[33m7db911e[m HEAD@{51}: checkout: moving from mehrad to dev
+[33mfeb2835[m HEAD@{52}: merge origin/mehrad: Fast-forward
+[33mf683525[m HEAD@{53}: checkout: moving from dev to mehrad
+[33m7db911e[m HEAD@{54}: checkout: moving from mehrad to dev
+[33mf683525[m HEAD@{55}: checkout: moving from dev to mehrad
+[33m7db911e[m HEAD@{56}: commit: change account view response and fix ERD.mermaid
+[33m1680d40[m HEAD@{57}: commit: fix account service & game models problem
+[33m5bad707[m HEAD@{58}: pull --no-stat -v --progress origin dev: Fast-forward
+[33m3bb90f2[m HEAD@{59}: pull --no-stat -v --progress origin main: Merge made by the 'ort' strategy.
+[33m2073e9d[m HEAD@{60}: commit: add v1 in urls
+[33m49950ee[m HEAD@{61}: commit: create Profile API and test for that
+[33m2aaf494[m[33m ([m[1;32mmain[m[33m)[m HEAD@{62}: checkout: moving from main to dev
+[33m2aaf494[m[33m ([m[1;32mmain[m[33m)[m HEAD@{63}: commit: create auth API and test for that
+[33m22e225f[m HEAD@{64}: commit: add migrations
+[33mf0e068d[m HEAD@{65}: commit: create all models and test for them
+[33m46d837f[m HEAD@{66}: commit: add spy directory in games app and add serializers in all app
+[33m6b0e9aa[m HEAD@{67}: commit: add /spy api in word and apidoc
+[33m581b0b7[m HEAD@{68}: commit: add api-doc.yaml
+[33m60950ce[m HEAD@{69}: reset: moving to HEAD~1
+[33m6d74dd5[m HEAD@{70}: commit: add api-doc.yaml
+[33m60950ce[m HEAD@{71}: commit: add ERD and word file
+[33m88a0da9[m HEAD@{72}: commit: create django project
+[33meced50b[m HEAD@{73}: clone: from https://github.com/Tahash44/GroupPlay

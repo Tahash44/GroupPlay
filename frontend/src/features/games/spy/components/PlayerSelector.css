@@ -157,6 +157,11 @@
   cursor: pointer;
 }
 
+.player-selector-host-option {
+  color: var(--color-primary);
+  font-weight: 700;
+}
+
 .player-selector-empty-slot {
   border: 2px dashed rgba(38, 38, 38, 0.2);
   border-radius: 8px;

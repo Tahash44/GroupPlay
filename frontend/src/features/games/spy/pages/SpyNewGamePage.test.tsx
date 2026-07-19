@@ -27,6 +27,12 @@ vi.mock('../services/spyService', () => ({
   },
 }));
 
+vi.mock('../../../../shared/context/AuthContext', () => ({
+  useAuth: () => ({
+    user: { id: 99, username: 'host', email: 'host@example.com', name: 'Host Player' },
+  }),
+}));
+
 const mockFriends = [
   { id: 1, name: 'حسن' },
   { id: 2, name: 'رضا' },
@@ -56,6 +62,16 @@ describe('SpyNewGamePage', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     (friendsService.getFriends as ReturnType<typeof vi.fn>).mockResolvedValue(mockFriends);
+  });
+
+  it('offers the authenticated host as an optional player', async () => {
+    const user = userEvent.setup();
+    await renderPage();
+
+    await ensureAddPanelOpen(user);
+    await user.click(screen.getByRole('button', { name: /Host Player/ }));
+
+    expect(screen.getByText('Host Player')).toBeInTheDocument();
   });
 
   it('keeps the submit button disabled while fewer than 4 players are added', async () => {
@@ -103,10 +119,10 @@ describe('SpyNewGamePage', () => {
     // دو نفر رو حذف کن (برگرد به ۴) → باید spyCount خودکار به ۱ برگرده
     const removeIcons = screen.getAllByText('close');
     await user.click(removeIcons[0]);
-    await user.click(removeIcons[0]);
+    await user.click(screen.getAllByText('close')[0]);
 
     await waitFor(() => {
-      expect(screen.getByText('۱')).toBeInTheDocument();
+      expect(document.querySelector('.spy-count-value')).toHaveTextContent('۱');
     });
   });
 

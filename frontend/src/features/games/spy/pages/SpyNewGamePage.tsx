@@ -6,29 +6,38 @@ import TimerSlider from '../components/TimerSlider';
 import { spyService } from '../services/spyService';
 import { MIN_PLAYERS } from '../types/spy.types';
 import type { PlayerInput, SelectedPlayer } from '../types/spy.types';
+import { useAuth } from '../../../../shared/context/AuthContext';
 import './SpyNewGamePage.css';
 
 export default function SpyNewGamePage() {
   const navigate = useNavigate();
+  const { user } = useAuth();
   const [players, setPlayers] = useState<SelectedPlayer[]>([]);
   const [spyCount, setSpyCount] = useState(1);
   const [timerMinutes, setTimerMinutes] = useState(8);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
- const maxSpyCount = Math.max(1, Math.floor(players.length / 3));
+  // The signed-in host is optional: they appear in the add-player menu and are
+  // only included in the request after explicitly selecting them.
+  const hostName = user?.name || user?.username || '';
+  const totalPlayers = players.length;
+  const maxSpyCount = Math.max(1, Math.floor(totalPlayers / 3));
 
   // اگه با کم شدن بازیکن‌ها تعداد جاسوس از حد مجاز رد شد، خودکار اصلاحش کن
   useEffect(() => {
     setSpyCount(prev => Math.min(prev, maxSpyCount));
   }, [maxSpyCount]);
 
-  const canSubmit = useMemo(() => players.length >= MIN_PLAYERS && !submitting, [players.length, submitting]);
+  const canSubmit = useMemo(
+    () => totalPlayers >= MIN_PLAYERS && !submitting,
+    [totalPlayers, submitting]
+  );
 
   const handleSubmit = async () => {
     setError(null);
 
-    if (players.length < MIN_PLAYERS) {
+    if (totalPlayers < MIN_PLAYERS) {
       setError(`برای شروع بازی حداقل به ${MIN_PLAYERS} بازیکن نیاز داری.`);
       return;
     }
@@ -69,7 +78,7 @@ export default function SpyNewGamePage() {
       </header>
 
       <main className="spy-new-game-main">
-        <PlayerSelector players={players} onChange={setPlayers} />
+        <PlayerSelector players={players} onChange={setPlayers} hostName={hostName} hostId={user?.id} />
         <SpyCountStepper value={spyCount} onChange={setSpyCount} max={maxSpyCount} />
         <TimerSlider minutes={timerMinutes} onChange={setTimerMinutes} />
 

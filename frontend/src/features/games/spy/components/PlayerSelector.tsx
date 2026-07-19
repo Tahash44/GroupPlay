@@ -7,9 +7,11 @@ import './PlayerSelector.css';
 interface PlayerSelectorProps {
   players: SelectedPlayer[];
   onChange: (players: SelectedPlayer[]) => void;
+  hostName: string;
+  hostId?: number;
 }
 
-export default function PlayerSelector({ players, onChange }: PlayerSelectorProps) {
+export default function PlayerSelector({ players, onChange, hostName, hostId }: PlayerSelectorProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [friends, setFriends] = useState<Friend[]>([]);
   const [friendsLoading, setFriendsLoading] = useState(true);
@@ -38,6 +40,14 @@ export default function PlayerSelector({ players, onChange }: PlayerSelectorProp
 
   const addFriend = (friend: Friend) => {
     onChange([...players, { key: `friend-${friend.id}`, label: friend.name, friendId: friend.id }]);
+  };
+
+  const hostKey = hostId != null ? `host-${hostId}` : '';
+  const hostIsSelected = hostKey !== '' && players.some(player => player.key === hostKey);
+
+  const addHost = () => {
+    if (!hostName || !hostKey || hostIsSelected) return;
+    onChange([...players, { key: hostKey, label: hostName }]);
   };
 
   const addGuest = () => {
@@ -72,6 +82,17 @@ export default function PlayerSelector({ players, onChange }: PlayerSelectorProp
                   value={search}
                   onChange={e => setSearch(e.target.value)}
                 />
+
+                {hostName && !hostIsSelected && (
+                  <button
+                    type="button"
+                    className="player-selector-friend-item player-selector-host-option"
+                    onClick={addHost}
+                  >
+                    <span>{hostName} (میزبان)</span>
+                    <span className="material-symbols-outlined">add_circle</span>
+                  </button>
+                )}
 
                 <div className="player-selector-friend-list">
                   {friendsLoading ? (

@@ -82,24 +82,21 @@ export default function PlayerSelector({ players, onChange, hostName, hostId }: 
                   value={search}
                   onChange={e => setSearch(e.target.value)}
                 />
+<div className="player-selector-player-list">
+  {hostName && !hostIsSelected && (
+    <button
+      type="button"
+      className="player-selector-friend-item player-selector-host-option"
+      onClick={addHost}
+    >
+      <span>{hostName} (میزبان)</span>
+      <span className="material-symbols-outlined">add_circle</span>
+    </button>
+  )}
 
-                {hostName && !hostIsSelected && (
-                  <button
-                    type="button"
-                    className="player-selector-friend-item player-selector-host-option"
-                    onClick={addHost}
-                  >
-                    <span>{hostName} (میزبان)</span>
-                    <span className="material-symbols-outlined">add_circle</span>
-                  </button>
-                )}
-
-                <div className="player-selector-friend-list">
                   {friendsLoading ? (
                     <p className="player-selector-hint">در حال بارگذاری دوستان...</p>
-                  ) : filteredFriends.length === 0 ? (
-                    <p className="player-selector-hint">دوستی پیدا نشد.</p>
-                  ) : (
+                  ): (
                     filteredFriends.map(friend => (
                       <button
                         key={friend.id}
@@ -111,8 +108,9 @@ export default function PlayerSelector({ players, onChange, hostName, hostId }: 
                         <span className="material-symbols-outlined">add_circle</span>
                       </button>
                     ))
-                  )}
-                </div>
+  )}
+</div>
+
 
                 <div className="player-selector-divider">یا یک مهمان اضافه کن</div>
 

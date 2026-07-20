@@ -69,8 +69,8 @@
   outline: none;
 }
 
-.player-selector-friend-list {
-  max-height: 160px;
+.player-selector-player-list {
+  max-height: 200px;
   overflow-y: auto;
   display: flex;
   flex-direction: column;

@@ -64,18 +64,23 @@ export default function SpyNewGamePage() {
 
   return (
     <div className="spy-new-game">
-      <header className="spy-new-game-header">
-        <div className="spy-new-game-header-right">
-          <button type="button" className="spy-new-game-back" onClick={() => navigate('/dashboard')}>
-            <span className="material-symbols-outlined">arrow_forward</span>
-          </button>
-          <h1 className="spy-new-game-brand">بازی‌گردان</h1>
-        </div>
-        <div className="spy-new-game-header-left">
-          <span className="material-symbols-outlined">settings</span>
-          <span className="material-symbols-outlined">help</span>
-        </div>
-      </header>
+<header className="spy-new-game-header">
+  <div className="spy-new-game-header-right">
+    <button 
+      type="button" 
+      className="spy-new-game-back" 
+      onClick={() => navigate('/dashboard')}
+    >
+      <span className="material-symbols-outlined">arrow_forward</span>
+    </button>
+
+    <h1 className="spy-new-game-brand">بازی‌گردان</h1>
+  </div>
+
+  <div className="spy-new-game-header-left">
+    <span className="material-symbols-outlined">help</span>
+  </div>
+</header>
 
       <main className="spy-new-game-main">
         <PlayerSelector players={players} onChange={setPlayers} hostName={hostName} hostId={user?.id} />

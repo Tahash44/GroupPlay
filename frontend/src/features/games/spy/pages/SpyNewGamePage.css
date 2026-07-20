@@ -7,6 +7,7 @@
 }
 
 .spy-new-game-header {
+  direction: rtl;
   position: sticky;
   top: 0;
   z-index: 20;
@@ -22,6 +23,13 @@
   display: flex;
   align-items: center;
   gap: 12px;
+}
+
+.spy-new-game-header-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--color-on-surface-variant);
 }
 
 .spy-new-game-back {
@@ -44,11 +52,7 @@
   color: var(--color-primary);
 }
 
-.spy-new-game-header-left {
-  display: flex;
-  gap: 8px;
-  color: var(--color-on-surface-variant);
-}
+
 
 .spy-new-game-main {
   max-width: 480px;

@@ -44,6 +44,7 @@ html {
   -webkit-font-smoothing: antialiased;
   /* جلوگیری از zoom روی input در iOS */
   -webkit-text-size-adjust: 100%;
+  scrollbar-gutter: stable;
 }
 
 body {

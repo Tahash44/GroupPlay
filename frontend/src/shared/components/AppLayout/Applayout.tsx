@@ -1,5 +1,5 @@
-import { type ReactNode, useState, useRef, useEffect } from 'react';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { type ReactNode } from 'react';
+import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import LogoutButton from '../../../features/auth/components/LogoutButton';
 import './AppLayout.css';
@@ -17,73 +17,11 @@ const NAV_ITEMS: NavItem[] = [
   { label: 'تاریخچه', icon: 'history', path: null },
 ];
 
-function UserMenu({
-  name,
-  username,
-  onNavigate,
-}: {
-  name?: string;
-  username?: string;
-  onNavigate: (path: string) => void;
-}) {
-  return (
-    <div className="app-user-menu">
-      <div className="app-user-menu-header">
-        <div className="app-user-menu-name">{name || username || 'کاربر'}</div>
-      </div>
-      <div className="app-user-menu-divider" />
-
-      <button
-        type="button"
-        className="app-user-menu-item"
-        onClick={() => onNavigate('/profile')}
-      >
-        <span className="material-symbols-outlined">person</span>
-        پروفایل
-      </button>
-
-      <span className="app-user-menu-item app-user-menu-item--soon">
-        <span className="material-symbols-outlined">settings</span>
-        تنظیمات
-      </span>
-
-      <span className="app-user-menu-item app-user-menu-item--soon">
-        <span className="material-symbols-outlined">notifications</span>
-        اعلان‌ها
-      </span>
-
-      <div className="app-user-menu-divider" />
-      <div className="app-user-menu-logout">
-        <LogoutButton />
-      </div>
-    </div>
-  );
-}
-
 export default function AppLayout({ children }: { children: ReactNode }) {
   const { user } = useAuth();
   const location = useLocation();
-  const navigate = useNavigate();
-
-  const [desktopMenuOpen, setDesktopMenuOpen] = useState(false);
-  const desktopMenuRef = useRef<HTMLDivElement>(null);
 
   const initial = (user?.name || user?.username || '؟').charAt(0);
-
-  useEffect(() => {
-    function handleClickOutside(e: MouseEvent) {
-      if (desktopMenuRef.current && !desktopMenuRef.current.contains(e.target as Node)) {
-        setDesktopMenuOpen(false);
-      }
-    }
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
-
-  function handleMenuNavigate(path: string) {
-    setDesktopMenuOpen(false);
-    navigate(path);
-  }
 
   return (
     <div className="app-layout paper-texture">
@@ -100,24 +38,10 @@ export default function AppLayout({ children }: { children: ReactNode }) {
 
       {/* ───── نوار کناری — دسکتاپ ───── */}
       <nav className="app-sidenav">
-        <div className="app-host-info" ref={desktopMenuRef}>
-          <div className="app-avatar-wrapper app-avatar-wrapper--desktop">
-            <button
-              type="button"
-              className="app-avatar app-avatar--lg"
-              aria-label="منوی کاربر"
-              onClick={() => setDesktopMenuOpen(prev => !prev)}
-            >
-              {initial}
-            </button>
-            {desktopMenuOpen && (
-              <UserMenu
-                name={user?.name}
-                username={user?.username}
-                onNavigate={handleMenuNavigate}
-              />
-            )}
-          </div>
+        <div className="app-host-info">
+          <Link to="/profile" className="app-avatar app-avatar--lg" aria-label="پروفایل">
+            {initial}
+          </Link>
           <div>
             <div className="app-host-name">{user?.name || user?.username || 'میزبان بازی'}</div>
             <div className="app-host-sub">مدیریت دورهمی</div>

@@ -45,25 +45,6 @@
   gap: 16px;
 }
 
-/* ───────── Avatar wrapper + dropdown ───────── */
-.app-avatar-wrapper {
-  position: relative;
-}
-
-/* موبایل: منو از سمت راست باز میشه (RTL) */
-.app-avatar-wrapper--mobile .app-user-menu {
-  right: 0;
-  left: auto;
-}
-
-/* دسکتاپ: منو از پایین آواتار، به سمت چپ باز میشه */
-.app-avatar-wrapper--desktop .app-user-menu {
-  top: calc(100% + 8px);
-  right: 0;
-  left: auto;
-  min-width: 220px;
-}
-
 .app-avatar {
   width: 40px;
   height: 40px;
@@ -91,73 +72,6 @@
   font-size: 18px;
 }
 
-/* ───────── منوی کاربر (dropdown) ───────── */
-.app-user-menu {
-  position: absolute;
-  top: calc(100% + 8px);
-  min-width: 200px;
-  background: var(--color-paper-base);
-  border: 2px solid var(--color-ink-charcoal);
-  border-radius: 4px 12px 8px 12px;
-  box-shadow: 6px 6px 0px 0px rgba(38, 38, 38, 0.12);
-  z-index: 100;
-  overflow: hidden;
-  animation: menuFadeIn 0.15s ease;
-}
-
-@keyframes menuFadeIn {
-  from { opacity: 0; transform: translateY(-6px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
-
-.app-user-menu-header {
-  padding: 12px 16px 8px;
-}
-
-.app-user-menu-name {
-  font-family: var(--font-vazir);
-  font-weight: 700;
-  font-size: 14px;
-  color: var(--color-on-surface);
-}
-
-.app-user-menu-divider {
-  height: 1px;
-  background: rgba(38, 38, 38, 0.15);
-  margin: 4px 0;
-}
-
-.app-user-menu-item {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 10px 16px;
-  font-family: var(--font-vazir);
-  font-size: 14px;
-  color: var(--color-on-surface);
-  cursor: pointer;
-  transition: background 0.1s ease;
-  text-decoration: none;
-}
-.app-user-menu-item:hover {
-  background: var(--color-surface-container-low);
-}
-.app-user-menu-item .material-symbols-outlined {
-  font-size: 20px;
-  color: var(--color-on-surface-variant);
-}
-.app-user-menu-item--soon {
-  opacity: 0.5;
-  cursor: default;
-}
-.app-user-menu-item--soon:hover {
-  background: none;
-}
-
-.app-user-menu-logout {
-  padding: 4px 8px 8px;
-}
-
 /* ───────── نوار کناری (دسکتاپ) ───────── */
 .app-sidenav {
   display: none;
@@ -172,6 +86,9 @@
     right: 0;
     height: 100%;
     width: 256px;
+    min-width: 256px;
+    max-width: 256px;
+    box-sizing: border-box;
     padding: 16px;
     gap: 16px;
     background: var(--color-paper-base);
@@ -214,6 +131,7 @@
   gap: 12px;
   padding: 12px;
   border-radius: 12px;
+  border: 2px solid transparent;
   color: var(--color-on-surface-variant);
   font-family: var(--font-vazir);
   font-size: 15px;
@@ -226,7 +144,7 @@
 .app-nav-link--active {
   background: var(--color-secondary-container);
   color: var(--color-on-secondary-container);
-  border: 2px solid var(--color-ink-charcoal);
+  border-color: var(--color-ink-charcoal);
 }
 
 .app-nav-link--soon {
@@ -291,13 +209,13 @@
   font-weight: 700;
   text-decoration: none;
   cursor: pointer;
+  padding: 4px 16px;
+  border-radius: 9999px;
 }
 
 .app-bottomnav-link--active {
   color: var(--color-primary);
   background: rgba(255, 236, 139, 0.35);
-  border-radius: 9999px;
-  padding: 4px 16px;
 }
 
 .app-bottomnav-link--soon {

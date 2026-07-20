@@ -36,11 +36,6 @@ const openGame = (game: Game) => {
           {games.map(game => (
             <GameCard key={game.id} game={game} onSelect={openGame} />
           ))}
-
-          <button type="button" className="games-add-card" title="به زودی">
-            <span className="material-symbols-outlined">add_circle</span>
-            <span>افزودن بازی جدید</span>
-          </button>
         </div>
       )}
     </div>

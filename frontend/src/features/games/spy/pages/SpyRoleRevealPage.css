@@ -1,35 +1,286 @@
 @import '../../../../shared/styles/sketch.css';
 
-.spy-reveal-placeholder {
+.spy-reveal-page {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 12px;
-  text-align: center;
-  font-family: var(--font-vazir);
+  background-color: var(--color-paper-base);
+  background-image: radial-gradient(rgba(38, 38, 38, 0.02) 1px, transparent 0);
+  background-size: 20px 20px;
   color: var(--color-on-surface);
-  padding: 24px;
+  padding-bottom: 96px;
 }
 
-.spy-reveal-placeholder-icon {
-  font-size: 56px;
+/* ───────── هدر ───────── */
+.spy-reveal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: sticky;
+  top: 0;
+  z-index: 30;
+  padding: 12px 20px;
+  background: var(--color-paper-base);
+  border-bottom: 2px solid rgba(38, 38, 38, 0.2);
+  box-shadow: 4px 4px 0px 0px rgba(38, 38, 38, 0.1);
+}
+
+.spy-reveal-header-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.spy-reveal-back {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--color-on-surface-variant);
+  display: flex;
+  align-items: center;
+  padding: 4px;
+}
+
+.spy-reveal-brand {
+  font-family: var(--font-bricolage);
+  font-weight: 700;
+  font-size: 22px;
   color: var(--color-primary);
 }
 
-.spy-reveal-placeholder-note {
+.spy-reveal-header-left {
   color: var(--color-on-surface-variant);
-  font-size: 14px;
+  display: flex;
+  align-items: center;
 }
 
-.spy-reveal-placeholder button {
-  margin-top: 16px;
+/* ───────── محتوا ───────── */
+.spy-reveal-main {
+  flex: 1;
+  width: 100%;
+  max-width: 640px;
+  margin: 0 auto;
+  padding: 32px 20px;
+}
+
+.spy-reveal-title-section {
+  text-align: center;
+  margin-bottom: 32px;
+}
+
+.spy-reveal-title-wrap {
+  position: relative;
+  display: inline-block;
+}
+
+.spy-reveal-title {
+  font-family: var(--font-bricolage);
+  font-weight: 700;
+  font-size: 40px;
+  color: var(--color-primary);
+  position: relative;
+  z-index: 1;
+  margin: 0;
+}
+
+.spy-reveal-title-highlight {
+  position: absolute;
+  bottom: 2px;
+  left: 0;
+  width: 100%;
+  height: 14px;
+  background: var(--color-pencil-highlight);
+  opacity: 0.7;
+  transform: skewX(-3deg);
+  z-index: 0;
+}
+
+.spy-reveal-subtitle {
+  font-family: var(--font-vazir);
+  font-size: 16px;
+  color: var(--color-on-surface-variant);
+  margin-top: 12px;
+}
+
+.spy-reveal-status {
+  text-align: center;
+  font-family: var(--font-vazir);
+  color: var(--color-on-surface-variant);
+  padding: 16px 0;
+}
+
+.spy-reveal-status-error {
+  color: var(--color-primary);
+}
+
+.spy-reveal-status-done {
+  color: var(--color-on-surface);
+  font-weight: 700;
+}
+
+/* ───────── گرید کارت‌ها ───────── */
+.spy-reveal-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+}
+
+.spy-reveal-card {
+  aspect-ratio: 1 / 1;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-paper-base);
+  border: 2px solid var(--color-ink-charcoal);
+  border-radius: 4px 12px 6px 14px;
+  box-shadow: 4px 4px 0px 0px var(--color-ink-charcoal);
+  cursor: pointer;
+  padding: 8px;
+}
+
+.spy-reveal-card:disabled {
+  cursor: default;
+  opacity: 0.6;
+}
+
+.spy-reveal-card-tape {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%) rotate(-2deg);
+  width: 48px;
+  height: 16px;
+  background: rgba(255, 236, 139, 0.5);
+  border-left: 1px solid rgba(38, 38, 38, 0.1);
+  border-right: 1px solid rgba(38, 38, 38, 0.1);
+}
+
+.spy-reveal-card-name {
+  font-family: var(--font-bricolage);
+  font-weight: 700;
+  font-size: 26px;
+  color: var(--color-primary);
+  word-break: break-word;
+  text-align: center;
+}
+
+/* ───────── نوار پایین: شروع بازی ───────── */
+.spy-reveal-action-bar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 16px 20px calc(16px + env(safe-area-inset-bottom));
+  background: var(--color-paper-base);
+  border-top: 2px solid rgba(38, 38, 38, 0.2);
+  box-shadow: 0 -4px 0px 0px rgba(38, 38, 38, 0.1);
+  z-index: 40;
+}
+
+.spy-reveal-start-btn {
+  width: 100%;
+  max-width: 640px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: var(--color-primary);
+  color: var(--color-on-primary);
+  border: 2px solid var(--color-ink-charcoal);
+  box-shadow: 4px 4px 0px 0px rgba(38, 38, 38, 0.2);
+  padding: 14px;
+  font-family: var(--font-vazir);
+  font-weight: 700;
+  font-size: 16px;
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.spy-reveal-start-btn:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: 6px 6px 0px 0px rgba(38, 38, 38, 0.25);
+}
+
+/* ───────── مودال نمایش نقش ───────── */
+.spy-reveal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  background: rgba(38, 38, 38, 0.45);
+  animation: spy-reveal-fade-in 0.15s ease;
+}
+
+@keyframes spy-reveal-fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.spy-reveal-modal {
+  width: 100%;
+  max-width: 360px;
+  background: var(--color-paper-base);
+  border: 2px solid var(--color-ink-charcoal);
+  border-radius: 4px 16px 6px 18px;
+  box-shadow: 8px 8px 0px 0px rgba(38, 38, 38, 0.25);
+  padding: 32px 24px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  animation: spy-reveal-pop-in 0.2s ease;
+}
+
+@keyframes spy-reveal-pop-in {
+  from {
+    opacity: 0;
+    transform: scale(0.9) translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.spy-reveal-modal-name {
+  font-family: var(--font-vazir);
+  font-weight: 700;
+  font-size: 15px;
+  color: var(--color-on-surface-variant);
+  margin: 0;
+}
+
+.spy-reveal-modal-role {
+  font-family: var(--font-bricolage);
+  font-weight: 700;
+  font-size: 32px;
+  color: var(--color-primary);
+  margin: 0;
+}
+
+.spy-reveal-modal-location {
+  font-family: var(--font-vazir);
+  font-size: 16px;
+  color: var(--color-on-surface);
+  margin: 0;
+}
+
+.spy-reveal-modal-close {
+  margin-top: 12px;
+  width: 100%;
   background: var(--color-primary);
   color: var(--color-on-primary);
   border: none;
   border-radius: 8px;
-  padding: 10px 20px;
+  padding: 12px 20px;
   font-family: var(--font-vazir);
+  font-weight: 700;
+  font-size: 15px;
   cursor: pointer;
 }

@@ -8,6 +8,7 @@ import ProfilePage from '../features/profile/pages/ProfilePage';
 import FriendsPage from '../features/friends/pages/FriendsPage';
 import SpyNewGamePage from '../features/games/spy/pages/SpyNewGamePage';
 import SpyRoleRevealPage from '../features/games/spy/pages/SpyRoleRevealPage';
+import SpyGamePlaceholderPage from '../features/games/spy/pages/SpyGamePlaceholderPage';
 
 function PrivateRoute({
                           children,
@@ -91,6 +92,15 @@ export default function AppRouter() {
                     element={
                         <PrivateRoute layout={false}>
                             <SpyRoleRevealPage/>
+                        </PrivateRoute>
+                    }
+                />
+
+                <Route
+                    path="/games/spy/sessions/:id/play"
+                    element={
+                        <PrivateRoute layout={false}>
+                            <SpyGamePlaceholderPage/>
                         </PrivateRoute>
                     }
                 />

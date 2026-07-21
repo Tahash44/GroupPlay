@@ -35,3 +35,20 @@ export interface SelectedPlayer {
 export const MIN_PLAYERS = 4;
 export const TIMER_MIN_MINUTES = 1;
 export const TIMER_MAX_MINUTES = 15;
+
+/* ───────── Role reveal ───────── */
+
+/* مطابق PendingPlayerSerializer: بازیکن‌هایی که هنوز نقششون رو ندیدن */
+export interface PendingPlayer {
+  id: number;
+  name: string;
+}
+
+/*
+  مطابق SpyRoleResponseSerializer / CivilianRoleResponseSerializer.
+  location برای جاسوس می‌تونه null باشه، برای شهروند همیشه مقدار داره.
+*/
+export interface RevealRoleResponse {
+  role: string;
+  location: string | null;
+}

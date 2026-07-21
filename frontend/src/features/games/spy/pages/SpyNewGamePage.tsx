@@ -48,13 +48,13 @@ export default function SpyNewGamePage() {
 
     setSubmitting(true);
     try {
-      const { session_id } = await spyService.createSession({
+      const { id } = await spyService.createSession({
         game_type: 'spy',
         timer_duration: timerMinutes * 60,
         spy_count: spyCount,
         players: playerInputs,
       });
-      navigate(`/games/spy/sessions/${session_id}/reveal`);
+      navigate(`/games/spy/sessions/${id}/reveal`);
     } catch (err) {
       setError('ساخت بازی با خطا مواجه شد. دوباره تلاش کن.');
     } finally {

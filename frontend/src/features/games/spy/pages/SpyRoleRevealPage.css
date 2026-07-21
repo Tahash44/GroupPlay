@@ -14,6 +14,7 @@
 /* ───────── هدر ───────── */
 .spy-reveal-header {
   display: flex;
+  direction: rtl;
   justify-content: space-between;
   align-items: center;
   position: sticky;

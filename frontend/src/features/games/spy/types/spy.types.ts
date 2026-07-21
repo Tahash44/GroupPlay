@@ -16,9 +16,14 @@ export interface CreateSpySessionPayload {
   players: PlayerInput[];
 }
 
+/*
+  دقیقاً مطابق SpySessionResponseSerializer:
+  fields = ["id", "status", "created_at"] — نه session_id.
+*/
 export interface CreateSpySessionResponse {
-  session_id: number;
+  id: number;
   status: SessionStatus;
+  created_at: string;
 }
 
 /*

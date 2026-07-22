@@ -57,3 +57,25 @@ export interface RevealRoleResponse {
   role: string;
   location: string | null;
 }
+
+export interface TimerStatus {
+  timer_duration: number;
+  timer_elapsed: number;
+  timer_started_at: string | null;
+  remaining_time: number;
+  is_running: boolean;
+}
+
+/* پاسخ pause/resume: همون TimerStatus + پیام */
+export interface TimerActionResponse extends TimerStatus {
+  message: string;
+}
+
+/* پاسخ stop: طبق TimerStopResponseSerializer، remaining_time و timer_started_at نداره */
+export interface TimerStopResponse {
+  message: string;
+  status: SessionStatus;
+  timer_duration: number;
+  timer_elapsed: number;
+  is_running: boolean;
+}

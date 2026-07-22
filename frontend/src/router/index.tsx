@@ -8,7 +8,8 @@ import ProfilePage from '../features/profile/pages/ProfilePage';
 import FriendsPage from '../features/friends/pages/FriendsPage';
 import SpyNewGamePage from '../features/games/spy/pages/SpyNewGamePage';
 import SpyRoleRevealPage from '../features/games/spy/pages/SpyRoleRevealPage';
-import SpyGamePlaceholderPage from '../features/games/spy/pages/SpyGamePlaceholderPage';
+import InGamePage from '../features/games/spy/pages/InGamePage';
+import SpyVotingPlaceholderPage from '../features/games/spy/pages/SpyVotingPlaceholderPage';
 
 function PrivateRoute({
                           children,
@@ -100,10 +101,19 @@ export default function AppRouter() {
                     path="/games/spy/sessions/:id/play"
                     element={
                         <PrivateRoute layout={false}>
-                            <SpyGamePlaceholderPage/>
+                            <InGamePage/>
                         </PrivateRoute>
                     }
                 />
+
+                +               <Route
+                   path="/games/spy/sessions/:id/vote"
+                   element={
+                       <PrivateRoute layout={false}>
+                           <SpyVotingPlaceholderPage/>
+                       </PrivateRoute>
+                   }
+               />
 
                 <Route path="*" element={<Navigate to="/auth/login" replace/>}/>
             </Routes>

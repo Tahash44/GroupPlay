@@ -2,8 +2,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import GameCard from '../components/GameCard';
 import { gamesService } from '../services/gamesService';
-// @ts-ignore
-import type { Game } from '../types/games.types';
+import type { Game } from '../types/game.types';
 import './GamesListPage.css';
 
 export default function GamesListPage() {

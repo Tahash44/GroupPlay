@@ -143,10 +143,10 @@ describe('SpyNewGamePage', () => {
   it('submits the correct payload (including timer in seconds) and redirects to the reveal page', async () => {
     const user = userEvent.setup();
     (spyService.createSession as ReturnType<typeof vi.fn>).mockResolvedValue({
-      session_id: 99,
+      id: 99,
       status: 'CREATED',
+      created_at: '2026-07-22T21:50:00Z',
     });
-
     await renderPage();
 
     await ensureAddPanelOpen(user);

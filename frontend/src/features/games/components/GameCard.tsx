@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import type { Game } from '../types/games.types';
+import type { Game } from '../types/game.types';
 import './GameCard.css';
 
 interface GameCardProps {

@@ -1,7 +1,7 @@
 import {BrowserRouter, Routes, Route, Navigate} from 'react-router-dom';
-import {useAuth} from '../shared/context/AuthContext';
+// import {useAuth} from '../shared/context/AuthContext';
 import AuthPage from '../features/auth/pages/AuthPage';
-import AppLayout from '../shared/components/AppLayout/Applayout';
+// import AppLayout from '../shared/components/AppLayout/Applayout';
 import GamesListPage from '../features/games/pages/GamesListPage';
 import GameDetailPage from '../features/games/pages/GameDetailPage';
 import ProfilePage from '../features/profile/pages/ProfilePage';
@@ -10,30 +10,8 @@ import SpyNewGamePage from '../features/games/spy/pages/SpyNewGamePage';
 import SpyRoleRevealPage from '../features/games/spy/pages/SpyRoleRevealPage';
 import InGamePage from '../features/games/spy/pages/InGamePage';
 import SpyVotingPlaceholderPage from '../features/games/spy/pages/SpyVotingPlaceholderPage';
+import PrivateRoute from './PrivateRoute';
 
-function PrivateRoute({
-                          children,
-                          layout = true,
-                      }: {
-    children: React.ReactNode;
-    layout?: boolean;
-}) {
-
-
-    const {isAuthenticated, isLoading} = useAuth();
-
-    if (isLoading) {
-        return (
-            <div style={{display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '100vh'}}>
-                ...
-            </div>
-        );
-    }
-
-    if (!isAuthenticated) return <Navigate to="/auth/login" replace/>;
-
-return layout ? <AppLayout>{children}</AppLayout> : <>{children}</>;
-}
 
 export default function AppRouter() {
     return (

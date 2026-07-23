@@ -163,7 +163,7 @@ class VoteResultResponseSerializer(serializers.Serializer):
 
 
 class SpyGuessRequestSerializer(serializers.Serializer):
-    location = serializers.CharField()
+    is_correct = serializers.BooleanField()
 
 
 

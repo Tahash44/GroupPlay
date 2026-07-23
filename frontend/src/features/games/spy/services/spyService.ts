@@ -7,6 +7,9 @@ import type {
     TimerStatus,
   TimerActionResponse,
   TimerStopResponse,
+    VoteResult,
+  SpyGuessResult,
+  SpySessionDetail,
 } from '../types/spy.types';
 
 export const spyService = {
@@ -54,4 +57,25 @@ export const spyService = {
     );
     return data;
   },
+
+   async getSessionDetail(sessionId: string | number): Promise<SpySessionDetail> {
+    const { data } = await api.get<SpySessionDetail>(`/games/spy/sessions/${sessionId}/`);
+    return data;
+  },
+
+  async submitVote(sessionId: string | number, votedPlayerId: number): Promise<VoteResult> {
+    const { data } = await api.post<VoteResult>(`/games/spy/sessions/${sessionId}/vote/`, {
+      voted_player_id: votedPlayerId,
+    });
+    return data;
+  },
+
+  async submitSpyGuess(sessionId: string | number, isCorrect: boolean): Promise<SpyGuessResult> {
+    const { data } = await api.post<SpyGuessResult>(
+      `/games/spy/sessions/${sessionId}/spy-guess/`,
+      { is_correct: isCorrect }
+    );
+    return data;
+  },
+  
 };

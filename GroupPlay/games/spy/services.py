@@ -278,18 +278,13 @@ class SpyVoteService:
 class SpyGuessService:
 
     @staticmethod
-    def guess_location(session, location_name):
+    def guess_location(session, is_correct):
         spy_game = SpyGameState.objects.get(session=session)
 
         if spy_game.status != SpyGameState.Status.SPY_GUESS:
             raise ValidationError("Session is not in SPY_GUESS state.")
 
-        correct = (
-                location_name.strip().lower() == spy_game.location.name_en.strip().lower()
-                or location_name.strip() == spy_game.location.name_fa.strip()
-        )
-
-        if correct:
+        if is_correct:
             winner_ids = list(
                 SpyPlayerState.objects.filter(session=session, is_spy=True)
                 .values_list("player_id", flat=True)
@@ -307,7 +302,7 @@ class SpyGuessService:
         session.save(update_fields=["winner"])
 
         return {
-            "correct": correct,
+            "correct": is_correct,
             "location": spy_game.location.name_en,
             "winner": winner_ids,
             "status": spy_game.status,

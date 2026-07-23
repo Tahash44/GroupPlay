@@ -1,0 +1,365 @@
+@import '../../../../shared/styles/sketch.css';
+
+.voting-page {
+  min-height: 100vh;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  background: var(--color-paper-base);
+  font-family: var(--font-vazir);
+  color: var(--color-on-surface);
+}
+
+.voting-page-center {
+  align-items: center;
+  justify-content: center;
+}
+
+.voting-status {
+  color: var(--color-on-surface-variant);
+  font-size: 15px;
+}
+
+.voting-status-error {
+  color: var(--color-primary);
+}
+
+.voting-header {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 20px;
+  background: var(--color-paper-base);
+  border-bottom: 2px solid rgba(38, 38, 38, 0.15);
+  box-shadow: 4px 4px 0px 0px rgba(38, 38, 38, 0.06);
+}
+
+.voting-brand {
+  font-family: var(--font-bricolage);
+  font-weight: 700;
+  font-size: 22px;
+  color: var(--color-primary);
+  margin: 0;
+}
+
+.voting-icon-btn {
+  border: none;
+  background: transparent;
+  color: var(--color-ink-charcoal);
+  border-radius: 999px;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.voting-icon-btn-spacer,
+.voting-header-spacer {
+  width: 40px;
+}
+
+/* فاز رأی‌گیری */
+.voting-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 32px 20px;
+  gap: 8px;
+}
+
+.voting-title {
+  font-family: var(--font-bricolage);
+  font-weight: 700;
+  font-size: 26px;
+  color: var(--color-primary);
+  margin: 0;
+}
+
+.voting-subtitle {
+  color: var(--color-on-surface-variant);
+  font-size: 15px;
+  margin-bottom: 24px;
+  text-align: center;
+}
+
+.voting-players-list {
+  width: 100%;
+  max-width: 400px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.voting-player-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 18px;
+  background: var(--color-surface);
+  border: 2px solid var(--color-outline-variant);
+  border-radius: 8px;
+  font-family: var(--font-vazir);
+  font-size: 16px;
+  color: var(--color-on-surface);
+  cursor: pointer;
+  text-align: right;
+}
+
+.voting-player-item-selected {
+  border-color: var(--color-primary);
+  background: rgba(169, 23, 30, 0.06);
+  color: var(--color-primary);
+}
+
+.voting-footer {
+  padding: 16px 20px 28px;
+}
+
+.voting-footer-double {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.voting-submit-btn {
+  width: 100%;
+  padding: 16px;
+  background: var(--color-primary);
+  color: var(--color-on-primary);
+  border-radius: 8px;
+  font-family: var(--font-vazir);
+  font-weight: 700;
+  font-size: 18px;
+  cursor: pointer;
+}
+
+.voting-submit-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* فاز حدس مکان */
+.voting-guess-heading-wrap {
+  display: inline-block;
+}
+
+.voting-guess-heading {
+  font-family: var(--font-bricolage);
+  font-weight: 700;
+  font-size: 22px;
+  color: var(--color-primary);
+  background: var(--color-pencil-highlight);
+  padding: 4px 12px;
+  border-radius: 6px;
+  margin: 0 0 8px;
+}
+
+.voting-guess-card {
+  width: 100%;
+  max-width: 340px;
+  background: var(--color-surface);
+  padding: 28px 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  margin-top: 24px;
+}
+
+.voting-guess-card-label {
+  color: var(--color-on-surface-variant);
+  font-size: 14px;
+  opacity: 0.8;
+  margin: 0;
+}
+
+.voting-guess-card-spy {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  color: var(--color-primary);
+  font-family: var(--font-bricolage);
+  font-weight: 600;
+  font-size: 18px;
+}
+
+.voting-guess-card-divider {
+  width: 100%;
+  height: 1px;
+  border-top: 1px dashed var(--color-outline-variant);
+}
+
+.voting-guess-card-hint {
+  font-style: italic;
+  color: var(--color-on-surface-variant);
+  font-size: 14px;
+  margin: 0;
+}
+
+.voting-guess-correct-btn,
+.voting-guess-wrong-btn {
+  width: 100%;
+  padding: 16px;
+  border-radius: 8px;
+  font-family: var(--font-vazir);
+  font-weight: 700;
+  font-size: 17px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  cursor: pointer;
+}
+
+.voting-guess-correct-btn {
+  background: var(--color-primary);
+  color: var(--color-on-primary);
+}
+
+.voting-guess-wrong-btn {
+  background: var(--color-surface);
+  color: var(--color-ink-charcoal);
+  border: 2px dashed var(--color-ink-charcoal);
+}
+
+.voting-guess-correct-btn:disabled,
+.voting-guess-wrong-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* فاز نتیجه */
+.voting-result-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 24px 20px 40px;
+  text-align: center;
+}
+
+.voting-result-title {
+  font-family: var(--font-bricolage);
+  font-weight: 700;
+  font-size: 24px;
+  color: var(--color-primary);
+  margin: 0 0 8px;
+}
+
+.voting-result-subtitle {
+  color: var(--color-on-surface-variant);
+  font-size: 15px;
+  margin: 0 0 24px;
+  max-width: 320px;
+}
+
+.voting-result-illustration-card {
+  width: 100%;
+  max-width: 340px;
+  background: #ffffff;
+  border: 2px solid var(--color-ink-charcoal);
+  border-radius: 4px 12px 6px 14px;
+  box-shadow: 6px 6px 0px 0px rgba(38, 38, 38, 0.1);
+  padding: 24px;
+  margin-bottom: 24px;
+  transform: rotate(1deg);
+}
+
+.voting-result-illustration {
+  width: 160px;
+  height: 160px;
+  color: var(--color-primary-container, #cc3333);
+  margin: 0 auto;
+  display: block;
+}
+
+.voting-result-illustration-spy {
+  color: var(--color-on-surface-variant);
+}
+
+.voting-result-team-label {
+  margin-top: 16px;
+  border-top: 1px dashed var(--color-outline-variant);
+  padding-top: 16px;
+  font-size: 15px;
+  color: var(--color-ink-charcoal);
+}
+
+.voting-result-chips {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.voting-result-chip {
+  padding: 4px 12px;
+  background: rgba(255, 236, 139, 0.4);
+  border: 1px solid var(--color-outline-variant);
+  border-radius: 999px;
+  font-size: 13px;
+}
+
+.voting-result-report-card {
+  width: 100%;
+  max-width: 320px;
+  background: var(--color-paper-base);
+  padding: 20px;
+  margin-bottom: 32px;
+}
+
+.voting-result-report-title {
+  font-family: var(--font-bricolage);
+  color: var(--color-primary);
+  font-size: 17px;
+  margin: 0 0 8px;
+}
+
+.voting-result-report-text {
+  color: var(--color-on-surface-variant);
+  font-size: 14px;
+  line-height: 1.6;
+  margin: 0;
+}
+
+.voting-result-actions {
+  width: 100%;
+  max-width: 340px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.voting-result-replay-btn,
+.voting-result-home-btn {
+  padding: 16px;
+  border-radius: 4px;
+  font-family: var(--font-bricolage);
+  font-weight: 700;
+  font-size: 17px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  cursor: pointer;
+}
+
+.voting-result-replay-btn {
+  background: var(--color-primary-container, #cc3333);
+  color: var(--color-on-primary);
+  box-shadow: 4px 4px 0px 0px #262626;
+}
+
+.voting-result-home-btn {
+  background: #ffffff;
+  color: var(--color-ink-charcoal);
+  box-shadow: 4px 4px 0px 0px rgba(38, 38, 38, 0.05);
+}

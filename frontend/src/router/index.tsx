@@ -9,7 +9,7 @@ import FriendsPage from '../features/friends/pages/FriendsPage';
 import SpyNewGamePage from '../features/games/spy/pages/SpyNewGamePage';
 import SpyRoleRevealPage from '../features/games/spy/pages/SpyRoleRevealPage';
 import InGamePage from '../features/games/spy/pages/InGamePage';
-import SpyVotingPlaceholderPage from '../features/games/spy/pages/SpyVotingPlaceholderPage';
+import SpyVotingPlaceholderPage from '../features/games/spy/pages/VotingPage';
 import PrivateRoute from './PrivateRoute';
 
 

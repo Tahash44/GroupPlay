@@ -26,7 +26,8 @@
 ┃ ┣ 📜BaziGardan_doc.docx
 ┃ ┣ 📜BaziGardan_doc.md
 ┃ ┣ 📜BaziGardan_doc.pdf
-┃ ┗ 📜ERD.mermaid
+┃ ┣ 📜ERD.mermaid
+┃ ┗ 📜projectStructure.md
 ┣ 📂frontend
 ┃ ┣ 📂dist
 ┃ ┣ 📂public
@@ -50,6 +51,7 @@
 ┃ ┃ ┃ ┣ 📂auth
 ┃ ┃ ┃ ┃ ┣ 📂components
 ┃ ┃ ┃ ┃ ┃ ┣ 📜LogoutButton.css
+┃ ┃ ┃ ┃ ┃ ┣ 📜LogoutButton.test.tsx
 ┃ ┃ ┃ ┃ ┃ ┗ 📜LogoutButton.tsx
 ┃ ┃ ┃ ┃ ┣ 📂pages
 ┃ ┃ ┃ ┃ ┃ ┣ 📜AuthPage.css
@@ -86,6 +88,7 @@
 ┃ ┃ ┃ ┃ ┃ ┣ 📜GameDetailPage.css
 ┃ ┃ ┃ ┃ ┃ ┣ 📜GameDetailPage.tsx
 ┃ ┃ ┃ ┃ ┃ ┣ 📜GamesListPage.css
+┃ ┃ ┃ ┃ ┃ ┣ 📜GamesListPage.test.tsx
 ┃ ┃ ┃ ┃ ┃ ┗ 📜GamesListPage.tsx
 ┃ ┃ ┃ ┃ ┣ 📂services
 ┃ ┃ ┃ ┃ ┃ ┗ 📜gamesService.ts
@@ -98,13 +101,15 @@
 ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜TimerSlider.css
 ┃ ┃ ┃ ┃ ┃ ┃ ┗ 📜TimerSlider.tsx
 ┃ ┃ ┃ ┃ ┃ ┣ 📂pages
-┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜SpyGamePlaceholderPage.css
-┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜SpyGamePlaceholderPage.tsx
+┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜InGamePage.css
+┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜InGamePage.tsx
 ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜SpyNewGamePage.css
 ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜SpyNewGamePage.test.tsx
 ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜SpyNewGamePage.tsx
 ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜SpyRoleRevealPage.css
-┃ ┃ ┃ ┃ ┃ ┃ ┗ 📜SpyRoleRevealPage.tsx
+┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜SpyRoleRevealPage.tsx
+┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜SpyVotingPlaceholderPage.css
+┃ ┃ ┃ ┃ ┃ ┃ ┗ 📜SpyVotingPlaceholderPage.tsx
 ┃ ┃ ┃ ┃ ┃ ┣ 📂services
 ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜spyApiInterceptor.test.ts
 ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜spyService.test.ts
@@ -122,7 +127,9 @@
 ┃ ┃ ┃     ┣ 📜profileService.test.ts
 ┃ ┃ ┃     ┗ 📜profileService.ts
 ┃ ┃ ┣ 📂router
-┃ ┃ ┃ ┗ 📜index.tsx
+┃ ┃ ┃ ┣ 📜index.tsx
+┃ ┃ ┃ ┣ 📜PrivateRoute.test.tsx
+┃ ┃ ┃ ┗ 📜PrivateRoute.tsx
 ┃ ┃ ┣ 📂shared
 ┃ ┃ ┃ ┣ 📂api
 ┃ ┃ ┃ ┃ ┣ 📜api.test.ts
@@ -130,6 +137,7 @@
 ┃ ┃ ┃ ┣ 📂components
 ┃ ┃ ┃ ┃ ┗ 📂AppLayout
 ┃ ┃ ┃ ┃   ┣ 📜Applayout.css
+┃ ┃ ┃ ┃   ┣ 📜Applayout.test.tsx
 ┃ ┃ ┃ ┃   ┗ 📜Applayout.tsx
 ┃ ┃ ┃ ┣ 📂context
 ┃ ┃ ┃ ┃ ┗ 📜AuthContext.tsx

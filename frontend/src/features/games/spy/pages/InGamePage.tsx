@@ -2,7 +2,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import { spyService } from '../services/spyService';
-import type { TimerStatus } from '../types/spy.types';
+import type { TimerStatus, SessionPlayer } from '../types/spy.types';
 import './InGamePage.css';
 
 const POLL_INTERVAL_MS = 2000;
@@ -27,6 +27,9 @@ export default function InGamePage() {
   const [actionLoading, setActionLoading] = useState(false);
   const [timesUp, setTimesUp] = useState(false);
   const [showStopConfirm, setShowStopConfirm] = useState(false);
+  const [players, setPlayers] = useState<SessionPlayer[]>([]);
+  const [showSpyGuessConfirm, setShowSpyGuessConfirm] = useState(false);
+  const [selectedSpyPlayerId, setSelectedSpyPlayerId] = useState<number | null>(null);
 
   const pollRef = useRef<number | null>(null);
   const tickRef = useRef<number | null>(null);
@@ -40,7 +43,7 @@ export default function InGamePage() {
     }
   }, []);
 
-  // گرفتن وضعیت اولیه‌ی تایمر
+  // گرفتن وضعیت اولیه‌ی تایمر + لیست بازیکن‌ها
   useEffect(() => {
     if (!id) return;
     let cancelled = false;
@@ -49,10 +52,14 @@ export default function InGamePage() {
       setLoading(true);
       setError(null);
       try {
-        const status = await spyService.getTimer(id);
+        const [status, detail] = await Promise.all([
+          spyService.getTimer(id),
+          spyService.getSessionDetail(id),
+        ]);
         if (!cancelled) applyStatus(status);
+        if (!cancelled) setPlayers(detail.players);
       } catch {
-        if (!cancelled) setError('گرفتن اطلاعات تایمر با خطا مواجه شد. صفحه رو رفرش کن.');
+        if (!cancelled) setError('گرفتن اطلاعات بازی با خطا مواجه شد. صفحه رو رفرش کن.');
       } finally {
         if (!cancelled) setLoading(false);
       }
@@ -129,6 +136,21 @@ export default function InGamePage() {
       toast.error('پایان زودهنگام بازی با خطا مواجه شد.');
       setActionLoading(false);
       setShowStopConfirm(false);
+    }
+  };
+
+  const handleConfirmSpyEarlyGuess = async () => {
+    if (!id || actionLoading || selectedSpyPlayerId === null) return;
+    setActionLoading(true);
+    try {
+      await spyService.stopTimer(id);
+      await spyService.submitVote(id, selectedSpyPlayerId);
+      navigate(`/games/spy/sessions/${id}/vote`);
+    } catch {
+      toast.error('ثبت درخواست حدس زودهنگام با خطا مواجه شد.');
+      setActionLoading(false);
+      setShowSpyGuessConfirm(false);
+      setSelectedSpyPlayerId(null);
     }
   };
 
@@ -215,6 +237,16 @@ export default function InGamePage() {
               <span className="ingame-early-stop-sub">پایان زودهنگام</span>
             </span>
           </button>
+
+          <button
+            type="button"
+            className="ingame-spy-guess-btn sketch-border"
+            onClick={() => setShowSpyGuessConfirm(true)}
+            disabled={actionLoading}
+          >
+            <span className="material-symbols-outlined">person_search</span>
+            <span>جاسوس مکان رو حدس می‌زنه</span>
+          </button>
         </div>
       </main>
 
@@ -238,6 +270,54 @@ export default function InGamePage() {
                 disabled={actionLoading}
               >
                 {actionLoading ? 'در حال ثبت...' : 'بله، تمومش کن'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {showSpyGuessConfirm && (
+        <div className="ingame-overlay" role="dialog" aria-modal="true">
+          <div className="ingame-modal ingame-spyguess-modal sketch-border">
+            <p className="ingame-modal-text">جاسوس ادعا کرده مکان رو می‌دونه. کدوم بازیکنه؟</p>
+
+            <div className="ingame-spyguess-players">
+              {players.map(player => (
+                <button
+                  key={player.id}
+                  type="button"
+                  className={`ingame-spyguess-player-item ${
+                    selectedSpyPlayerId === player.id ? 'ingame-spyguess-player-item-selected' : ''
+                  }`}
+                  onClick={() => setSelectedSpyPlayerId(player.id)}
+                >
+                  <span className="material-symbols-outlined">
+                    {selectedSpyPlayerId === player.id ? 'radio_button_checked' : 'radio_button_unchecked'}
+                  </span>
+                  <span>{player.name}</span>
+                </button>
+              ))}
+            </div>
+
+            <div className="ingame-modal-actions">
+              <button
+                type="button"
+                className="ingame-modal-cancel"
+                onClick={() => {
+                  setShowSpyGuessConfirm(false);
+                  setSelectedSpyPlayerId(null);
+                }}
+                disabled={actionLoading}
+              >
+                انصراف
+              </button>
+              <button
+                type="button"
+                className="ingame-modal-confirm"
+                onClick={handleConfirmSpyEarlyGuess}
+                disabled={actionLoading || selectedSpyPlayerId === null}
+              >
+                {actionLoading ? 'در حال ثبت...' : 'تأیید و برو به حدس مکان'}
               </button>
             </div>
           </div>

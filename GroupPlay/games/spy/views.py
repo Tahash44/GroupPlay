@@ -203,7 +203,7 @@ class SpySessionGuessView(APIView):
 
         result = SpyGuessService.guess_location(
             session=session,
-            location_name=serializer.validated_data["location"],
+            is_correct=serializer.validated_data["is_correct"],
         )
 
         return Response(GameResultResponseSerializer(result).data, status=status.HTTP_200_OK)

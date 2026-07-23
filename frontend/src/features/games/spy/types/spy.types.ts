@@ -79,3 +79,36 @@ export interface TimerStopResponse {
   timer_elapsed: number;
   is_running: boolean;
 }
+
+export type VoteResultType = 'spy_caught' | 'wrong_vote';
+
+export interface VoteResult {
+  result: VoteResultType;
+  spy_can_guess: boolean;
+  voted_player: string;
+  status: SessionStatus;
+  winner: number[];
+}
+
+export interface SpyGuessResult {
+  correct: boolean;
+  location: string;
+  winner: number[];
+  status: SessionStatus;
+}
+
+/* بازیکن توی SpySessionDetailSerializer — role هست ولی توی فرم رأی‌گیری عمداً نادیده گرفته میشه */
+export interface SessionPlayer {
+  id: number;
+  name: string;
+  role: string | null;
+}
+
+export interface SpySessionDetail {
+  id: number;
+  game_type: string;
+  status: SessionStatus;
+  location: string | null;
+  winner: number[] | null;
+  players: SessionPlayer[];
+}

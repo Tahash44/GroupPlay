@@ -229,3 +229,100 @@ class SpySessionAPITest(APITestCase):
         spy_state.refresh_from_db()
         self.assertEqual(spy_state.status, SpyGameState.Status.VOTING)
         self.assertIsNone(spy_state.timer_started_at)
+class SpyVoteAndGuessAPITest(APITestCase):
+
+    def setUp(self):
+        self.user = User.objects.create_user(username="host2", password="12345678")
+        self.client.force_authenticate(user=self.user)
+
+        create_url = reverse("spy-session-create-v1")
+        payload = {
+            "timer_duration": 300,
+            "spy_count": 1,
+            "players": [
+                {"name": "Ali", "friend_id": None},
+                {"name": "Reza", "friend_id": None},
+                {"name": "Sara", "friend_id": None},
+            ],
+        }
+        create_response = self.client.post(create_url, payload, format="json")
+        self.session_id = create_response.data["id"]
+
+        session = GameSession.objects.get(id=self.session_id)
+        self.spy_state = SpyGameState.objects.get(session=session)
+        self.spy_state.status = SpyGameState.Status.VOTING
+        self.spy_state.save(update_fields=["status"])
+
+        self.spy_player = SpyPlayerState.objects.get(session=session, is_spy=True)
+        self.civilian_player = SpyPlayerState.objects.filter(session=session, is_spy=False).first()
+
+        self.vote_url = reverse("spy-session-vote-v1", kwargs={"id": self.session_id})
+        self.guess_url = reverse("spy-session-spy-guess-v1", kwargs={"id": self.session_id})
+
+    def test_vote_correct_player_opens_spy_guess(self):
+        response = self.client.post(
+            self.vote_url,
+            {"voted_player_id": self.spy_player.player_id},
+            format="json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data["result"], "spy_caught")
+        self.assertTrue(response.data["spy_can_guess"])
+        self.assertEqual(response.data["status"], SpyGameState.Status.SPY_GUESS)
+
+        self.spy_state.refresh_from_db()
+        self.assertEqual(self.spy_state.status, SpyGameState.Status.SPY_GUESS)
+
+    def test_vote_wrong_player_finishes_game_civilians_lose(self):
+        response = self.client.post(
+            self.vote_url,
+            {"voted_player_id": self.civilian_player.player_id},
+            format="json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data["result"], "wrong_vote")
+        self.assertFalse(response.data["spy_can_guess"])
+        self.assertEqual(response.data["status"], SpyGameState.Status.FINISHED)
+        self.assertEqual(response.data["winner"], [self.spy_player.player_id])
+
+    def test_vote_when_not_in_voting_state_fails(self):
+        self.spy_state.status = SpyGameState.Status.IN_PROGRESS
+        self.spy_state.save(update_fields=["status"])
+
+        response = self.client.post(
+            self.vote_url,
+            {"voted_player_id": self.spy_player.player_id},
+            format="json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_guess_correct_spy_wins(self):
+        self.spy_state.status = SpyGameState.Status.SPY_GUESS
+        self.spy_state.save(update_fields=["status"])
+
+        response = self.client.post(self.guess_url, {"is_correct": True}, format="json")
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertTrue(response.data["correct"])
+        self.assertEqual(response.data["status"], SpyGameState.Status.FINISHED)
+        self.assertEqual(response.data["winner"], [self.spy_player.player_id])
+
+    def test_guess_wrong_civilians_win(self):
+        self.spy_state.status = SpyGameState.Status.SPY_GUESS
+        self.spy_state.save(update_fields=["status"])
+
+        response = self.client.post(self.guess_url, {"is_correct": False}, format="json")
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertFalse(response.data["correct"])
+        self.assertEqual(response.data["status"], SpyGameState.Status.FINISHED)
+        civilian_ids = set(
+            SpyPlayerState.objects.filter(session_id=self.session_id, is_spy=False)
+            .values_list("player_id", flat=True)
+        )
+        self.assertEqual(set(response.data["winner"]), civilian_ids)
+
+    def test_guess_from_wrong_state_returns_409(self):
+        # spy_state هنوز روی VOTING هست، نه SPY_GUESS
+        response = self.client.post(self.guess_url, {"is_correct": True}, format="json")
+        self.assertEqual(response.status_code, status.HTTP_409_CONFLICT)

@@ -309,3 +309,62 @@
 .ingame-timesup-btn:hover {
   filter: brightness(1.05);
 }
+
+.ingame-spy-guess-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 12px 20px;
+  background: var(--color-surface);
+  border-color: var(--color-secondary);
+  color: var(--color-secondary);
+  font-family: var(--font-vazir);
+  font-weight: 700;
+  font-size: 15px;
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.ingame-spy-guess-btn:active {
+  transform: translate(2px, 2px);
+ }
+
+.ingame-spy-guess-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.ingame-spyguess-modal {
+  max-width: 380px;
+}
+
+.ingame-spyguess-players {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-height: 240px;
+  overflow-y: auto;
+}
+
+.ingame-spyguess-player-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 14px;
+  background: var(--color-surface-container-low);
+  border: 2px solid var(--color-outline-variant);
+  border-radius: 8px;
+  font-family: var(--font-vazir);
+  font-size: 15px;
+  color: var(--color-on-surface);
+  cursor: pointer;
+  text-align: right;
+}
+
+.ingame-spyguess-player-item-selected {
+  border-color: var(--color-secondary);
+  background: rgba(59, 97, 136, 0.08);
+  color: var(--color-secondary);
+}

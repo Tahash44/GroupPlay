@@ -10,6 +10,8 @@ import type {
     VoteResult,
   SpyGuessResult,
   SpySessionDetail,
+  SpySessionHistoryItem,
+  PaginatedResponse,
 } from '../types/spy.types';
 
 export const spyService = {
@@ -78,4 +80,13 @@ export const spyService = {
     return data;
   },
   
+
+  async getFinishedSessions(page = 1): Promise<PaginatedResponse<SpySessionHistoryItem>> {
+    const { data } = await api.get<PaginatedResponse<SpySessionHistoryItem>>(
+      '/games/spy/sessions/',
+      { params: { status: 'FINISHED', page } }
+    );
+    return data;
+  },
+
 };

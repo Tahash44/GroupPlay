@@ -6,6 +6,7 @@ from rest_framework import status
 from django.shortcuts import get_object_or_404
 from rest_framework.generics import RetrieveAPIView
 from games.models import GameSession
+from rest_framework.pagination import PageNumberPagination
 from games.spy.serializers import (
     SpySessionCreateSerializer,
     SpySessionResponseSerializer,
@@ -13,6 +14,7 @@ from games.spy.serializers import (
     TimerResponseSerializer,
     TimerPauseResponseSerializer,
     TimerResumeResponseSerializer,
+    SpySessionHistorySerializer,
     TimerStopResponseSerializer,
 )
 from games.spy.services import SpyGameService,SpyVoteService, SpyGuessService,SpyTimerService
@@ -27,6 +29,11 @@ from .serializers import (
     SpyGuessRequestSerializer,
     GameResultResponseSerializer,
 )
+
+class SpySessionHistoryPagination(PageNumberPagination):
+    page_size = 10
+    page_size_query_param = "page_size"
+    max_page_size = 50
 
 class SpySessionCreateView(APIView):
     permission_classes = [IsAuthenticated]
@@ -48,13 +55,19 @@ class SpySessionCreateView(APIView):
         return Response(response_serializer.data, status=status.HTTP_201_CREATED)
 
     def get(self, request):
-        sessions = GameSession.objects.filter(
+        queryset = GameSession.objects.filter(
             host=request.user,
             game_type=GameSession.GameType.SPY
         ).order_by("-created_at")
 
-        serializer = SpySessionDetailSerializer(sessions, many=True)
-        return Response(serializer.data)
+        status_param = request.query_params.get("status")
+        if status_param:
+            queryset = queryset.filter(spy_state__status=status_param)
+
+        paginator = SpySessionHistoryPagination()
+        page = paginator.paginate_queryset(queryset, request)
+        serializer = SpySessionHistorySerializer(page, many=True)
+        return paginator.get_paginated_response(serializer.data)
 
 from django.shortcuts import get_object_or_404
 from rest_framework.generics import RetrieveAPIView

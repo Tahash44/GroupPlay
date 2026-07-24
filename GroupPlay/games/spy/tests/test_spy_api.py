@@ -326,3 +326,85 @@ class SpyVoteAndGuessAPITest(APITestCase):
         # spy_state هنوز روی VOTING هست، نه SPY_GUESS
         response = self.client.post(self.guess_url, {"is_correct": True}, format="json")
         self.assertEqual(response.status_code, status.HTTP_409_CONFLICT)
+        
+class SpySessionHistoryAPITest(APITestCase):
+
+    def setUp(self):
+        self.user = User.objects.create_user(username="historyuser", password="12345678")
+        self.client.force_authenticate(user=self.user)
+        self.create_url = reverse("spy-session-create-v1")
+        self.payload = {
+            "timer_duration": 300,
+            "spy_count": 1,
+            "players": [
+                {"name": "Ali", "friend_id": None},
+                {"name": "Reza", "friend_id": None},
+                {"name": "Sara", "friend_id": None},
+            ],
+        }
+
+    def _create_finished_session(self, spy_wins: bool):
+        response = self.client.post(self.create_url, self.payload, format="json")
+        session_id = response.data["id"]
+        session = GameSession.objects.get(id=session_id)
+        spy_state = SpyGameState.objects.get(session=session)
+        spy_state.status = SpyGameState.Status.FINISHED
+        spy_state.save(update_fields=["status"])
+
+        spy_player = SpyPlayerState.objects.get(session=session, is_spy=True)
+        civilians = SpyPlayerState.objects.filter(session=session, is_spy=False)
+
+        session.winner = [spy_player.player_id] if spy_wins else [p.player_id for p in civilians]
+        session.save(update_fields=["winner"])
+        return session_id
+
+    def test_list_filters_by_status(self):
+        finished_id = self._create_finished_session(spy_wins=False)
+        self.client.post(self.create_url, self.payload, format="json")  # سشن ناتموم
+
+        response = self.client.get(self.create_url, {"status": "FINISHED"})
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        ids = [item["id"] for item in response.data["results"]]
+        self.assertEqual(ids, [finished_id])
+
+    def test_list_item_fields_and_winner_side_civilians(self):
+        self._create_finished_session(spy_wins=False)
+
+        response = self.client.get(self.create_url, {"status": "FINISHED"})
+        item = response.data["results"][0]
+
+        for field in ("id", "game_type", "status", "played_at", "player_count", "winner_side"):
+            self.assertIn(field, item)
+        self.assertEqual(item["player_count"], 3)
+        self.assertEqual(item["winner_side"], "civilians")
+
+    def test_list_winner_side_spy(self):
+        self._create_finished_session(spy_wins=True)
+
+        response = self.client.get(self.create_url, {"status": "FINISHED"})
+        self.assertEqual(response.data["results"][0]["winner_side"], "spy")
+
+    def test_list_is_paginated(self):
+        self._create_finished_session(spy_wins=False)
+
+        response = self.client.get(self.create_url, {"status": "FINISHED"})
+
+        for field in ("count", "next", "previous", "results"):
+            self.assertIn(field, response.data)
+
+    def test_list_requires_authentication(self):
+        self.client.force_authenticate(user=None)
+        response = self.client.get(self.create_url, {"status": "FINISHED"})
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+    def test_detail_includes_history_fields(self):
+        finished_id = self._create_finished_session(spy_wins=False)
+        detail_url = reverse("spy-session-detail-v1", kwargs={"id": finished_id})
+
+        response = self.client.get(detail_url)
+
+        for field in ("played_at", "duration_seconds", "player_count", "winner_side"):
+            self.assertIn(field, response.data)
+        self.assertEqual(response.data["player_count"], 3)
+        self.assertEqual(response.data["winner_side"], "civilians")

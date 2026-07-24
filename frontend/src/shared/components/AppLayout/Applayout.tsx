@@ -13,8 +13,7 @@ interface NavItem {
 const NAV_ITEMS: NavItem[] = [
   { label: 'پیش‌خوان', icon: 'dashboard', path: '/dashboard' },
   { label: 'دوستان', icon: 'group', path: '/friends' },
-  { label: 'تنظیمات بازی', icon: 'sports_esports', path: null },
-  { label: 'تاریخچه', icon: 'history', path: null },
+  { label: 'تاریخچه', icon: 'history', path: '/history' },
 ];
 
 export default function AppLayout({ children }: { children: ReactNode }) {
@@ -84,6 +83,15 @@ export default function AppLayout({ children }: { children: ReactNode }) {
 
       {/* ───── نوار پایین — موبایل ───── */}
       <nav className="app-bottomnav">
+
+<Link
+          to="/history"
+          className={`app-bottomnav-link ${location.pathname.startsWith('/history') ? 'app-bottomnav-link--active' : ''}`}
+        >
+          <span className="material-symbols-outlined">history</span>
+          تاریخچه
+        </Link>
+
         <Link
           to="/dashboard"
           className={`app-bottomnav-link ${location.pathname === '/dashboard' ? 'app-bottomnav-link--active' : ''}`}

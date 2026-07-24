@@ -69,10 +69,33 @@ class SpySessionDetailSerializer(serializers.ModelSerializer):
     location = serializers.SerializerMethodField()
     players = serializers.SerializerMethodField()
     winner = serializers.SerializerMethodField()
+    played_at = serializers.DateTimeField(source="created_at", read_only=True)
+    duration_seconds = serializers.SerializerMethodField()
+    player_count = serializers.SerializerMethodField()
+    winner_side = serializers.SerializerMethodField()
 
     class Meta:
         model = GameSession
-        fields = ["id", "game_type", "status", "location", "winner", "players"]
+        fields = [
+            "id", "game_type", "status", "location", "winner", "players",
+            "played_at", "duration_seconds", "player_count", "winner_side",
+        ]
+        
+    def get_duration_seconds(self, obj):
+        spy_game_state = SpyGameState.objects.filter(session=obj).first()
+        return spy_game_state.timer_elapsed if spy_game_state else None
+
+    def get_player_count(self, obj):
+        return obj.players.count()
+
+    def get_winner_side(self, obj):
+        if not obj.winner:
+            return None
+        spy_player_ids = set(
+            SpyPlayerState.objects.filter(session=obj, is_spy=True)
+            .values_list("player_id", flat=True)
+        )
+        return "spy" if set(obj.winner) & spy_player_ids else "civilians"
 
     def get_status(self, obj):
         spy_game_state = SpyGameState.objects.filter(session=obj).first()
@@ -172,3 +195,29 @@ class GameResultResponseSerializer(serializers.Serializer):
     location = serializers.CharField()
     winner = serializers.ListField(child=serializers.IntegerField())
     status = serializers.CharField()
+
+class SpySessionHistorySerializer(serializers.ModelSerializer):
+    played_at = serializers.DateTimeField(source="created_at", read_only=True)
+    player_count = serializers.SerializerMethodField()
+    winner_side = serializers.SerializerMethodField()
+    status = serializers.SerializerMethodField()
+
+    class Meta:
+        model = GameSession
+        fields = ["id", "game_type", "status", "played_at", "player_count", "winner_side"]
+
+    def get_player_count(self, obj):
+        return obj.players.count()
+
+    def get_status(self, obj):
+        spy_game_state = SpyGameState.objects.filter(session=obj).first()
+        return spy_game_state.status if spy_game_state else None
+
+    def get_winner_side(self, obj):
+        if not obj.winner:
+            return None
+        spy_player_ids = set(
+            SpyPlayerState.objects.filter(session=obj, is_spy=True)
+            .values_list("player_id", flat=True)
+        )
+        return "spy" if set(obj.winner) & spy_player_ids else "civilians"

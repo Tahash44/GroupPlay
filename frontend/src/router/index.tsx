@@ -11,6 +11,8 @@ import SpyRoleRevealPage from '../features/games/spy/pages/SpyRoleRevealPage';
 import InGamePage from '../features/games/spy/pages/InGamePage';
 import SpyVotingPlaceholderPage from '../features/games/spy/pages/VotingPage';
 import PrivateRoute from './PrivateRoute';
+import HistoryPage from '../features/games/pages/HistoryPage';
+import HistoryDetailPage from '../features/games/pages/HistoryDetailPage';
 
 
 export default function AppRouter() {
@@ -47,7 +49,23 @@ export default function AppRouter() {
                         </PrivateRoute>
                     }
                 />
+<Route
+                   path="/history"
+                   element={
+                       <PrivateRoute>
+                           <HistoryPage/>
+                       </PrivateRoute>
+                   }
+               />
 
+               <Route
+                   path="/history/:id"
+                   element={
+                       <PrivateRoute>
+                           <HistoryDetailPage/>
+                       </PrivateRoute>
+                   }
+               />
                 <Route
                     path="/friends"
                     element={

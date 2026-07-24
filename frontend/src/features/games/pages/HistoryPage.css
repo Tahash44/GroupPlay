@@ -1,0 +1,239 @@
+@import '../../../shared/styles/sketch.css';
+
+.history-page {
+  font-family: var(--font-vazir);
+  color: var(--color-on-surface);
+  padding-bottom: 32px;
+}
+
+.history-header {
+  margin-bottom: 16px;
+}
+
+.history-title {
+  font-family: var(--font-bricolage);
+  font-weight: 700;
+  font-size: 24px;
+  color: var(--color-primary);
+  margin: 0 0 4px;
+}
+
+.history-subtitle {
+  color: var(--color-on-surface-variant);
+  font-size: 14px;
+  margin: 0;
+}
+
+.history-tabs {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding-bottom: 4px;
+  margin-bottom: 24px;
+}
+
+.history-tab {
+  padding: 8px 20px;
+  border-radius: 999px;
+  border: 2px solid var(--color-ink-charcoal);
+  background: var(--color-paper-base);
+  color: var(--color-on-surface);
+  font-family: var(--font-vazir);
+  font-weight: 700;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.history-tab-active {
+  background: var(--color-primary);
+  color: var(--color-on-primary);
+}
+
+.history-tab:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.history-status {
+  color: var(--color-on-surface-variant);
+  text-align: center;
+  padding: 32px 0;
+}
+
+.history-status-error {
+  color: var(--color-primary);
+}
+
+.history-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 64px 20px;
+}
+
+.history-empty-icon {
+  font-size: 72px;
+  color: rgba(38, 38, 38, 0.15);
+  margin-bottom: 16px;
+}
+
+.history-empty-title {
+  font-size: 20px;
+  font-weight: 700;
+  margin-bottom: 20px;
+}
+
+.history-empty-btn {
+  background: var(--color-primary);
+  color: var(--color-on-primary);
+  padding: 14px 32px;
+  border-radius: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 6px 6px 0px 0px rgba(38, 38, 38, 1);
+}
+
+.history-list {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.history-card {
+  background: #ffffff;
+  padding: 20px;
+  text-align: right;
+  cursor: pointer;
+  display: block;
+  width: 100%;
+}
+
+.history-card-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 16px;
+}
+
+.history-card-label {
+  display: block;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--color-on-surface-variant);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 4px;
+}
+
+.history-card-title {
+  font-size: 18px;
+  font-weight: 700;
+  margin: 0;
+}
+
+.history-card-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 999px;
+  background: var(--color-blueprint-fill);
+  border: 2px solid var(--color-ink-charcoal);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-primary);
+  flex-shrink: 0;
+}
+
+.history-card-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.history-card-meta-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: var(--color-on-surface-variant);
+}
+
+.history-card-meta-row .material-symbols-outlined {
+  font-size: 16px;
+}
+
+.history-card-footer {
+  padding-top: 16px;
+  border-top: 2px dashed rgba(38, 38, 38, 0.15);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.history-card-winner-label {
+  display: block;
+  font-size: 11px;
+  color: var(--color-on-surface-variant);
+  margin-bottom: 4px;
+}
+
+.history-card-winner {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.history-card-winner-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 999px;
+  border: 1px solid var(--color-ink-charcoal);
+}
+
+.history-card-winner-dot-civilians {
+  background: #22c55e;
+}
+
+.history-card-winner-dot-spy {
+  background: var(--color-primary);
+}
+
+.history-card-winner-text-civilians {
+  font-weight: 700;
+  color: #15803d;
+}
+
+.history-card-winner-text-spy {
+  font-weight: 700;
+  color: var(--color-primary);
+}
+
+.history-card-chevron {
+  width: 40px;
+  height: 40px;
+  border-radius: 999px;
+  border: 2px solid var(--color-ink-charcoal);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.history-load-more {
+  display: block;
+  margin: 24px auto 0;
+  padding: 10px 24px;
+  background: transparent;
+  border: none;
+  color: var(--color-secondary);
+  font-family: var(--font-vazir);
+  font-weight: 700;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.history-load-more:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}

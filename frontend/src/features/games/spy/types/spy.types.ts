@@ -111,4 +111,24 @@ export interface SpySessionDetail {
   location: string | null;
   winner: number[] | null;
   players: SessionPlayer[];
+  played_at: string;
+  duration_seconds: number | null;
+  player_count: number;
+  winner_side: 'spy' | 'civilians' | null;
+}
+
+export interface SpySessionHistoryItem {
+  id: number;
+  game_type: string;
+  status: SessionStatus;
+  played_at: string;
+  player_count: number;
+  winner_side: 'spy' | 'civilians' | null;
+}
+
+export interface PaginatedResponse<T> {
+  count: number;
+  next: string | null;
+  previous: string | null;
+  results: T[];
 }

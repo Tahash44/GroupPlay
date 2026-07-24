@@ -108,8 +108,9 @@
 ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜SpyNewGamePage.tsx
 ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜SpyRoleRevealPage.css
 ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜SpyRoleRevealPage.tsx
-┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜SpyVotingPlaceholderPage.css
-┃ ┃ ┃ ┃ ┃ ┃ ┗ 📜SpyVotingPlaceholderPage.tsx
+┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜VotingPage.css
+┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜VotingPage.test.tsx
+┃ ┃ ┃ ┃ ┃ ┃ ┗ 📜VotingPage.tsx
 ┃ ┃ ┃ ┃ ┃ ┣ 📂services
 ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜spyApiInterceptor.test.ts
 ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜spyService.test.ts

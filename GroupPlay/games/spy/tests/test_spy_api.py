@@ -3,7 +3,7 @@ from rest_framework import status
 from rest_framework.test import APITestCase
 from django.contrib.auth import get_user_model
 from games.models import GameSession
-from games.spy.models import SpyGameState
+from games.spy.models import SpyGameState, SpyPlayerState
 from django.utils import timezone
 
 

@@ -74,9 +74,9 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
   gap: 32px;
-  padding: 20px;
+  padding: 32px 20px 20px;
 }
 
 /* تایمر دایره‌ای */
@@ -176,13 +176,18 @@
   align-items: center;
   justify-content: center;
   gap: 10px;
-  padding: 12px 24px;
+  padding: 16px 24px;
   background: transparent;
   border: 2px solid rgba(38, 38, 38, 0.4);
-  border-radius: 8px;
+  border-radius: 4px;
   color: var(--color-ink-charcoal);
   cursor: pointer;
-  transition: background 0.15s ease;
+  font-family: var(--font-vazir);
+  transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+}
+.ingame-early-stop-btn:active {
+  transform: translate(2px, 2px);
+  box-shadow: 2px 2px 0px 0px var(--color-ink-charcoal);
 }
 
 .ingame-early-stop-btn:hover {
@@ -202,9 +207,9 @@
 }
 
 .ingame-early-stop-label > span:first-child {
-  font-family: var(--font-bricolage);
+  font-family: var(--font-vazir);
   font-weight: 700;
-  font-size: 18px;
+  font-size: 20px;
 }
 
 .ingame-early-stop-sub {
@@ -317,8 +322,8 @@
   gap: 10px;
   padding: 12px 20px;
   background: var(--color-surface);
-  border-color: var(--color-secondary);
-  color: var(--color-secondary);
+  border-color: var(--color-primary);
+  color: var(--color-primary);
   font-family: var(--font-vazir);
   font-weight: 700;
   font-size: 15px;

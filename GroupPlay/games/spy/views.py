@@ -174,6 +174,18 @@ class SpySessionTimerStopView(APIView):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
+class SpySessionEarlyGuessView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, id):
+        session = get_object_or_404(
+            GameSession.objects.filter(game_type=GameSession.GameType.SPY),
+            id=id
+        )
+        result = SpyTimerService.start_spy_guess(session)
+        return Response(result, status=status.HTTP_200_OK)
+
+
 
 class SpySessionVoteView(APIView):
     permission_classes = [IsAuthenticated]
@@ -189,7 +201,8 @@ class SpySessionVoteView(APIView):
 
         result = SpyVoteService.vote(
             session=session,
-            voted_player_id=serializer.validated_data["voted_player_id"],
+            voted_player_ids=serializer.validated_data.get("voted_player_ids")
+            or [serializer.validated_data["voted_player_id"]],
         )
 
         return Response(VoteResultResponseSerializer(result).data, status=status.HTTP_200_OK)

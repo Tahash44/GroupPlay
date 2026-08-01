@@ -60,14 +60,21 @@ export const spyService = {
     return data;
   },
 
+  async startSpyGuess(sessionId: string | number): Promise<TimerStopResponse> {
+    const { data } = await api.post<TimerStopResponse>(
+      `/games/spy/sessions/${sessionId}/timer/spy-guess/`
+    );
+    return data;
+  },
+
    async getSessionDetail(sessionId: string | number): Promise<SpySessionDetail> {
     const { data } = await api.get<SpySessionDetail>(`/games/spy/sessions/${sessionId}/`);
     return data;
   },
 
-  async submitVote(sessionId: string | number, votedPlayerId: number): Promise<VoteResult> {
+  async submitVote(sessionId: string | number, votedPlayerIds: number[]): Promise<VoteResult> {
     const { data } = await api.post<VoteResult>(`/games/spy/sessions/${sessionId}/vote/`, {
-      voted_player_id: votedPlayerId,
+      voted_player_ids: votedPlayerIds,
     });
     return data;
   },

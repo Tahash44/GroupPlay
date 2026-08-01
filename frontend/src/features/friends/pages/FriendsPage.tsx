@@ -1,6 +1,8 @@
 import { useEffect, useMemo, useState } from 'react';
 import toast from 'react-hot-toast';
 import FriendListItem from '../components/FriendListItem';
+import Icon from '../../../shared/components/Icon/Icon';
+import { Button, PageHeader, StatePanel, TextField } from '../../../shared/components/ui';
 import AddFriendModal from '../components/AddFriendModal';
 import EditFriendModal from '../components/EditFriendModal';
 import DeleteConfirmDialog from '../components/DeleteConfirmDialog';
@@ -59,46 +61,36 @@ export default function FriendsPage() {
 
   return (
     <div className="friends-page">
-      <div className="friends-header">
-        <h1 className="friends-title">دوستان</h1>
-        <button
-          type="button"
-          className="friends-add-btn sketch-hover"
-          onClick={() => setShowAddModal(true)}
-        >
-          <span>افزودن</span>
-          <span className="material-symbols-outlined" aria-hidden="true">add</span>
-        </button>
-      </div>
+      <PageHeader
+        title="دوستان"
+        actions={
+          <Button size="sm" icon={<Icon name="add" />} onClick={() => setShowAddModal(true)}>
+            افزودن
+          </Button>
+        }
+      />
 
-      <div className="friends-search-wrap">
-        <span className="material-symbols-outlined friends-search-icon" aria-hidden="true">search</span>
-        <input
-          className="friends-search-input"
+        <TextField
+          label="جستجوی دوستان"
+          hideLabel
+          icon={<Icon name="search" />}
           value={searchInput}
           onChange={e => setSearchInput(e.target.value)}
           placeholder="جستجوی دوستان..."
         />
-      </div>
 
       <div className="friends-divider" aria-hidden="true">× × ×</div>
 
       {loading ? (
-        <div className="friends-loading">
-          <span className="friends-spinner" aria-label="در حال بارگذاری" />
-        </div>
+        <StatePanel title="در حال دریافت دوستان" loading />
       ) : loadError ? (
-        <p className="friends-message friends-message--error">{loadError}</p>
+        <StatePanel title={loadError} tone="error" />
       ) : filteredFriends.length === 0 ? (
-        <div className="friends-empty">
-          <span className="material-symbols-outlined friends-empty-icon" aria-hidden="true">group_off</span>
-          <p className="friends-empty-title">
-            {searchInput ? 'دوستی با این نام پیدا نشد' : 'هنوز دوستی اضافه نکردی'}
-          </p>
-          {!searchInput && (
-            <p className="friends-empty-hint">با دکمه‌ی «افزودن» اولین دوستت رو اضافه کن</p>
-          )}
-        </div>
+        <StatePanel
+          icon={<Icon name="group_off" />}
+          title={searchInput ? 'دوستی با این نام پیدا نشد' : 'هنوز دوستی اضافه نکردی'}
+          description={!searchInput ? 'با دکمهٔ افزودن اولین دوستت را اضافه کن' : undefined}
+        />
       ) : (
         <ul className="friends-list">
           {filteredFriends.map((friend, index) => (

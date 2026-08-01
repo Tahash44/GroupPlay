@@ -61,7 +61,25 @@ async function renderPage() {
 describe('SpyNewGamePage', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    sessionStorage.clear();
     (friendsService.getFriends as ReturnType<typeof vi.fn>).mockResolvedValue(mockFriends);
+  });
+
+  it('restores the latest setup during the same browser session', async () => {
+    sessionStorage.setItem('spy-last-setup-99', JSON.stringify({
+      savedAt: Date.now(),
+      players: [
+        { key: 'guest-one', label: 'مهمان ذخیره‌شده' },
+        { key: 'friend-1', label: 'حسن', friendId: 1 },
+      ],
+      spyCount: 1,
+      timerMinutes: 12,
+    }));
+
+    await renderPage();
+
+    expect(screen.getByText('مهمان ذخیره‌شده')).toBeInTheDocument();
+    expect(screen.getByText('۱۲ دقیقه')).toBeInTheDocument();
   });
 
   it('offers the authenticated host as an optional player', async () => {
@@ -105,7 +123,7 @@ describe('SpyNewGamePage', () => {
     }
 
     // ۴ بازیکن → floor(4/3) = 1 → دکمه‌ی افزایش باید غیرفعال بمونه
-    const incrementBtn = screen.getByRole('button', { name: 'add' });
+    const incrementBtn = screen.getByRole('button', { name: 'افزایش تعداد جاسوس' });
     expect(incrementBtn).toBeDisabled();
 
     // ۲ نفر دیگه اضافه کن → ۶ بازیکن → floor(6/3) = 2
@@ -117,9 +135,9 @@ describe('SpyNewGamePage', () => {
     expect(screen.getByText('۲')).toBeInTheDocument();
 
     // دو نفر رو حذف کن (برگرد به ۴) → باید spyCount خودکار به ۱ برگرده
-    const removeIcons = screen.getAllByText('close');
-    await user.click(removeIcons[0]);
-    await user.click(screen.getAllByText('close')[0]);
+    const removeButtons = screen.getAllByRole('button', { name: /^حذف / });
+    await user.click(removeButtons[0]);
+    await user.click(screen.getAllByRole('button', { name: /^حذف / })[0]);
 
     await waitFor(() => {
       expect(document.querySelector('.spy-count-value')).toHaveTextContent('۱');

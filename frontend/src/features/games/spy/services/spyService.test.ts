@@ -185,7 +185,7 @@ describe('spyService — timer & voting methods', () => {
   });
 
   describe('submitVote', () => {
-    it('sends voted_player_id and returns spy_caught result', async () => {
+    it('sends voted_player_ids and returns spy_caught result', async () => {
       const responseData = {
         result: 'spy_caught',
         spy_can_guess: true,
@@ -194,11 +194,11 @@ describe('spyService — timer & voting methods', () => {
         winner: [],
       };
       mock.onPost('/games/spy/sessions/1/vote/').reply((config) => {
-        expect(JSON.parse(config.data)).toEqual({ voted_player_id: 5 });
+        expect(JSON.parse(config.data)).toEqual({ voted_player_ids: [5] });
         return [200, responseData];
       });
 
-      const result = await spyService.submitVote(1, 5);
+      const result = await spyService.submitVote(1, [5]);
 
       expect(result.result).toBe('spy_caught');
       expect(result.spy_can_guess).toBe(true);
@@ -214,7 +214,7 @@ describe('spyService — timer & voting methods', () => {
       };
       mock.onPost('/games/spy/sessions/1/vote/').reply(200, responseData);
 
-      const result = await spyService.submitVote(1, 2);
+      const result = await spyService.submitVote(1, [2]);
 
       expect(result.result).toBe('wrong_vote');
       expect(result.winner).toEqual([7]);

@@ -2,7 +2,9 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import { spyService } from '../services/spyService';
-import type { TimerStatus, SessionPlayer } from '../types/spy.types';
+import type { TimerStatus } from '../types/spy.types';
+import Icon from '../../../../shared/components/Icon/Icon';
+import { Button, StatePanel } from '../../../../shared/components/ui';
 import './InGamePage.css';
 
 const POLL_INTERVAL_MS = 2000;
@@ -27,9 +29,6 @@ export default function InGamePage() {
   const [actionLoading, setActionLoading] = useState(false);
   const [timesUp, setTimesUp] = useState(false);
   const [showStopConfirm, setShowStopConfirm] = useState(false);
-  const [players, setPlayers] = useState<SessionPlayer[]>([]);
-  const [showSpyGuessConfirm, setShowSpyGuessConfirm] = useState(false);
-  const [selectedSpyPlayerId, setSelectedSpyPlayerId] = useState<number | null>(null);
 
   const pollRef = useRef<number | null>(null);
   const tickRef = useRef<number | null>(null);
@@ -43,27 +42,36 @@ export default function InGamePage() {
     }
   }, []);
 
+  const loadGame = useCallback(async () => {
+    if (!id) return;
+    setLoading(true);
+    setError(null);
+    try {
+      const status = await spyService.getTimer(id);
+      applyStatus(status);
+    } catch {
+      setError('گرفتن اطلاعات بازی با خطا مواجه شد');
+    } finally {
+      setLoading(false);
+    }
+  }, [id, applyStatus]);
+
   // گرفتن وضعیت اولیه‌ی تایمر + لیست بازیکن‌ها
   useEffect(() => {
     if (!id) return;
     let cancelled = false;
 
-    (async () => {
-      setLoading(true);
-      setError(null);
-      try {
-        const [status, detail] = await Promise.all([
-          spyService.getTimer(id),
-          spyService.getSessionDetail(id),
-        ]);
-        if (!cancelled) applyStatus(status);
-        if (!cancelled) setPlayers(detail.players);
-      } catch {
-        if (!cancelled) setError('گرفتن اطلاعات بازی با خطا مواجه شد. صفحه رو رفرش کن.');
-      } finally {
+    spyService.getTimer(id)
+      .then(status => {
+        if (cancelled) return;
+        applyStatus(status);
+      })
+      .catch(() => {
+        if (!cancelled) setError('گرفتن اطلاعات بازی با خطا مواجه شد');
+      })
+      .finally(() => {
         if (!cancelled) setLoading(false);
-      }
-    })();
+      });
 
     return () => {
       cancelled = true;
@@ -139,18 +147,15 @@ export default function InGamePage() {
     }
   };
 
-  const handleConfirmSpyEarlyGuess = async () => {
-    if (!id || actionLoading || selectedSpyPlayerId === null) return;
+  const handleSpyEarlyGuess = async () => {
+    if (!id || actionLoading) return;
     setActionLoading(true);
     try {
-      await spyService.stopTimer(id);
-      await spyService.submitVote(id, selectedSpyPlayerId);
+      await spyService.startSpyGuess(id);
       navigate(`/games/spy/sessions/${id}/vote`);
     } catch {
       toast.error('ثبت درخواست حدس زودهنگام با خطا مواجه شد.');
       setActionLoading(false);
-      setShowSpyGuessConfirm(false);
-      setSelectedSpyPlayerId(null);
     }
   };
 
@@ -162,7 +167,7 @@ export default function InGamePage() {
   if (loading) {
     return (
       <div className="ingame-page ingame-page-center">
-        <p className="ingame-status">در حال بارگذاری تایمر...</p>
+        <StatePanel title="در حال دریافت وضعیت بازی" loading />
       </div>
     );
   }
@@ -170,7 +175,7 @@ export default function InGamePage() {
   if (error || remainingSeconds === null || timerDuration === null) {
     return (
       <div className="ingame-page ingame-page-center">
-        <p className="ingame-status ingame-status-error">{error ?? 'خطای غیرمنتظره'}</p>
+        <StatePanel title={error ?? 'خطای غیرمنتظره'} tone="error" action={<Button onClick={loadGame}>تلاش دوباره</Button>} />
       </div>
     );
   }
@@ -181,22 +186,31 @@ export default function InGamePage() {
   return (
     <div className={`ingame-page ${!isRunning && !timesUp ? 'ingame-page-paused' : ''}`}>
       <header className="ingame-header">
-        <button type="button" className="ingame-icon-btn" aria-label="راهنما">
-          <span className="material-symbols-outlined">help</span>
-        </button>
-        <h1 className="ingame-brand">بازی‌گردان</h1>
-        <button
-          type="button"
-          className="ingame-icon-btn"
-          onClick={() => navigate('/dashboard')}
-          aria-label="برگشت"
-        >
-          <span className="material-symbols-outlined">arrow_forward</span>
-        </button>
+        <div className="ingame-header-brand">
+          <button type="button" className="ingame-icon-btn" onClick={() => navigate('/dashboard')} aria-label="بازگشت به فهرست بازی‌ها">
+            <Icon name="arrow_forward" />
+          </button>
+          <strong className="ingame-brand">بازی‌گردان</strong>
+        </div>
+        <details className="ingame-help">
+          <summary className="ingame-icon-btn" aria-label="راهنمای بازی"><Icon name="help" /></summary>
+          <div className="ingame-help__popover">تا پایان زمان دربارهٔ مکان سؤال بپرسید. هر زمان آماده بودید وارد رأی‌گیری شوید. اگر جاسوس مکان را فهمید، گزینهٔ حدس مکان را انتخاب کنید</div>
+        </details>
       </header>
 
       <main className="ingame-main">
-        <div className="ingame-timer-wrap">
+        <p className={`ingame-round-status ${isRunning ? 'ingame-round-status--running' : ''}`}>
+          {timesUp ? 'زمان تمام شده' : isRunning ? 'بازی در حال اجراست' : 'بازی متوقف شده'}
+        </p>
+        <div
+          className="ingame-timer-wrap"
+          role="progressbar"
+          aria-label="زمان باقی‌مانده"
+          aria-valuemin={0}
+          aria-valuemax={timerDuration}
+          aria-valuenow={remainingSeconds}
+          aria-valuetext={formatTime(remainingSeconds)}
+        >
           <svg className="ingame-timer-ring" viewBox="0 0 100 100">
             <circle className="ingame-timer-ring-bg" cx="50" cy="50" r="45" />
             <circle
@@ -207,7 +221,7 @@ export default function InGamePage() {
               style={{ strokeDasharray: CIRCUMFERENCE, strokeDashoffset: dashOffset }}
             />
           </svg>
-          <div className={`ingame-timer-display ${isRunning ? 'ingame-timer-pulse' : ''}`}>
+          <div className={`ingame-timer-display ${isRunning && remainingSeconds <= 30 ? 'ingame-timer-pulse' : ''}`}>
             {formatTime(remainingSeconds)}
           </div>
         </div>
@@ -221,7 +235,7 @@ export default function InGamePage() {
             onClick={handleToggle}
             disabled={actionLoading}
           >
-            <span className="material-symbols-outlined">{isRunning ? 'pause' : 'play_arrow'}</span>
+            <Icon name={isRunning ? 'pause' : 'play_arrow'} />
             <span>{isRunning ? 'توقف موقت' : 'ادامه بازی'}</span>
           </button>
 
@@ -231,7 +245,7 @@ export default function InGamePage() {
             onClick={() => setShowStopConfirm(true)}
             disabled={actionLoading}
           >
-            <span className="material-symbols-outlined">how_to_reg</span>
+            <Icon name="how_to_reg" />
             <span className="ingame-early-stop-label">
               <span>رأی‌گیری</span>
               <span className="ingame-early-stop-sub">پایان زودهنگام</span>
@@ -241,10 +255,10 @@ export default function InGamePage() {
           <button
             type="button"
             className="ingame-spy-guess-btn sketch-border"
-            onClick={() => setShowSpyGuessConfirm(true)}
+            onClick={handleSpyEarlyGuess}
             disabled={actionLoading}
           >
-            <span className="material-symbols-outlined">person_search</span>
+            <Icon name="person_search" />
             <span>جاسوس مکان رو حدس می‌زنه</span>
           </button>
         </div>
@@ -276,60 +290,12 @@ export default function InGamePage() {
         </div>
       )}
 
-      {showSpyGuessConfirm && (
-        <div className="ingame-overlay" role="dialog" aria-modal="true">
-          <div className="ingame-modal ingame-spyguess-modal sketch-border">
-            <p className="ingame-modal-text">جاسوس ادعا کرده مکان رو می‌دونه. کدوم بازیکنه؟</p>
-
-            <div className="ingame-spyguess-players">
-              {players.map(player => (
-                <button
-                  key={player.id}
-                  type="button"
-                  className={`ingame-spyguess-player-item ${
-                    selectedSpyPlayerId === player.id ? 'ingame-spyguess-player-item-selected' : ''
-                  }`}
-                  onClick={() => setSelectedSpyPlayerId(player.id)}
-                >
-                  <span className="material-symbols-outlined">
-                    {selectedSpyPlayerId === player.id ? 'radio_button_checked' : 'radio_button_unchecked'}
-                  </span>
-                  <span>{player.name}</span>
-                </button>
-              ))}
-            </div>
-
-            <div className="ingame-modal-actions">
-              <button
-                type="button"
-                className="ingame-modal-cancel"
-                onClick={() => {
-                  setShowSpyGuessConfirm(false);
-                  setSelectedSpyPlayerId(null);
-                }}
-                disabled={actionLoading}
-              >
-                انصراف
-              </button>
-              <button
-                type="button"
-                className="ingame-modal-confirm"
-                onClick={handleConfirmSpyEarlyGuess}
-                disabled={actionLoading || selectedSpyPlayerId === null}
-              >
-                {actionLoading ? 'در حال ثبت...' : 'تأیید و برو به حدس مکان'}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
       {timesUp && (
         <div className="ingame-overlay" role="dialog" aria-modal="true">
           <div className="ingame-modal ingame-timesup-modal sketch-border">
             <p className="ingame-timesup-title">زمان تمام شد!</p>
             <button type="button" className="ingame-timesup-btn" onClick={handleGoToVoting}>
-              <span className="material-symbols-outlined">how_to_reg</span>
+              <Icon name="how_to_reg" />
               <span>بریم برای رأی‌گیری</span>
             </button>
           </div>

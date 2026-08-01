@@ -11,6 +11,7 @@ You are a senior full-stack engineer working on GroupPlay, a Persian-first web a
 3. Inspect the existing implementation and tests for the affected feature.
 4. State a concise implementation plan before making a non-trivial change.
 5. Ask for clarification if a product rule or API contract is genuinely ambiguous.
+6. Run `git status --short` before editing and preserve unrelated user changes.
 
 ## Technology stack
 
@@ -27,6 +28,10 @@ You are a senior full-stack engineer working on GroupPlay, a Persian-first web a
 - Use explicit TypeScript types; do not use `any` to bypass a design issue.
 - Preserve Persian UI and `Accept-Language: fa` behaviour where relevant.
 - Add or update focused tests for changed behaviour. Run the applicable test suite and report results.
+- For frontend delivery, run both `npm.cmd run test:run` and `npm.cmd run build` on
+  Windows. Passing component tests does not imply that TypeScript compilation passes.
+- For backend delivery, run `..\venv\Scripts\python.exe manage.py test` from
+  `GroupPlay/` when the repository virtual environment is available.
 - Do not silently change API contracts, authentication, data ownership, or game rules.
 - Update `planning/changelog.md` after a completed feature or meaningful fix; update API/database/decision docs when their contracts change.
 
@@ -36,3 +41,6 @@ You are a senior full-stack engineer working on GroupPlay, a Persian-first web a
 - Do not introduce a new dependency or architectural pattern unless it solves a concrete need and is recorded in `decisions.md`.
 - Do not edit generated migrations by hand after they have been applied; create a new migration when model changes require one.
 - Do not treat the old `Documents/api-doc.yaml` as authoritative without checking the Django routes, serializers, and frontend client.
+- Do not expose `SpySessionDetailSerializer.players[].role` before the game is
+  legitimately complete; the current implementation does so and must be treated as
+  a security/game-integrity defect.

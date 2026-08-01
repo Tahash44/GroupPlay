@@ -1,188 +1,178 @@
-@import '../../../shared/styles/sketch.css';
+@import '../../../shared/styles/tokens.css';
 
 .history-detail-page {
-  font-family: var(--font-vazir);
-  color: var(--color-on-surface);
-  max-width: 420px;
-  margin: 0 auto;
-  padding-bottom: 32px;
+  width: min(100%, 760px);
+  margin-inline: auto;
+  padding-bottom: var(--space-8);
+  direction: rtl;
+  color: var(--color-text);
 }
 
-.history-detail-status {
-  text-align: center;
-  padding: 64px 20px;
-  color: var(--color-on-surface-variant);
+.history-detail-page > .ui-page-header {
+  text-align: right;
 }
 
-.history-detail-status-error {
-  color: var(--color-primary);
-}
-
-.history-detail-title-wrap {
-  text-align: center;
-  margin-bottom: 24px;
-}
-
-.history-detail-title {
-  display: inline-block;
-  font-family: var(--font-bricolage);
-  font-weight: 700;
-  font-size: 20px;
-  background: var(--color-pencil-highlight);
-  padding: 2px 12px;
-  margin: 0;
+.history-detail-summary,
+.history-detail-stat-card,
+.history-detail-player-card {
+  border: 2px solid var(--color-border);
+  border-radius: var(--radius-card);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-card);
 }
 
 .history-detail-summary {
-  background: #ffffff;
-  padding: 24px;
-  margin-bottom: 16px;
+  padding: var(--space-5);
+  margin-bottom: var(--space-4);
 }
 
 .history-detail-summary-top {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
+  gap: var(--space-4);
 }
 
 .history-detail-game-title {
-  font-family: var(--font-bricolage);
+  margin: 0 0 var(--space-1);
   color: var(--color-primary);
-  font-size: 20px;
-  margin: 0 0 4px;
+  font-size: 22px;
 }
 
 .history-detail-date {
-  color: var(--color-on-surface-variant);
-  font-size: 13px;
   margin: 0;
+  color: var(--color-text-secondary);
+  font-size: 14px;
 }
 
 .history-detail-location-chip {
-  background: var(--color-pencil-highlight);
-  border: 2px solid var(--color-ink-charcoal);
-  padding: 4px 12px;
+  padding: 5px 12px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-full);
+  background: var(--color-highlight);
   font-size: 13px;
   font-weight: 700;
-  transform: rotate(2deg);
 }
 
 .history-detail-result-row {
   display: flex;
   align-items: center;
-  gap: 12px;
-  margin-top: 16px;
-  padding-top: 16px;
-  border-top: 2px solid rgba(38, 38, 38, 0.05);
+  gap: var(--space-3);
+  margin-top: var(--space-4);
+  padding-top: var(--space-4);
+  border-top: 1px dashed var(--color-outline-variant);
 }
 
 .history-detail-result-icon {
-  color: #15803d;
+  flex: 0 0 auto;
+  color: var(--color-success);
   font-size: 28px;
 }
 
-.history-detail-result-label {
-  font-size: 13px;
-  opacity: 0.7;
+.history-detail-result-label,
+.history-detail-result-value {
   margin: 0;
 }
 
+.history-detail-result-label {
+  color: var(--color-text-secondary);
+  font-size: 13px;
+}
+
 .history-detail-result-value {
-  font-family: var(--font-bricolage);
-  font-weight: 700;
+  margin-top: var(--space-1);
+  color: var(--color-success);
   font-size: 18px;
-  color: #166534;
-  margin: 4px 0 0;
+  font-weight: 700;
 }
 
 .history-detail-stats {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 16px;
-  margin-bottom: 24px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-3);
+  margin-bottom: var(--space-6);
 }
 
 .history-detail-stat-card {
-  background: #ffffff;
-  padding: 16px;
+  padding: var(--space-4);
   text-align: center;
 }
 
-.history-detail-stat-card .material-symbols-outlined {
-  color: var(--color-on-surface-variant);
+.history-detail-stat-card svg {
+  color: var(--color-text-secondary);
+  font-size: 24px;
 }
 
 .history-detail-stat-label {
+  margin: var(--space-1) 0 0;
+  color: var(--color-text-secondary);
   font-size: 13px;
-  opacity: 0.6;
-  margin: 4px 0 0;
 }
 
 .history-detail-stat-value {
-  font-family: var(--font-bricolage);
-  font-weight: 700;
+  margin: var(--space-1) 0 0;
   font-size: 20px;
-  margin: 4px 0 0;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
 }
 
 .history-detail-players-title {
-  font-size: 14px;
-  font-weight: 700;
-  margin: 0 0 12px 8px;
+  margin: 0 0 var(--space-3);
+  font-size: 18px;
 }
 
 .history-detail-players-list {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: var(--space-3);
 }
 
 .history-detail-player-card {
-  background: #ffffff;
-  padding: 16px;
   display: flex;
   justify-content: space-between;
   align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-4);
 }
 
 .history-detail-player-card-spy {
   border-color: var(--color-primary);
-  background: rgba(169, 23, 30, 0.06);
+  background: color-mix(in srgb, var(--color-primary) 7%, var(--color-surface));
 }
 
-.history-detail-player-left {
+.history-detail-player-left,
+.history-detail-player-role {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: var(--space-2);
 }
 
 .history-detail-player-index {
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  border: 2px solid var(--color-ink-charcoal);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: 700;
+  width: 34px;
+  height: 34px;
+  display: grid;
+  place-items: center;
+  flex: 0 0 34px;
+  border: 2px solid var(--color-border);
+  border-radius: var(--radius-full);
   background: var(--color-surface-container);
+  font-weight: 700;
 }
 
 .history-detail-player-card-spy .history-detail-player-index {
+  border-color: var(--color-primary);
   background: var(--color-primary);
   color: var(--color-on-primary);
-  border-color: var(--color-primary);
 }
 
 .history-detail-player-name {
+  overflow-wrap: anywhere;
   font-weight: 700;
 }
 
 .history-detail-player-role {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  color: var(--color-on-surface-variant);
+  flex: 0 0 auto;
+  color: var(--color-text-secondary);
   font-size: 14px;
 }
 
@@ -191,15 +181,13 @@
   font-weight: 700;
 }
 
-.history-detail-back {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin: 32px auto 0;
-  background: transparent;
-  border: none;
-  color: var(--color-secondary);
-  font-family: var(--font-vazir);
-  font-weight: 700;
-  cursor: pointer;
+@media (max-width: 420px) {
+  .history-detail-summary-top,
+  .history-detail-player-card {
+    align-items: flex-start;
+  }
+
+  .history-detail-player-card {
+    flex-direction: column;
+  }
 }

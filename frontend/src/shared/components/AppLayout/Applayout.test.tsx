@@ -56,14 +56,15 @@ describe('AppLayout', () => {
     profileLinks.forEach(link => expect(link).toHaveAttribute('href', '/profile'));
   });
 
-  it('renders not-yet-available nav items ("game settings", "history") as non-navigable, not as links', () => {
+  it('renders history as navigation and keeps unavailable game settings hidden', () => {
     renderLayout();
-    // History isn't built on the frontend yet, and "game settings" has no route either,
-    // so both must render as plain, non-clickable elements rather than links.
+
+    const historyLinks = screen.getAllByRole('link', { name: /تاریخچه/ });
+    expect(historyLinks.length).toBeGreaterThan(0);
+    historyLinks.forEach(link => expect(link).toHaveAttribute('href', '/history'));
+
     expect(screen.queryByRole('link', { name: /تنظیمات بازی/ })).not.toBeInTheDocument();
-    expect(screen.queryByRole('link', { name: /تاریخچه/ })).not.toBeInTheDocument();
-    expect(screen.getByText('تنظیمات بازی')).toBeInTheDocument();
-    expect(screen.getByText('تاریخچه')).toBeInTheDocument();
+    expect(screen.queryByText('تنظیمات بازی')).not.toBeInTheDocument();
   });
 
   it('shows the logout control', () => {

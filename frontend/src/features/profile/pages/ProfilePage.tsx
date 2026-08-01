@@ -1,61 +1,75 @@
 import { useState } from 'react';
 import { useAuth } from '../../../shared/context/AuthContext';
+import Icon from '../../../shared/components/Icon/Icon';
+import { Button, PageHeader, TextField } from '../../../shared/components/ui';
 import { profileService } from '../services/profileService';
 import LogoutButton from '../../../features/auth/components/LogoutButton';
 import './ProfilePage.css';
 
+function getErrorMessage(error: unknown): string {
+  if (typeof error !== 'object' || error === null || !('response' in error)) {
+    return 'خطایی رخ داد، دوباره تلاش کنید';
+  }
+  const response = error.response;
+  if (typeof response !== 'object' || response === null || !('data' in response)) {
+    return 'خطایی رخ داد، دوباره تلاش کنید';
+  }
+  const data = response.data;
+  if (typeof data !== 'object' || data === null || !('detail' in data)) {
+    return 'خطایی رخ داد، دوباره تلاش کنید';
+  }
+  return typeof data.detail === 'string' ? data.detail : 'خطایی رخ داد، دوباره تلاش کنید';
+}
+
 export default function ProfilePage() {
   const { user, setUser } = useAuth();
-
   const [nameValue, setNameValue] = useState(user?.name || '');
   const [usernameValue, setUsernameValue] = useState(user?.username || '');
   const [emailValue, setEmailValue] = useState(user?.email || '');
-
   const [showPasswordFields, setShowPasswordFields] = useState(false);
   const [oldPassword, setOldPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [showNewPassword, setShowNewPassword] = useState(false);
-
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
 
-  const initial = (user?.name || user?.username || '؟').charAt(0).toUpperCase();
+  const closePasswordFields = () => {
+    setShowPasswordFields(false);
+    setOldPassword('');
+    setNewPassword('');
+    setShowNewPassword(false);
+  };
 
   const handleSave = async () => {
-    setSaving(true);
     setError(null);
     setSuccess(null);
 
+    if (showPasswordFields && newPassword && !oldPassword) {
+      setError('برای تغییر رمز، رمز فعلی را هم وارد کنید');
+      return;
+    }
+
+    setSaving(true);
     try {
       const updated = await profileService.updateProfile({
-        name: nameValue,
-        username: usernameValue,
-        email: emailValue,
+        name: nameValue.trim(),
+        username: usernameValue.trim(),
+        email: emailValue.trim(),
       });
       setUser(updated);
 
       if (showPasswordFields && newPassword) {
-        if (!oldPassword) {
-          setError('برای تغییر رمز، رمز فعلی را هم وارد کنید');
-          setSaving(false);
-          return;
-        }
         await profileService.changePassword({
           old_password: oldPassword,
           new_password: newPassword,
         });
-        setOldPassword('');
-        setNewPassword('');
-        setShowPasswordFields(false);
+        closePasswordFields();
       }
 
       setSuccess('تغییرات با موفقیت ذخیره شد');
-    } catch (err: any) {
-      setError(
-        err?.response?.data?.detail ||
-        'خطایی رخ داد، دوباره تلاش کنید'
-      );
+    } catch (caughtError: unknown) {
+      setError(getErrorMessage(caughtError));
     } finally {
       setSaving(false);
     }
@@ -63,127 +77,91 @@ export default function ProfilePage() {
 
   return (
     <div className="profile-page">
+      <PageHeader title="پروفایل" subtitle="اطلاعات حساب و رمز عبور خود را مدیریت کن" />
 
-      {/* ── آواتار ── */}
-      <div className="profile-avatar-section">
-        <div className="profile-avatar-frame">
-          <div className="profile-avatar">{initial}</div>
-        </div>
-        <p className="profile-avatar-hint">تغییر تصویر نمایه به‌زودی</p>
-      </div>
+      <div className="profile-layout">
+        <section className="profile-form" aria-label="ویرایش اطلاعات پروفایل">
+          <TextField
+            label="نام و نام خانوادگی"
+            value={nameValue}
+            onChange={event => setNameValue(event.target.value)}
+            placeholder={'نام خود را وارد کنید' + '...'}
+            autoComplete="name"
+            icon={<Icon name="person" />}
+          />
+          <TextField
+            label="نام کاربری"
+            value={usernameValue}
+            onChange={event => setUsernameValue(event.target.value)}
+            placeholder={'نام کاربری' + '...'}
+            autoComplete="username"
+            spellCheck={false}
+            icon={<Icon name="alternate_email" />}
+          />
+          <TextField
+            label="ایمیل"
+            type="email"
+            value={emailValue}
+            onChange={event => setEmailValue(event.target.value)}
+            placeholder={'ایمیل' + '...'}
+            autoComplete="email"
+            inputMode="email"
+            spellCheck={false}
+            icon={<Icon name="mail" />}
+          />
 
-      {/* ── فیلدها ── */}
-      <div className="profile-fields">
+          {!showPasswordFields ? (
+            <Button variant="ghost" className="profile-password-toggle" onClick={() => setShowPasswordFields(true)}>
+              <Icon name="lock" />
+              تغییر رمز عبور
+            </Button>
+          ) : (
+            <fieldset className="profile-password-panel">
+              <legend>تغییر رمز عبور</legend>
+              <TextField
+                label="رمز عبور فعلی"
+                type="password"
+                value={oldPassword}
+                onChange={event => setOldPassword(event.target.value)}
+                placeholder={'رمز فعلی' + '...'}
+                autoComplete="current-password"
+                icon={<Icon name="lock" />}
+              />
+              <TextField
+                label="رمز عبور جدید"
+                type={showNewPassword ? 'text' : 'password'}
+                value={newPassword}
+                onChange={event => setNewPassword(event.target.value)}
+                placeholder={'رمز جدید' + '...'}
+                autoComplete="new-password"
+                icon={<Icon name="lock" />}
+                endAdornment={(
+                  <button
+                    type="button"
+                    className="profile-password-visibility"
+                    onClick={() => setShowNewPassword(value => !value)}
+                    aria-label={showNewPassword ? 'پنهان کردن رمز جدید' : 'نمایش رمز جدید'}
+                  >
+                    <Icon name={showNewPassword ? 'visibility_off' : 'visibility'} />
+                  </button>
+                )}
+              />
+              <Button variant="ghost" onClick={closePasswordFields}>انصراف از تغییر رمز</Button>
+            </fieldset>
+          )}
 
-        <div className="profile-field">
-          <label className="profile-field-label">نام و نام خانوادگی</label>
-          <div className="profile-field-input-wrap">
-            <span className="material-symbols-outlined profile-field-icon">person</span>
-            <input
-              className="profile-field-input"
-              value={nameValue}
-              onChange={e => setNameValue(e.target.value)}
-              placeholder="نام خود را وارد کنید..."
-            />
+          <div className="profile-feedback" aria-live="polite">
+            {error && <p className="profile-message profile-message--error">{error}</p>}
+            {success && <p className="profile-message profile-message--success">{success}</p>}
           </div>
-        </div>
 
-        <div className="profile-field">
-          <label className="profile-field-label">نام کاربری</label>
-          <div className="profile-field-input-wrap">
-            <span className="material-symbols-outlined profile-field-icon">alternate_email</span>
-            <input
-              className="profile-field-input"
-              value={usernameValue}
-              onChange={e => setUsernameValue(e.target.value)}
-              placeholder="نام کاربری..."
-            />
+          <div className="profile-actions">
+            <Button block loading={saving} onClick={handleSave} icon={<Icon name="save" />}>
+              {saving ? 'در حال ذخیره...' : 'ذخیره تغییرات'}
+            </Button>
+            <div className="profile-logout-wrap"><LogoutButton /></div>
           </div>
-        </div>
-
-        <div className="profile-field">
-          <label className="profile-field-label">ایمیل</label>
-          <div className="profile-field-input-wrap">
-            <span className="material-symbols-outlined profile-field-icon">mail</span>
-            <input
-              className="profile-field-input"
-              type="email"
-              value={emailValue}
-              onChange={e => setEmailValue(e.target.value)}
-              placeholder="ایمیل..."
-            />
-          </div>
-        </div>
-
-        {!showPasswordFields ? (
-          <button
-            type="button"
-            className="profile-change-password-link"
-            onClick={() => setShowPasswordFields(true)}
-          >
-            <span className="material-symbols-outlined">lock</span>
-            تغییر رمز عبور
-          </button>
-        ) : (
-          <>
-            <div className="profile-field">
-              <label className="profile-field-label">رمز عبور فعلی</label>
-              <div className="profile-field-input-wrap">
-                <span className="material-symbols-outlined profile-field-icon">lock</span>
-                <input
-                  className="profile-field-input"
-                  type="password"
-                  value={oldPassword}
-                  onChange={e => setOldPassword(e.target.value)}
-                  placeholder="رمز فعلی..."
-                />
-              </div>
-            </div>
-
-            <div className="profile-field">
-              <label className="profile-field-label">رمز عبور جدید</label>
-              <div className="profile-field-input-wrap">
-                <span className="material-symbols-outlined profile-field-icon">lock</span>
-                <input
-                  className="profile-field-input"
-                  type={showNewPassword ? 'text' : 'password'}
-                  value={newPassword}
-                  onChange={e => setNewPassword(e.target.value)}
-                  placeholder="رمز جدید..."
-                />
-                <button
-                  type="button"
-                  className="profile-field-toggle-visibility"
-                  onClick={() => setShowNewPassword(v => !v)}
-                >
-                  <span className="material-symbols-outlined">
-                    {showNewPassword ? 'visibility_off' : 'visibility'}
-                  </span>
-                </button>
-              </div>
-            </div>
-          </>
-        )}
-      </div>
-
-      {error && <p className="profile-message profile-message--error">{error}</p>}
-      {success && <p className="profile-message profile-message--success">{success}</p>}
-
-      {/* ── دکمه‌های اقدام ── */}
-      <div className="profile-actions">
-        <button
-          type="button"
-          className="profile-save-btn"
-          onClick={handleSave}
-          disabled={saving}
-        >
-          <span className="material-symbols-outlined">save</span>
-          <span>{saving ? 'در حال ذخیره...' : 'ذخیره تغییرات'}</span>
-        </button>
-
-        <div className="profile-logout-wrap">
-          <LogoutButton />
-        </div>
+        </section>
       </div>
     </div>
   );

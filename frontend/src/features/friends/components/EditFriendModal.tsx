@@ -1,7 +1,9 @@
 import { useState } from 'react';
 import type { Friend } from '../types/friend.types';
 import { friendsService } from '../services/friendsService';
-import './FriendModal.css';
+import Icon from '../../../shared/components/Icon/Icon';
+import { Button, Dialog, TextField } from '../../../shared/components/ui';
+import { getHttpStatus } from '../../../shared/api/errors';
 
 interface EditFriendModalProps {
   friend: Friend;
@@ -27,11 +29,11 @@ export default function EditFriendModal({ friend, onClose, onUpdated }: EditFrie
       const updated = await friendsService.updateFriend(friend.id, { name: trimmed });
       onUpdated(updated);
       onClose();
-    } catch (err: any) {
+    } catch (err: unknown) {
       // پیام‌های بک‌اند انگلیسی‌ان، پس همیشه پیام فارسی خودمون رو نشون می‌دیم
-      if (err?.response?.status === 404) {
+      if (getHttpStatus(err) === 404) {
         setError('این دوست دیگر وجود ندارد (شاید حذف شده)');
-      } else if (err?.response?.status === 400) {
+      } else if (getHttpStatus(err) === 400) {
         setError('نام واردشده معتبر نیست، دوباره تلاش کنید');
       } else {
         setError('خطایی رخ داد، دوباره تلاش کنید');
@@ -42,39 +44,28 @@ export default function EditFriendModal({ friend, onClose, onUpdated }: EditFrie
   };
 
   return (
-    <div className="friend-modal-overlay" onClick={onClose}>
-      <div className="friend-modal-sheet" onClick={e => e.stopPropagation()}>
-        <div className="friend-modal-handle" />
-        <h2 className="friend-modal-title">ویرایش دوست</h2>
-
-        <div className="friend-modal-field-wrap">
-          <span className="material-symbols-outlined friend-modal-field-icon" aria-hidden="true">edit</span>
-          <input
-            className="friend-modal-input"
+    <Dialog
+      title="ویرایش دوست"
+      onClose={onClose}
+      actions={
+        <>
+          <Button variant="secondary" onClick={onClose}>انصراف</Button>
+          <Button icon={<Icon name="check" />} loading={saving} onClick={handleSubmit}>
+            {saving ? 'در حال ذخیره...' : 'ذخیره تغییرات'}
+          </Button>
+        </>
+      }
+    >
+          <TextField
+            label="نام دوست"
+            icon={<Icon name="edit" />}
             autoFocus
             value={name}
             onChange={e => setName(e.target.value)}
             onKeyDown={e => e.key === 'Enter' && handleSubmit()}
-            placeholder="نام دوست..."
+            placeholder="نام دوست را وارد کنید"
+            error={error}
           />
-        </div>
-        {error && <p className="friend-modal-error">{error}</p>}
-
-        <div className="friend-modal-actions">
-          <button type="button" className="friend-modal-btn friend-modal-btn--cancel" onClick={onClose}>
-            انصراف
-          </button>
-          <button
-            type="button"
-            className="friend-modal-btn friend-modal-btn--primary"
-            onClick={handleSubmit}
-            disabled={saving}
-          >
-            <span className="material-symbols-outlined" aria-hidden="true">check</span>
-            {saving ? 'در حال ذخیره...' : 'ذخیره تغییرات'}
-          </button>
-        </div>
-      </div>
-    </div>
+    </Dialog>
   );
 }

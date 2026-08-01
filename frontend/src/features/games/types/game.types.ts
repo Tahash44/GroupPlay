@@ -14,5 +14,6 @@ export interface Game {
   /* وقتی API وصل شد، این مقدار از بک‌اند می‌آد */
   imageUrl?: string;
   badge?: string;
+  available?: boolean;
   size: GameCardSize;
 }

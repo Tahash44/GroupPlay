@@ -1,4 +1,5 @@
 import './SpyCountStepper.css';
+import Icon from '../../../../shared/components/Icon/Icon';
 
 interface SpyCountStepperProps {
   value: number;
@@ -17,16 +18,28 @@ export default function SpyCountStepper({ value, onChange, min = 1, max }: SpyCo
     <section className="spy-count">
       <h2 className="spy-count-title">تعداد جاسوس‌ها</h2>
       <div className="spy-count-control">
-        <button type="button" className="spy-count-btn sketch-border" onClick={decrement} disabled={value <= min}>
-          <span className="material-symbols-outlined">remove</span>
+        <button
+          type="button"
+          className="spy-count-btn sketch-border"
+          aria-label="افزایش تعداد جاسوس"
+          onClick={increment}
+          disabled={value >= max}
+        >
+          <Icon name="add" />
         </button>
 
         <div className="spy-count-value sketch-border">
           <span>{toFarsiDigits(value)}</span>
         </div>
 
-        <button type="button" className="spy-count-btn sketch-border" onClick={increment} disabled={value >= max}>
-          <span className="material-symbols-outlined">add</span>
+        <button
+          type="button"
+          className="spy-count-btn sketch-border"
+          aria-label="کاهش تعداد جاسوس"
+          onClick={decrement}
+          disabled={value <= min}
+        >
+          <Icon name="remove" />
         </button>
       </div>
     </section>

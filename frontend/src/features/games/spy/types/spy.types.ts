@@ -114,6 +114,7 @@ export interface SpySessionDetail {
   played_at: string;
   duration_seconds: number | null;
   player_count: number;
+  spy_count: number;
   winner_side: 'spy' | 'civilians' | null;
 }
 

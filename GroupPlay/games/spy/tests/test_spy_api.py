@@ -123,6 +123,26 @@ class SpySessionAPITest(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertIn("role", response.data)
 
+    def test_timer_starts_only_after_start_action(self):
+        create_response = self.client.post(self.url, self.valid_payload, format="json")
+        session_id = create_response.data["id"]
+        session = GameSession.objects.get(id=session_id)
+        reveal_url = reverse("spy-session-reveal-v1", kwargs={"id": session_id})
+
+        for player_id in session.players.values_list("id", flat=True):
+            self.client.post(reveal_url, {"player_id": player_id}, format="json")
+
+        spy_state = SpyGameState.objects.get(session=session)
+        self.assertEqual(spy_state.status, SpyGameState.Status.IN_PROGRESS)
+        self.assertIsNone(spy_state.timer_started_at)
+
+        start_url = reverse("spy-session-timer-resume-v1", kwargs={"id": session_id})
+        response = self.client.post(start_url)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        spy_state.refresh_from_db()
+        self.assertIsNotNone(spy_state.timer_started_at)
+
     def test_get_pending_players(self):
         create_response = self.client.post(self.url, self.valid_payload, format="json")
         session_id = create_response.data["id"]
@@ -258,6 +278,20 @@ class SpyVoteAndGuessAPITest(APITestCase):
 
         self.vote_url = reverse("spy-session-vote-v1", kwargs={"id": self.session_id})
         self.guess_url = reverse("spy-session-spy-guess-v1", kwargs={"id": self.session_id})
+        self.early_guess_url = reverse("spy-session-early-guess-v1", kwargs={"id": self.session_id})
+
+    def test_early_guess_opens_spy_guess_without_selecting_player(self):
+        self.spy_state.status = SpyGameState.Status.IN_PROGRESS
+        self.spy_state.timer_started_at = timezone.now()
+        self.spy_state.save(update_fields=["status", "timer_started_at"])
+
+        response = self.client.post(self.early_guess_url)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data["status"], SpyGameState.Status.SPY_GUESS)
+        self.spy_state.refresh_from_db()
+        self.assertEqual(self.spy_state.status, SpyGameState.Status.SPY_GUESS)
+        self.assertIsNone(self.spy_state.timer_started_at)
 
     def test_vote_correct_player_opens_spy_guess(self):
         response = self.client.post(
@@ -272,6 +306,30 @@ class SpyVoteAndGuessAPITest(APITestCase):
 
         self.spy_state.refresh_from_db()
         self.assertEqual(self.spy_state.status, SpyGameState.Status.SPY_GUESS)
+
+    def test_vote_requires_all_spies_when_session_has_multiple_spies(self):
+        create_url = reverse("spy-session-create-v1")
+        response = self.client.post(create_url, {
+            "timer_duration": 300,
+            "spy_count": 2,
+            "players": [{"name": f"Player {index}"} for index in range(6)],
+        }, format="json")
+        session = GameSession.objects.get(id=response.data["id"])
+        state = SpyGameState.objects.get(session=session)
+        state.status = SpyGameState.Status.VOTING
+        state.save(update_fields=["status"])
+        spy_ids = list(
+            SpyPlayerState.objects.filter(session=session, is_spy=True)
+            .values_list("player_id", flat=True)
+        )
+        vote_url = reverse("spy-session-vote-v1", kwargs={"id": session.id})
+
+        incomplete = self.client.post(vote_url, {"voted_player_ids": spy_ids[:1]}, format="json")
+        self.assertEqual(incomplete.status_code, status.HTTP_400_BAD_REQUEST)
+
+        exact = self.client.post(vote_url, {"voted_player_ids": spy_ids}, format="json")
+        self.assertEqual(exact.status_code, status.HTTP_200_OK)
+        self.assertEqual(exact.data["status"], SpyGameState.Status.SPY_GUESS)
 
     def test_vote_wrong_player_finishes_game_civilians_lose(self):
         response = self.client.post(

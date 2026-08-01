@@ -20,4 +20,18 @@ Before analysing or changing code, read:
 - `.ai/prompts/` — repeatable prompts for feature work.
 - `.ai/context/` — small, task-specific context notes when a future task needs them.
 
-These documents describe the checked-in code as of 2026-07-19. Update the appropriate document in the same change whenever code changes its stated contract or architecture.
+These documents describe the checked-in code as audited through 2026-08-02. Update the
+appropriate document in the same change whenever code changes its stated contract,
+architecture, delivery status, or verified quality baseline.
+
+## Authority
+
+The implementation is authoritative for current behaviour:
+
+1. Django routes, serializers, services, models, migrations, and tests.
+2. Frontend routes, feature services, types, pages, and tests.
+3. `Agents/` as the maintained explanation and backlog.
+4. `Documents/` as supporting product/design material that may be stale.
+
+Do not infer completion from the presence of a screen or endpoint alone. Check that
+the relevant test suite and production build pass.

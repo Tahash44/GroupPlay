@@ -2,6 +2,8 @@ import { useCallback, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { spyService } from '../spy/services/spyService';
 import type { SpySessionHistoryItem } from '../spy/types/spy.types';
+import Icon from '../../../shared/components/Icon/Icon';
+import { Button, PageHeader, StatePanel } from '../../../shared/components/ui';
 import './HistoryPage.css';
 
 /*
@@ -44,21 +46,37 @@ export default function HistoryPage() {
     setHasMore(data.next !== null);
   }, []);
 
-  useEffect(() => {
-    let cancelled = false;
+  const loadInitialPage = useCallback(async () => {
     setLoading(true);
     setError(null);
-    loadPage(1, false)
+    setPage(1);
+    try {
+      await loadPage(1, false);
+    } catch {
+      setError('گرفتن تاریخچهٔ بازی‌ها با خطا مواجه شد');
+    } finally {
+      setLoading(false);
+    }
+  }, [loadPage]);
+
+  useEffect(() => {
+    let active = true;
+    spyService.getFinishedSessions(1)
+      .then(data => {
+        if (!active) return;
+        setItems(data.results);
+        setHasMore(data.next !== null);
+      })
       .catch(() => {
-        if (!cancelled) setError('گرفتن تاریخچه‌ی بازی‌ها با خطا مواجه شد.');
+        if (active) setError('گرفتن تاریخچهٔ بازی‌ها با خطا مواجه شد');
       })
       .finally(() => {
-        if (!cancelled) setLoading(false);
+        if (active) setLoading(false);
       });
     return () => {
-      cancelled = true;
+      active = false;
     };
-  }, [loadPage]);
+  }, []);
 
   const handleLoadMore = async () => {
     setLoadingMore(true);
@@ -75,33 +93,23 @@ export default function HistoryPage() {
 
   return (
     <div className="history-page">
-      <header className="history-header">
-        <h2 className="history-title">تاریخچه</h2>
-        <p className="history-subtitle">لیست بازی‌های تموم‌شده</p>
-      </header>
+      <PageHeader title="تاریخچه" subtitle="نتیجه و جزئیات بازی‌های تمام‌شده را مرور کن" />
 
-      <div className="history-tabs">
-        <button type="button" className="history-tab history-tab-active">
-          همه
-        </button>
-        <button type="button" className="history-tab" disabled>
-          جاسوس
-        </button>
-      </div>
-
-      {loading && <p className="history-status">در حال بارگذاری...</p>}
-      {error && !loading && <p className="history-status history-status-error">{error}</p>}
+      {loading && <StatePanel title="در حال دریافت تاریخچه" loading />}
+      {error && !loading && (
+        <StatePanel
+          title={error}
+          tone="error"
+          action={<Button onClick={loadInitialPage}>تلاش دوباره</Button>}
+        />
+      )}
 
       {!loading && !error && items.length === 0 && (
-        <div className="history-empty">
-          <span className="material-symbols-outlined history-empty-icon" aria-hidden="true">
-            history_edu
-          </span>
-          <h3 className="history-empty-title">هنوز هیچ بازی‌ای ثبت نشده</h3>
-          <button type="button" className="history-empty-btn sketch-border" onClick={() => navigate('/dashboard')}>
-            شروع اولین بازی
-          </button>
-        </div>
+        <StatePanel
+          icon={<Icon name="history_edu" />}
+          title="هنوز هیچ بازی‌ای ثبت نشده"
+          action={<Button onClick={() => navigate('/dashboard')}>شروع اولین بازی</Button>}
+        />
       )}
 
       {!loading && !error && items.length > 0 && (
@@ -116,28 +124,28 @@ export default function HistoryPage() {
               >
                 <div className="history-card-top">
                   <div>
-                    <span className="history-card-label">نوع بازی</span>
-                    <h3 className="history-card-title">جاسوس (Spy)</h3>
+                    <span className="history-card-label">بازی</span>
+                    <h2 className="history-card-title">جاسوس</h2>
                   </div>
                   <div className="history-card-icon">
-                    <span className="material-symbols-outlined">visibility_off</span>
+                    <Icon name="visibility_off" />
                   </div>
                 </div>
 
                 <div className="history-card-meta">
                   <span className="history-card-meta-row">
-                    <span className="material-symbols-outlined">calendar_month</span>
+                    <Icon name="calendar_month" />
                     {formatPlayedAt(item.played_at)}
                   </span>
                   <span className="history-card-meta-row">
-                    <span className="material-symbols-outlined">groups</span>
+                    <Icon name="groups" />
                     {item.player_count} بازیکن
                   </span>
                 </div>
 
                 <div className="history-card-footer">
                   <div>
-                    <span className="history-card-winner-label">برنده نبرد:</span>
+                    <span className="history-card-winner-label">برندهٔ بازی</span>
                     <div className="history-card-winner">
                       <span
                         className={`history-card-winner-dot ${
@@ -157,16 +165,16 @@ export default function HistoryPage() {
                       </span>
                     </div>
                   </div>
-                  <span className="history-card-chevron material-symbols-outlined">chevron_left</span>
+                  <Icon className="history-card-chevron" name="chevron_left" />
                 </div>
               </button>
             ))}
           </div>
 
           {hasMore && (
-            <button type="button" className="history-load-more" onClick={handleLoadMore} disabled={loadingMore}>
+            <Button variant="ghost" block loading={loadingMore} onClick={handleLoadMore}>
               {loadingMore ? 'در حال بارگذاری...' : 'نمایش بیشتر'}
-            </button>
+            </Button>
           )}
         </>
       )}

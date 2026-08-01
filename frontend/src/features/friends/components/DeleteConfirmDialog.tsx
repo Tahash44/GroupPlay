@@ -1,7 +1,9 @@
 import { useState } from 'react';
 import type { Friend } from '../types/friend.types';
 import { friendsService } from '../services/friendsService';
-import './FriendModal.css';
+import Icon from '../../../shared/components/Icon/Icon';
+import { Button, Dialog } from '../../../shared/components/ui';
+import { getHttpStatus } from '../../../shared/api/errors';
 
 interface DeleteConfirmDialogProps {
   friend: Friend;
@@ -20,8 +22,8 @@ export default function DeleteConfirmDialog({ friend, onClose, onDeleted }: Dele
       await friendsService.deleteFriend(friend.id);
       onDeleted(friend.id);
       onClose();
-    } catch (err: any) {
-      if (err?.response?.status === 404) {
+    } catch (err: unknown) {
+      if (getHttpStatus(err) === 404) {
         // از قبل حذف شده — از نظر کاربر یعنی موفق
         onDeleted(friend.id);
         onClose();
@@ -34,32 +36,28 @@ export default function DeleteConfirmDialog({ friend, onClose, onDeleted }: Dele
   };
 
   return (
-    <div className="friend-modal-overlay" onClick={onClose}>
-      <div className="friend-modal-sheet" onClick={e => e.stopPropagation()}>
-        <div className="friend-modal-handle" />
-        <h2 className="friend-modal-title">حذف دوست</h2>
-
-        <p className="friend-modal-delete-text">
-          مطمئنی می‌خوای <span className="friend-modal-delete-name">{friend.name}</span> رو از لیست دوستانت حذف کنی؟
-          این کار قابل بازگشت نیست.
-        </p>
-        {error && <p className="friend-modal-error">{error}</p>}
-
-        <div className="friend-modal-actions">
-          <button type="button" className="friend-modal-btn friend-modal-btn--cancel" onClick={onClose}>
-            انصراف
-          </button>
-          <button
-            type="button"
-            className="friend-modal-btn friend-modal-btn--danger"
-            onClick={handleDelete}
-            disabled={deleting}
-          >
-            <span className="material-symbols-outlined" aria-hidden="true">delete</span>
+    <Dialog
+      title="حذف دوست"
+      description=""
+      onClose={onClose}
+      closeOnBackdrop={!deleting}
+      actions={
+        <>
+          <Button variant="secondary" onClick={onClose} disabled={deleting}>انصراف</Button>
+          <Button variant="danger" icon={<Icon name="delete" />} loading={deleting} onClick={handleDelete}>
             {deleting ? 'در حال حذف...' : 'حذف کن'}
-          </button>
-        </div>
-      </div>
-    </div>
+          </Button>
+        </>
+      }
+    >
+        <p className="friend-delete-message">
+          مطمئنی می‌خوای
+          {' '}
+          <bdi className="friend-modal-delete-name" dir="auto">{friend.name}</bdi>
+          {' '}
+          رو از لیست دوستانت حذف کنی؟
+        </p>
+        {error && <p className="ui-field__error" role="alert">{error}</p>}
+    </Dialog>
   );
 }

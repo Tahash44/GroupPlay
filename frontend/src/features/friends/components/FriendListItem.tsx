@@ -1,5 +1,6 @@
 import type { Friend } from '../types/friend.types';
 import './FriendListItem.css';
+import Icon from '../../../shared/components/Icon/Icon';
 
 interface FriendListItemProps {
   friend: Friend;
@@ -28,7 +29,7 @@ export default function FriendListItem({ friend, index, onEdit, onDelete }: Frie
           aria-label={`حذف ${friend.name}`}
           onClick={() => onDelete(friend)}
         >
-          <span className="material-symbols-outlined">delete</span>
+          <Icon name="delete" />
         </button>
         <button
           type="button"
@@ -36,7 +37,7 @@ export default function FriendListItem({ friend, index, onEdit, onDelete }: Frie
           aria-label={`ویرایش ${friend.name}`}
           onClick={() => onEdit(friend)}
         >
-          <span className="material-symbols-outlined">edit</span>
+          <Icon name="edit" />
         </button>
       </div>
     </li>

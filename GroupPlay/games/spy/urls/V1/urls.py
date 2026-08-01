@@ -2,7 +2,8 @@ from django.urls import path
 from games.spy.views import (SpySessionCreateView, SpySessionDetailView ,
                              SpySessionRevealView , SpySessionTimerView ,
                              SpySessionTimerPauseView , SpySessionTimerResumeView ,
-                             SpySessionTimerStopView, SpySessionVoteView, SpySessionGuessView)
+                             SpySessionTimerStopView, SpySessionEarlyGuessView,
+                             SpySessionVoteView, SpySessionGuessView)
 
 
 urlpatterns = [
@@ -31,6 +32,11 @@ urlpatterns = [
         "sessions/<int:id>/timer/stop/",
         SpySessionTimerStopView.as_view(),
         name="spy-session-timer-stop-v1"
+    ),
+    path(
+        "sessions/<int:id>/timer/spy-guess/",
+        SpySessionEarlyGuessView.as_view(),
+        name="spy-session-early-guess-v1"
     ),
 path("sessions/<int:id>/vote/", SpySessionVoteView.as_view(), name="spy-session-vote-v1"),
 path("sessions/<int:id>/spy-guess/", SpySessionGuessView.as_view(), name="spy-session-spy-guess-v1"),

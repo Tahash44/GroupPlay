@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { gamesService } from '../services/gamesService';
-import type { Game } from '../types/games.types';
+import type { Game } from '../types/game.types';
+import Icon from '../../../shared/components/Icon/Icon';
 import './GameDetailPage.css';
 
 export default function GameDetailPage() {
@@ -36,13 +37,11 @@ export default function GameDetailPage() {
   return (
     <div className="game-detail sketch-border sketch-shadow">
       <button type="button" className="game-detail-back-link" onClick={() => navigate('/dashboard')}>
-        <span className="material-symbols-outlined">arrow_back</span>
+        <Icon name="arrow_back" />
         برگشت
       </button>
 
-      <span className="game-detail-icon material-symbols-outlined" aria-hidden="true">
-        {game.icon}
-      </span>
+      <Icon className="game-detail-icon" name={game.icon} weight="duotone" />
       <h1 className="game-detail-title">{game.title}</h1>
       <p className="game-detail-desc">{game.description}</p>
 

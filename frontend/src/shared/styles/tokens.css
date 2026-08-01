@@ -1,0 +1,94 @@
+:root {
+  color-scheme: light;
+
+  --color-background: #fdfcf8;
+  --color-surface: #fff8f7;
+  --color-surface-bright: #ffffff;
+  --color-surface-low: #fff0ef;
+  --color-surface-container: #ffe9e7;
+  --color-surface-high: #fee2df;
+  --color-surface-dim: #efd4d1;
+  --color-text: #271817;
+  --color-text-secondary: #5a403e;
+  --color-text-tertiary: #737373;
+  --color-border: #262626;
+  --color-outline: #8e706d;
+  --color-outline-variant: #e3bebb;
+  --color-primary: #a9171e;
+  --color-primary-strong: #930012;
+  --color-on-primary: #ffffff;
+  --color-secondary: #3b6188;
+  --color-secondary-container: #acd2ff;
+  --color-on-secondary-container: #345a81;
+  --color-highlight: #ffec8b;
+  --color-blueprint-fill: #e6f0f7;
+  --color-error: #ba1a1a;
+  --color-error-container: #ffdad6;
+  --color-success: #2f7a52;
+  --color-avatar-rose-bg: #f3d4e8;
+  --color-avatar-rose-text: #7f315f;
+  --color-avatar-green-bg: #cdeeda;
+  --color-avatar-green-text: #246341;
+  --color-avatar-yellow-bg: #faedad;
+  --color-avatar-yellow-text: #735a12;
+  --color-scrim: rgba(38, 38, 38, 0.56);
+
+  --font-body: 'Vazirmatn', Tahoma, Arial, sans-serif;
+  --font-display: 'Vazirmatn', Tahoma, Arial, sans-serif;
+
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-10: 40px;
+  --space-12: 48px;
+
+  --radius-control: 6px 12px 6px 12px;
+  --radius-card: 4px 14px 6px 16px;
+  --radius-sheet: 255px 15px 225px 15px / 15px 225px 15px 255px;
+  --radius-full: 9999px;
+
+  --radius-sm: 8px;
+  --radius-md: 14px;
+  --radius-lg: 22px;
+
+  --shadow-control: 3px 3px 0 #262626;
+  --shadow-card: 4px 4px 0 rgba(38, 38, 38, 0.14);
+  --shadow-sheet: 6px 6px 0 rgba(38, 38, 38, 0.12);
+  --shadow-btn: 0 4px 14px rgba(169, 23, 30, 0.28);
+
+  --motion-fast: 150ms;
+  --motion-normal: 220ms;
+  --motion-slow: 320ms;
+  --ease-enter: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-exit: cubic-bezier(0.4, 0, 1, 1);
+
+  /* Compatibility aliases while page styles migrate to semantic tokens. */
+  --bg: var(--color-background);
+  --header: var(--color-background);
+  --accent: var(--color-primary);
+  --accent-dark: var(--color-primary-strong);
+  --accent-light: var(--color-surface-high);
+  --accent-glow: rgba(169, 23, 30, 0.18);
+  --surface: var(--color-surface);
+  --border: var(--color-outline-variant);
+  --text: var(--color-text);
+  --text-muted: var(--color-text-secondary);
+  --text-light: var(--color-text-tertiary);
+  --error: var(--color-error);
+  --error-bg: var(--color-error-container);
+  --success: var(--color-success);
+  --font: var(--font-body);
+  --ease: var(--motion-normal) ease;
+
+  --color-ink-charcoal: var(--color-border);
+  --color-paper-base: var(--color-background);
+  --color-on-surface: var(--color-text);
+  --color-on-surface-variant: var(--color-text-secondary);
+  --color-pencil-highlight: var(--color-highlight);
+  --font-vazir: var(--font-body);
+  --font-bricolage: var(--font-display);
+}

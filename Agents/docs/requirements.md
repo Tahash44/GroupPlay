@@ -2,36 +2,53 @@
 
 ## Product
 
-GroupPlay is a web application for facilitating in-person group/party games on a single shared device. The host manages the game; players can be saved friends or entered by name.
+GroupPlay facilitates in-person party games on one shared device. The authenticated
+host manages the game; participants are saved friends or ad-hoc names.
 
-## Implemented or evidenced capabilities
+## Implemented capabilities
 
-- Host registration, login, token refresh, logout, profile update, and password change.
-- Host-scoped friend list with create, edit, and soft delete.
-- Browse game cards and open game details in the frontend.
-- Create a Spy session with a timer, spy count, and selected/named players.
-- Reveal one role at a time; the game starts after all roles are revealed.
-- Inspect, pause, resume, or stop the game timer.
-- Vote for a player, then allow the spy to guess the location when applicable.
+- Host registration, login, refresh, logout, profile update, and password change.
+- Host-scoped friend listing, creation, editing, and soft deletion.
+- Static game catalogue and detail placeholders for games other than Spy.
+- Spy creation with timer, spy count, and explicitly selected participants.
+- Sequential private role reveal and automatic timer start after the last reveal.
+- Timer inspection, pause, resume, stop, voting, Spy guess, and result handling.
+- Exact multi-Spy accusation when a session contains more than one Spy.
+- Paginated finished-Spy history and session detail screens.
+- Same-session restoration of the last successfully created Spy setup for the
+  current user, expiring after eight hours.
 
 ## Product rules
 
 - Only the host requires an account.
-- The host can be selected as a player but is not automatically included in a Spy session.
-- A Spy session has at least three submitted players plus the host; spy count must be lower than the player count after the host is included.
-- A submitted player needs either a friend ID or a non-empty name; duplicate friend IDs and duplicate entered names are rejected.
-- Timer duration is 60–3600 seconds.
-- Roles must remain private until the relevant player reveals theirs.
+- The host is never added implicitly. When selected, the host is submitted as a
+  normal name-only participant.
+- A participant supplies either a friend ID or a non-empty name.
+- Duplicate friend IDs and duplicate entered names are rejected.
+- Spy count must be lower than submitted player count.
+- Voting must submit exactly as many unique accused players as the configured Spy
+  count. The Spy-guess phase opens only when that set equals all actual Spies.
+- The frontend currently requires four players; the backend accepts three. The
+  intended minimum is unresolved and must be aligned.
+- Backend timer duration is 60–3600 seconds. The setup UI offers 1–15 minutes.
+- A role remains private until its participant reveals it.
+- Host-owned sessions, friends, and controls must be inaccessible to another host.
+- Setup restoration is a short-lived convenience only. It must be scoped to the
+  signed-in user, saved only after successful creation, and must not survive as a
+  days-later remembered game.
 
 ## Non-functional expectations
 
-- Persian-first UI, responsive enough for a shared mobile/tablet device.
+- Persian-first, responsive shared-device UI.
 - Secure authenticated API access and host data isolation.
-- Clear handling of expired credentials through the frontend refresh flow.
-- Test important game rules, authentication paths, and API client error handling.
+- Expired credentials handled through a coordinated frontend refresh flow.
+- Tests for game rules, authentication, ownership, privacy, and API error handling.
+- A releasable frontend passes both Vitest and the TypeScript/Vite production build.
 
 ## Out of current scope
 
-- A player account for every participant.
+- Participant accounts.
 - Online multiplayer or real-time remote synchronization.
-- Payment, notifications, and a confirmed production deployment design.
+- Payment and notifications.
+- A backend-managed game catalogue.
+- A confirmed production deployment/database design.

@@ -14,12 +14,12 @@ import type { Game } from '../types/game.types';
 */
 
 const MOCK_GAMES: Game[] = [
-  { id: 'mafia', title: 'مافیا', description: 'بازی نقش مخفی و استدلال گروهی', icon: 'theater_comedy', badge: 'محبوب',imageUrl: "/images/games/card/mafia.png" , size: 'large' },
-  { id: 'spy', title: 'اسپای', description: 'پیدا کردن جاسوس در مکان', icon: 'visibility', imageUrl: "/images/games/card/spy.png" , size: 'tall' },
-  { id: 'charades', title: 'پانتومیم', description: 'حدس کلمه با اجرای نمایش', icon: 'emoji_people',imageUrl: "/images/games/card/charades.png" , size: 'small' },
-  { id: 'name-family', title: 'اسم فامیل', description: 'کلاسیک و نوستالژیک', icon: 'abc',imageUrl: "/images/games/card/name-family.png" , size: 'small' },
-  { id: 'truth-or-dare', title: 'حقیقت یا جرات', description: 'چالش‌های جسورانه یا اعترافات', icon: 'local_fire_department', imageUrl: "/images/games/card/truth-or-dare.png" ,size: 'wide' },
-  { id: 'pictionary', title: 'پیکشنری', description: 'نقاشی بکش تا حدس بزنن', icon: 'draw',imageUrl: "/images/games/card/pictionary.png" , size: 'tall' },
+  { id: 'spy', title: 'جاسوس', description: 'جاسوس را در میان بازیکنان پیدا کنید', icon: 'visibility', badge: 'آمادهٔ بازی', imageUrl: '/images/games/card/spy.png', available: true, size: 'tall' },
+  { id: 'mafia', title: 'مافیا', description: 'بازی نقش مخفی و استدلال گروهی', icon: 'theater_comedy', badge: 'به‌زودی', imageUrl: '/images/games/card/mafia.png', available: false, size: 'large' },
+  { id: 'charades', title: 'پانتومیم', description: 'حدس کلمه با اجرای نمایش', icon: 'emoji_people', imageUrl: '/images/games/card/charades.png', available: false, size: 'small' },
+  { id: 'name-family', title: 'اسم فامیل', description: 'کلاسیک و نوستالژیک', icon: 'abc', imageUrl: '/images/games/card/name-family.png', available: false, size: 'small' },
+  { id: 'truth-or-dare', title: 'حقیقت یا جرئت', description: 'چالش‌های جسورانه یا اعترافات', icon: 'local_fire_department', imageUrl: '/images/games/card/truth-or-dare.png', available: false, size: 'wide' },
+  { id: 'pictionary', title: 'نقاشی و حدس', description: 'نقاشی بکشید تا دیگران حدس بزنند', icon: 'draw', imageUrl: '/images/games/card/pictionary.png', available: false, size: 'tall' },
 ];
 
 export const gamesService = {

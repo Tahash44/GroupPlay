@@ -103,7 +103,7 @@ describe('FriendsPage', () => {
 
       await user.click(getHeaderAddButton());
       const modal = getModal('افزودن دوست جدید');
-      await user.type(modal.getByPlaceholderText('نام دوست...'), 'نگار کریمی');
+      await user.type(modal.getByPlaceholderText('نام دوست را وارد کنید'), 'نگار کریمی');
       await user.click(modal.getByRole('button', { name: 'افزودن' }));
 
       expect(await screen.findByText('نگار کریمی')).toBeInTheDocument();
@@ -122,7 +122,7 @@ describe('FriendsPage', () => {
 
       await user.click(getHeaderAddButton());
       const modal = getModal('افزودن دوست جدید');
-      await user.type(modal.getByPlaceholderText('نام دوست...'), 'X');
+      await user.type(modal.getByPlaceholderText('نام دوست را وارد کنید'), 'X');
       await user.click(modal.getByRole('button', { name: 'افزودن' }));
 
       expect(

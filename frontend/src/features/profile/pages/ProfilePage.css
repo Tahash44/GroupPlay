@@ -1,187 +1,105 @@
-@import '../../../shared/styles/sketch.css';
+@import '../../../shared/styles/tokens.css';
 
 .profile-page {
-  display: flex;
-  flex-direction: column;
-  gap: 28px;
-  max-width: 480px;
-  margin: 0 auto;
+  width: min(100%, 640px);
+  margin-inline: auto;
+  direction: rtl;
 }
 
-/* ── آواتار ── */
-.profile-avatar-section {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 8px;
+.profile-page > .ui-page-header {
+  text-align: right;
 }
 
-.profile-avatar-frame {
-  width: 128px;
-  height: 128px;
-  border-radius: 255px 15px 225px 15px / 15px 225px 15px 255px;
-  border: 2px solid var(--color-ink-charcoal);
-  background: var(--color-surface-container);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transform: rotate(-2deg);
-}
-
-.profile-avatar {
-  width: 96px;
-  height: 96px;
-  border-radius: 9999px;
-  background: var(--color-secondary-container);
-  color: var(--color-on-secondary-container);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-family: var(--font-bricolage);
-  font-size: 36px;
-  font-weight: 700;
-}
-
-.profile-avatar-hint {
-  font-family: var(--font-vazir);
-  font-size: 13px;
-  color: var(--color-on-surface-variant);
-  opacity: 0.7;
-  margin: 0;
-}
-
-/* ── فیلدها ── */
-.profile-fields {
-  display: flex;
-  flex-direction: column;
-  gap: 24px;
-}
-
-.profile-field-label {
-  display: block;
-  margin-bottom: 4px;
-  margin-right: 4px;
-  font-family: var(--font-vazir);
-  font-size: 13px;
-  font-weight: 700;
-  color: var(--color-on-surface-variant);
-}
-
-.profile-field-input-wrap {
-  position: relative;
-  border-bottom: 2px solid var(--color-ink-charcoal);
-  border-radius: 0 0 12px 12px / 0 0 4px 4px;
-  display: flex;
-  align-items: center;
-}
-
-.profile-field-icon {
-  position: absolute;
-  left: 8px;
-  font-size: 18px;
-  color: var(--color-outline);
-  opacity: 0.5;
-  pointer-events: none;
-}
-
-.profile-field-input {
+.profile-layout {
   width: 100%;
-  background: transparent;
-  border: none;
-  outline: none;
-  padding: 12px 36px 12px 4px;
-  font-family: var(--font-vazir);
-  font-size: 16px;
-  color: var(--color-on-surface);
 }
 
-.profile-field-input::placeholder {
-  color: var(--color-outline-variant);
+.profile-form {
+  border: 2px solid var(--color-border);
+  border-radius: var(--radius-card);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-card);
 }
 
-.profile-field-toggle-visibility {
-  position: absolute;
-  left: 8px;
-  background: none;
-  border: none;
-  cursor: pointer;
-  color: var(--color-outline);
+.profile-form {
   display: flex;
-  align-items: center;
-}
-.profile-field-toggle-visibility:hover {
-  color: var(--color-primary);
+  flex-direction: column;
+  gap: var(--space-5);
+  padding: var(--space-5);
 }
 
-.profile-change-password-link {
+.profile-password-toggle {
+  align-self: flex-start;
+}
+
+.profile-password-panel {
   display: flex;
-  align-items: center;
-  gap: 6px;
-  width: fit-content;
-  background: none;
-  border: none;
-  cursor: pointer;
-  padding: 0;
-  font-family: var(--font-vazir);
-  font-size: 13px;
+  flex-direction: column;
+  gap: var(--space-4);
+  margin: 0;
+  padding: var(--space-5);
+  border: 1px dashed var(--color-outline-variant);
+  border-radius: var(--radius-control);
+  background: var(--color-surface-container);
+}
+
+.profile-password-panel legend {
+  padding-inline: var(--space-2);
   font-weight: 700;
-  color: var(--color-secondary);
-}
-.profile-change-password-link .material-symbols-outlined {
-  font-size: 16px;
 }
 
-/* ── پیام‌ها ── */
+.profile-password-visibility {
+  width: 44px;
+  height: 44px;
+  display: grid;
+  place-items: center;
+  flex: 0 0 44px;
+  border: 0;
+  background: transparent;
+  color: var(--color-text-secondary);
+  cursor: pointer;
+}
+
+.profile-feedback:empty {
+  display: none;
+}
+
 .profile-message {
   margin: 0;
-  font-family: var(--font-vazir);
-  font-size: 13px;
-  text-align: center;
-}
-.profile-message--error {
-  color: var(--color-primary);
-}
-.profile-message--success {
-  color: #2e7d55;
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-control);
+  font-size: 14px;
+  font-weight: 600;
+  text-align: right;
 }
 
-/* ── اقدامات ── */
+.profile-message--error {
+  border: 1px solid var(--color-error);
+  background: var(--color-error-container);
+  color: var(--color-error);
+}
+
+.profile-message--success {
+  border: 1px solid var(--color-success);
+  background: color-mix(in srgb, var(--color-success) 10%, var(--color-surface));
+  color: var(--color-success);
+}
+
 .profile-actions {
   display: flex;
   flex-direction: column;
-  gap: 16px;
-}
-
-.profile-save-btn {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  width: 100%;
-  padding: 16px;
-  background: var(--color-primary);
-  color: var(--color-on-primary);
-  border: 2px solid var(--color-ink-charcoal);
-  border-radius: 4px 12px 6px 14px;
-  box-shadow: 6px 6px 0px 0px rgba(38, 38, 38, 0.1);
-  font-family: var(--font-vazir);
-  font-size: 16px;
-  font-weight: 700;
-  cursor: pointer;
-  transition: transform 0.15s ease, box-shadow 0.15s ease;
-}
-.profile-save-btn:hover:not(:disabled) {
-  transform: translate(-2px, -2px);
-  box-shadow: 8px 8px 0px 0px rgba(38, 38, 38, 0.15);
-}
-.profile-save-btn:disabled {
-  opacity: 0.6;
-  cursor: default;
+  gap: var(--space-4);
 }
 
 .profile-logout-wrap {
   display: flex;
   justify-content: center;
-  padding-top: 8px;
+  padding-top: var(--space-4);
   border-top: 1px dashed var(--color-outline-variant);
+}
+
+@media (min-width: 768px) {
+  .profile-form {
+    padding: var(--space-8);
+  }
 }

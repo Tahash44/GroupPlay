@@ -73,13 +73,18 @@ class SpySessionDetailSerializer(serializers.ModelSerializer):
     duration_seconds = serializers.SerializerMethodField()
     player_count = serializers.SerializerMethodField()
     winner_side = serializers.SerializerMethodField()
+    spy_count = serializers.SerializerMethodField()
 
     class Meta:
         model = GameSession
         fields = [
             "id", "game_type", "status", "location", "winner", "players",
-            "played_at", "duration_seconds", "player_count", "winner_side",
+            "played_at", "duration_seconds", "player_count", "winner_side", "spy_count",
         ]
+
+    def get_spy_count(self, obj):
+        spy_game_state = SpyGameState.objects.filter(session=obj).first()
+        return spy_game_state.spy_count if spy_game_state else 1
         
     def get_duration_seconds(self, obj):
         spy_game_state = SpyGameState.objects.filter(session=obj).first()
@@ -174,7 +179,17 @@ class TimerStopResponseSerializer(serializers.Serializer):
     is_running = serializers.BooleanField()
 
 class VoteRequestSerializer(serializers.Serializer):
-    voted_player_id = serializers.IntegerField()
+    voted_player_id = serializers.IntegerField(required=False)
+    voted_player_ids = serializers.ListField(
+        child=serializers.IntegerField(), required=False, allow_empty=False
+    )
+
+    def validate(self, attrs):
+        if "voted_player_ids" not in attrs and "voted_player_id" not in attrs:
+            raise serializers.ValidationError("At least one voted player is required.")
+        if "voted_player_ids" in attrs and "voted_player_id" in attrs:
+            raise serializers.ValidationError("Use only voted_player_ids.")
+        return attrs
 
 
 class VoteResultResponseSerializer(serializers.Serializer):

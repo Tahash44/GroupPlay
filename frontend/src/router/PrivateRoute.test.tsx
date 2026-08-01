@@ -62,7 +62,7 @@ describe('PrivateRoute', () => {
     renderWithRoutes();
 
     // The app brand text only appears when AppLayout is used as a wrapper.
-    expect(screen.getByText('بازی‌گردان')).toBeInTheDocument();
+    expect(screen.getAllByText('بازی‌گردان').length).toBeGreaterThan(0);
   });
 
   it('skips the AppLayout wrapper when layout=false', () => {

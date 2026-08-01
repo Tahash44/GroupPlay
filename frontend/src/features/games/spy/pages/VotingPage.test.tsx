@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { render, screen, waitFor, within } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MemoryRouter, Routes, Route } from 'react-router-dom';
 import MockAdapter from 'axios-mock-adapter';
@@ -125,7 +125,7 @@ describe('VotingPage', () => {
     await user.click(screen.getByRole('button', { name: /ثبت رأی/ }));
 
     await waitFor(() => {
-      expect(screen.getByText('جاسوس پیروز شد!')).toBeInTheDocument();
+      expect(screen.getByText('برندهٔ بازی جاسوس‌ها')).toBeInTheDocument();
     });
   });
 
@@ -174,7 +174,7 @@ describe('VotingPage', () => {
     await user.click(screen.getByRole('button', { name: /حدس درست بود/ }));
 
     await waitFor(() => {
-      expect(screen.getByText('جاسوس پیروز شد!')).toBeInTheDocument();
+      expect(screen.getByText('برندهٔ بازی جاسوس‌ها')).toBeInTheDocument();
     });
   });
 
@@ -204,8 +204,12 @@ describe('VotingPage', () => {
     await user.click(screen.getByRole('button', { name: /حدس اشتباه بود/ }));
 
     await waitFor(() => {
-      expect(screen.getByText('شهروندان پیروز شدند!')).toBeInTheDocument();
+      expect(screen.getByText('برندهٔ بازی شهروندان')).toBeInTheDocument();
     });
+    expect(screen.getByText('Hospital')).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'نقش بازیکنان' })).toBeInTheDocument();
+    expect(screen.getByText('بردیا')).toBeInTheDocument();
+    expect(screen.getByText('جاسوس', { selector: '.voting-result-role span' })).toBeInTheDocument();
   });
 
   it('shows result directly when status is already FINISHED (e.g. after refresh)', async () => {
@@ -225,7 +229,7 @@ describe('VotingPage', () => {
     renderPage();
 
     await waitFor(() => {
-      expect(screen.getByText('شهروندان پیروز شدند!')).toBeInTheDocument();
+      expect(screen.getByText('برندهٔ بازی شهروندان')).toBeInTheDocument();
     });
   });
 

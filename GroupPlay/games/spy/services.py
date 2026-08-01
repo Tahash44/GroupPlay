@@ -95,7 +95,7 @@ class SpyRevealService:
         if all_revealed:
             spy_game = SpyGameState.objects.get(session=session)
             spy_game.status = SpyGameState.Status.IN_PROGRESS
-            spy_game.timer_started_at = timezone.now()
+            spy_game.timer_started_at = None
             spy_game.save(update_fields=["status", "timer_started_at"])
 
         spy_game = SpyGameState.objects.get(session=session)
@@ -229,39 +229,71 @@ class SpyTimerService:
             "is_running": False,
         }
 
+    @staticmethod
+    def start_spy_guess(session):
+        spy_game = SpyGameState.objects.get(session=session)
+
+        if spy_game.timer_started_at:
+            delta = timezone.now() - spy_game.timer_started_at
+            spy_game.timer_elapsed += int(delta.total_seconds())
+
+        spy_game.timer_started_at = None
+        spy_game.status = SpyGameState.Status.SPY_GUESS
+        spy_game.save(update_fields=["timer_elapsed", "timer_started_at", "status"])
+
+        return {
+            "message": "Status changed to spy guess",
+            "status": spy_game.status,
+            "timer_duration": spy_game.timer_duration,
+            "timer_elapsed": spy_game.timer_elapsed,
+            "is_running": False,
+        }
+
 
 
 class SpyVoteService:
 
     @staticmethod
-    def vote(session, voted_player_id):
+    def vote(session, voted_player_ids):
         spy_game = SpyGameState.objects.get(session=session)
 
         if spy_game.status != SpyGameState.Status.VOTING:
             raise ValidationError("Session is not in VOTING state.")
 
-        try:
-            voted_player = Player.objects.get(id=voted_player_id, session=session)
-        except Player.DoesNotExist:
-            raise ValidationError(f"Player {voted_player_id} not found in this session.")
+        selected_ids = set(voted_player_ids)
+        if len(selected_ids) != spy_game.spy_count:
+            raise ValidationError(f"Exactly {spy_game.spy_count} players must be selected.")
 
-        voted_state = SpyPlayerState.objects.get(player=voted_player, session=session)
+        valid_ids = set(
+            Player.objects.filter(id__in=selected_ids, session=session)
+            .values_list("id", flat=True)
+        )
+        if valid_ids != selected_ids:
+            raise ValidationError("One or more selected players are not in this session.")
 
-        if voted_state.is_spy:
+        spy_player_ids = set(
+            SpyPlayerState.objects.filter(session=session, is_spy=True)
+            .values_list("player_id", flat=True)
+        )
+        selected_names = list(
+            Player.objects.filter(id__in=selected_ids, session=session)
+            .order_by("id")
+            .values_list("name", flat=True)
+        )
+        voted_player_label = "، ".join(selected_names)
+
+        if selected_ids == spy_player_ids:
             spy_game.status = SpyGameState.Status.SPY_GUESS
             spy_game.save(update_fields=["status"])
             return {
                 "result": "spy_caught",
                 "spy_can_guess": True,
-                "voted_player": voted_player.name,
+                "voted_player": voted_player_label,
                 "status": spy_game.status,
                 "winner": [],
             }
         else:
-            spy_player_ids = list(
-                SpyPlayerState.objects.filter(session=session, is_spy=True)
-                .values_list("player_id", flat=True)
-            )
+            spy_player_ids = list(spy_player_ids)
             spy_game.status = SpyGameState.Status.FINISHED
             spy_game.save(update_fields=["status"])
             session.winner = spy_player_ids
@@ -269,7 +301,7 @@ class SpyVoteService:
             return {
                 "result": "wrong_vote",
                 "spy_can_guess": False,
-                "voted_player": voted_player.name,
+                "voted_player": voted_player_label,
                 "status": spy_game.status,
                 "winner": spy_player_ids,
             }

@@ -1,44 +1,49 @@
 # API Reference
 
-## Source of truth
+## Authority and conventions
 
-The running backend routes in `GroupPlay/config/urls.py` and the DRF serializers are authoritative. Interactive schema endpoints are `/api/schema/` and `/api/docs/`.
+`GroupPlay/config/urls.py`, mounted URL modules, serializers, views, and services are
+authoritative. Schema endpoints are `/api/schema/` and `/api/docs/`.
 
-All application endpoints below are prefixed with `/api/v1`. Protected endpoints require `Authorization: Bearer <access_token>`.
+Application endpoints use `/api/v1`. Protected endpoints require a bearer access
+token.
 
 ## Authentication and account
 
 | Method | Path | Purpose |
 | --- | --- | --- |
-| POST | `/auth/register/` | Create host account and return JWT tokens. |
-| POST | `/auth/login/` | Authenticate by username/password and return tokens. |
-| POST | `/auth/token/refresh/` | Exchange `refresh_token` for an access token. |
-| POST | `/auth/logout/` | Blacklist the supplied refresh token. |
-| GET/PATCH | `/auth/profile/` | Read or update current host profile. |
-| POST | `/auth/change-password/` | Change current host password. |
+| POST | `/auth/register/` | Create a host and return access/refresh tokens. |
+| POST | `/auth/login/` | Authenticate and return tokens. |
+| POST | `/auth/token/refresh/` | Exchange `refresh_token` for access. |
+| POST | `/auth/logout/` | Blacklist `refresh_token`. |
+| GET/PATCH | `/auth/profile/` | Read or update the current profile. |
+| POST | `/auth/change-password/` | Change password. |
 
 ## Friends
 
 | Method | Path | Purpose |
 | --- | --- | --- |
 | GET/POST | `/friends/` | List active friends or create one. |
-| GET/PUT/DELETE | `/friends/{pk}/` | Read, update, or soft-delete a friend. |
+| GET/PUT/DELETE | `/friends/{pk}/` | Read, partially update, or soft-delete. |
 
-## Spy sessions
+## Spy
 
 | Method | Path | Purpose |
 | --- | --- | --- |
-| GET/POST | `/games/spy/sessions/` | List host Spy sessions or create one. |
-| GET | `/games/spy/sessions/{id}/` | Retrieve a Spy session. |
-| GET/POST | `/games/spy/sessions/{id}/reveal/` | Get pending players or reveal a player's role. |
-| GET | `/games/spy/sessions/{id}/timer/` | Get computed timer status. |
+| GET/POST | `/games/spy/sessions/` | Paginated host sessions or create. |
+| GET | `/games/spy/sessions/{id}/` | Session/history detail. |
+| GET/POST | `/games/spy/sessions/{id}/reveal/` | Pending players or reveal one role. |
+| GET | `/games/spy/sessions/{id}/timer/` | Computed timer status. |
 | POST | `/games/spy/sessions/{id}/timer/pause/` | Pause timer. |
 | POST | `/games/spy/sessions/{id}/timer/resume/` | Resume timer. |
-| POST | `/games/spy/sessions/{id}/timer/stop/` | Stop timer and move to voting. |
-| POST | `/games/spy/sessions/{id}/vote/` | Vote for `voted_player_id`. |
-| POST | `/games/spy/sessions/{id}/spy-guess/` | Submit the spy's `location` guess. |
+| POST | `/games/spy/sessions/{id}/timer/stop/` | Stop and enter voting. |
+| POST | `/games/spy/sessions/{id}/vote/` | Submit one or more accused player IDs. |
+| POST | `/games/spy/sessions/{id}/spy-guess/` | Submit boolean `is_correct`. |
 
-## Create Spy session example
+The sessions collection accepts `status`, such as `status=FINISHED`, plus page
+parameters. Page size defaults to 10 and is capped at 50.
+
+## Core payloads
 
 ```json
 {
@@ -52,6 +57,36 @@ All application endpoints below are prefixed with `/api/v1`. Protected endpoints
 }
 ```
 
-## Contract warning
+Creation returns `id`, `status`, and `created_at`, with status currently
+`ROLE_REVEAL`.
 
-`Documents/api-doc.yaml` is a useful draft but is out of sync in places (for example, it lacks the `/api/v1` prefix and some request/response field names differ). Do not generate frontend clients from it until it is reconciled with the code.
+```json
+{ "player_id": 12 }
+```
+
+The current voting payload uses a list and must contain exactly `spy_count` unique
+session player IDs:
+
+```json
+{ "voted_player_ids": [12, 18] }
+```
+
+The legacy single-player field `voted_player_id` remains accepted for one-Spy
+clients, but new clients should use `voted_player_ids`.
+
+```json
+{ "is_correct": true }
+```
+
+Pause/resume responses include timer status and `message`. Stop omits
+`remaining_time` and `timer_started_at`. Detail/history adds `played_at`,
+`duration_seconds`, `player_count`, `spy_count`, and `winner_side`.
+
+## Known contract and security gaps
+
+- Only the sessions collection is host-scoped. Detail and all control endpoints
+  authenticate but do not verify ownership.
+- Detail currently exposes every role and the location regardless of state. This is
+  a defect, not an intended public contract.
+- `Documents/api-doc.yaml` lacks or misstates current prefixes and fields. Do not
+  generate clients from it until reconciled with code and generated schema.

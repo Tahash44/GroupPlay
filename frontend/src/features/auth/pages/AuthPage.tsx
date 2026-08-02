@@ -1,7 +1,7 @@
 import { useEffect, useState, type ChangeEvent, type FormEvent } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import toast from 'react-hot-toast';
-import { authService } from '../services/authService';
+import { authService, resolveAdminUrl } from '../services/authService';
 import { useAuth } from '../../../shared/context/AuthContext';
 import Icon from '../../../shared/components/Icon/Icon';
 import { Button, TextField } from '../../../shared/components/ui';
@@ -88,6 +88,10 @@ export default function AuthPage() {
             password: form.password,
             name: form.name.trim() || undefined,
           });
+      if (isLogin && tokens.admin_url) {
+        window.location.href = resolveAdminUrl(tokens.admin_url);
+        return;
+      }
       authService.saveTokens(tokens);
       const user = await authService.getProfile();
       setUser(user);

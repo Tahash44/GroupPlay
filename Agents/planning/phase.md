@@ -28,16 +28,17 @@
 - [x] Support exact multi-Spy accusation and same-session restoration of the last
   successful setup.
 - [x] Restore a passing frontend test and production build.
-- [ ] Enforce ownership on every read/control endpoint.
-- [ ] Prevent premature role/location disclosure.
-- [ ] Validate friend ownership and harden state transitions.
+- [x] Enforce ownership on every read/control endpoint.
+- [x] Prevent premature role/location disclosure.
+- [x] Validate friend ownership.
+- [x] Harden state transitions.
 - [ ] Align generated/manual API documentation and frontend types.
 
 ## Phase 4 — Quality and expansion
 
 **Status:** In progress
 
-- [ ] Resolve player-count and timer-range product mismatches.
+- [x] Resolve player-count, Spy-count, and timer-range product mismatches.
 - [ ] Harden deployment security and secret management.
 - [x] Redesign all currently implemented functional pages against the maintained
   design system.
@@ -46,3 +47,7 @@
 - [ ] Complete encoding and Persian-language QA.
 - [ ] Add games through the generic session abstraction.
 - [ ] Define production database and deployment architecture.
+- [x] Add the version-one superuser administration panel for users, Spy sessions,
+  Spy locations, bulk content import, auditing, and operational dashboard metrics.
+- [x] Prevent inactive/archived locations from entering new games and reduce
+  host-local location repetition across recent finished sessions.

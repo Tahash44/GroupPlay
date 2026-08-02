@@ -8,12 +8,19 @@ authoritative. Schema endpoints are `/api/schema/` and `/api/docs/`.
 Application endpoints use `/api/v1`. Protected endpoints require a bearer access
 token.
 
+The administration site is mounted at `/admin/`. It is a server-rendered,
+session-authenticated, CSRF-protected internal interface restricted to active
+superusers; it does not add a public administration API.
+Its standalone login form is disabled: unauthenticated admin requests return to the
+shared frontend login page. Player-visible Spy reveal, detail, and result payloads
+use `Location.name_fa` rather than the English content-management name.
+
 ## Authentication and account
 
 | Method | Path | Purpose |
 | --- | --- | --- |
 | POST | `/auth/register/` | Create a host and return access/refresh tokens. |
-| POST | `/auth/login/` | Authenticate and return tokens. |
+| POST | `/auth/login/` | Authenticate and return tokens; superusers also receive `admin_url` and an admin session. |
 | POST | `/auth/token/refresh/` | Exchange `refresh_token` for access. |
 | POST | `/auth/logout/` | Blacklist `refresh_token`. |
 | GET/PATCH | `/auth/profile/` | Read or update the current profile. |
@@ -31,7 +38,7 @@ token.
 | Method | Path | Purpose |
 | --- | --- | --- |
 | GET/POST | `/games/spy/sessions/` | Paginated host sessions or create. |
-| GET | `/games/spy/sessions/{id}/` | Session/history detail. |
+| GET | `/games/spy/sessions/{id}/` | Host-owned, state-safe session/history detail. |
 | GET/POST | `/games/spy/sessions/{id}/reveal/` | Pending players or reveal one role. |
 | GET | `/games/spy/sessions/{id}/timer/` | Computed timer status. |
 | POST | `/games/spy/sessions/{id}/timer/pause/` | Pause timer. |
@@ -60,6 +67,10 @@ parameters. Page size defaults to 10 and is capped at 50.
 Creation returns `id`, `status`, and `created_at`, with status currently
 `ROLE_REVEAL`.
 
+Creation requires at least four players. `spy_count` must be no greater than the
+floor of one third of the player count, and `timer_duration` must be between 60 and
+900 seconds.
+
 ```json
 { "player_id": 12 }
 ```
@@ -82,11 +93,18 @@ Pause/resume responses include timer status and `message`. Stop omits
 `remaining_time` and `timer_started_at`. Detail/history adds `played_at`,
 `duration_seconds`, `player_count`, `spy_count`, and `winner_side`.
 
+Before a session is finished, detail returns player names and IDs but keeps every
+player `role`, `location`, `winner`, and `winner_side` null. Finished sessions expose
+those result fields for result and history screens. Every detail/control endpoint is
+host-scoped and returns not-found for a foreign session.
+
+State-changing operations are guarded by the Spy lifecycle. Requests made in the
+wrong state return HTTP 409 with the stable `invalid_game_state` error code. Invalid
+player input remains a validation error with HTTP 400.
+
 ## Known contract and security gaps
 
-- Only the sessions collection is host-scoped. Detail and all control endpoints
-  authenticate but do not verify ownership.
-- Detail currently exposes every role and the location regardless of state. This is
-  a defect, not an intended public contract.
 - `Documents/api-doc.yaml` lacks or misstates current prefixes and fields. Do not
   generate clients from it until reconciled with code and generated schema.
+- Production deployment must supply HTTPS, secure-cookie, trusted-origin, secret,
+  host, and proxy settings before exposing `/admin/` outside a trusted environment.

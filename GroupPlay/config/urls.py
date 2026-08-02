@@ -1,10 +1,10 @@
-from django.contrib import admin
 from django.urls import include, path
 from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
 from games.spy.views import SpySessionCreateView
+from config.admin_site import admin_site
 
 urlpatterns = [
-    path("admin/", admin.site.urls),
+    path("admin/", admin_site.urls),
     path("api/v1/auth/", include("accounts.urls.V1.auth_urls")),
     path("api/v1/friends/", include("accounts.urls.V1.friends_urls")),
     path("api/v1/games/spy/", include("games.spy.urls.V1.urls")),

@@ -32,6 +32,11 @@ const basePlayers = [
   { id: 4, name: 'مهسا', role: null },
 ];
 
+const finishedPlayers = [
+  { id: 1, name: 'علی', role: 'Hospital' },
+  { id: 2, name: 'بردیا', role: 'جاسوس' },
+];
+
 describe('VotingPage', () => {
   let mock: MockAdapter;
 
@@ -45,7 +50,7 @@ describe('VotingPage', () => {
   });
 
   it('shows voting form with player list when status is VOTING', async () => {
-    mock.onGet('/games/spy/sessions/1/').reply(200, {
+    mock.onGet('/games/spy/sessions/1/').replyOnce(200, {
       id: 1,
       game_type: 'spy',
       status: 'VOTING',
@@ -96,18 +101,26 @@ describe('VotingPage', () => {
   });
 
   it('submits vote and shows civilians-lose result when wrong player is voted', async () => {
-    mock.onGet('/games/spy/sessions/1/').reply(200, {
+    mock.onGet('/games/spy/sessions/1/').replyOnce(200, {
       id: 1,
       game_type: 'spy',
       status: 'VOTING',
       location: null,
       winner: null,
-      players: [
-        { id: 1, name: 'علی', role: null },
-        { id: 2, name: 'سارا', role: null },
-        { id: 3, name: 'بردیا', role: 'جاسوس' }, // نقش واقعی فقط بعد اتمام بازی استفاده میشه
-        { id: 4, name: 'مهسا', role: null },
-      ],
+      players: basePlayers,
+    });
+    mock.onGet('/games/spy/sessions/1/').reply(200, {
+      id: 1,
+      game_type: 'spy',
+      status: 'FINISHED',
+      location: 'Hospital',
+      winner: [3],
+      winner_side: 'spy',
+      spy_count: 1,
+      players: basePlayers.map(player => ({
+        ...player,
+        role: player.id === 3 ? 'جاسوس' : 'Hospital',
+      })),
     });
     mock.onPost('/games/spy/sessions/1/vote/').reply(200, {
       result: 'wrong_vote',
@@ -130,7 +143,7 @@ describe('VotingPage', () => {
   });
 
   it('shows spy_guess phase directly when status is already SPY_GUESS (e.g. after refresh)', async () => {
-    mock.onGet('/games/spy/sessions/1/').reply(200, {
+    mock.onGet('/games/spy/sessions/1/').replyOnce(200, {
       id: 1,
       game_type: 'spy',
       status: 'SPY_GUESS',
@@ -149,16 +162,23 @@ describe('VotingPage', () => {
   });
 
   it('submits correct guess and shows spy-wins result', async () => {
-    mock.onGet('/games/spy/sessions/1/').reply(200, {
+    mock.onGet('/games/spy/sessions/1/').replyOnce(200, {
       id: 1,
       game_type: 'spy',
       status: 'SPY_GUESS',
       location: null,
       winner: null,
-      players: [
-        { id: 1, name: 'علی', role: null },
-        { id: 2, name: 'بردیا', role: 'جاسوس' },
-      ],
+      players: finishedPlayers.map(player => ({ ...player, role: null })),
+    });
+    mock.onGet('/games/spy/sessions/1/').reply(200, {
+      id: 1,
+      game_type: 'spy',
+      status: 'FINISHED',
+      location: 'Hospital',
+      winner: [2],
+      winner_side: 'spy',
+      spy_count: 1,
+      players: finishedPlayers,
     });
     mock.onPost('/games/spy/sessions/1/spy-guess/').reply(200, {
       correct: true,
@@ -179,16 +199,23 @@ describe('VotingPage', () => {
   });
 
   it('submits wrong guess and shows civilians-win result', async () => {
-    mock.onGet('/games/spy/sessions/1/').reply(200, {
+    mock.onGet('/games/spy/sessions/1/').replyOnce(200, {
       id: 1,
       game_type: 'spy',
       status: 'SPY_GUESS',
       location: null,
       winner: null,
-      players: [
-        { id: 1, name: 'علی', role: null },
-        { id: 2, name: 'بردیا', role: 'جاسوس' },
-      ],
+      players: finishedPlayers.map(player => ({ ...player, role: null })),
+    });
+    mock.onGet('/games/spy/sessions/1/').reply(200, {
+      id: 1,
+      game_type: 'spy',
+      status: 'FINISHED',
+      location: 'Hospital',
+      winner: [1],
+      winner_side: 'civilians',
+      spy_count: 1,
+      players: finishedPlayers,
     });
     mock.onPost('/games/spy/sessions/1/spy-guess/').reply(200, {
       correct: false,
@@ -219,6 +246,8 @@ describe('VotingPage', () => {
       status: 'FINISHED',
       location: 'Hospital',
       winner: [1, 2],
+      winner_side: 'civilians',
+      spy_count: 1,
       players: [
         { id: 1, name: 'علی', role: 'Hospital' },
         { id: 2, name: 'سارا', role: 'Hospital' },

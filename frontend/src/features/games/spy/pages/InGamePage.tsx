@@ -159,9 +159,16 @@ export default function InGamePage() {
     }
   };
 
-  const handleGoToVoting = () => {
-    if (!id) return;
-    navigate(`/games/spy/sessions/${id}/vote`);
+  const handleGoToVoting = async () => {
+    if (!id || actionLoading) return;
+    setActionLoading(true);
+    try {
+      await spyService.stopTimer(id);
+      navigate(`/games/spy/sessions/${id}/vote`);
+    } catch {
+      toast.error('ورود به رأی‌گیری با خطا مواجه شد. دوباره تلاش کن.');
+      setActionLoading(false);
+    }
   };
 
   if (loading) {
@@ -294,9 +301,14 @@ export default function InGamePage() {
         <div className="ingame-overlay" role="dialog" aria-modal="true">
           <div className="ingame-modal ingame-timesup-modal sketch-border">
             <p className="ingame-timesup-title">زمان تمام شد!</p>
-            <button type="button" className="ingame-timesup-btn" onClick={handleGoToVoting}>
+            <button
+              type="button"
+              className="ingame-timesup-btn"
+              onClick={handleGoToVoting}
+              disabled={actionLoading}
+            >
               <Icon name="how_to_reg" />
-              <span>بریم برای رأی‌گیری</span>
+              <span>{actionLoading ? 'در حال ورود...' : 'بریم برای رأی‌گیری'}</span>
             </button>
           </div>
         </div>

@@ -45,8 +45,16 @@ export default function VotingPage() {
   const [actionLoading, setActionLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // منبع واحد برای اسم جاسوس — از players[].role میاد، صرف‌نظر از مسیر ورود به این فاز
+  // نقش‌ها فقط پس از پایان بازی از قرارداد جزئیات نشست دریافت می‌شوند.
   const spyPlayers = players.filter(player => player.role === 'جاسوس');
+
+  const hydrateFinishedDetail = async (fallbackWinner: WinnerSide) => {
+    if (!id) return;
+    const detail = await spyService.getSessionDetail(id);
+    setPlayers(detail.players);
+    setGameLocation(detail.location);
+    setWinnerSide(detail.winner_side ?? fallbackWinner);
+  };
 
   useEffect(() => {
     if (!id) return;
@@ -66,9 +74,7 @@ export default function VotingPage() {
         } else if (detail.status === 'SPY_GUESS') {
           setPhase('spy_guess');
         } else if (detail.status === 'FINISHED') {
-          const spyIds = detail.players.filter(player => player.role === 'جاسوس').map(player => player.id);
-          const spyWon = !!detail.winner?.some(winnerId => spyIds.includes(winnerId));
-          setWinnerSide(spyWon ? 'spy' : 'civilians');
+          setWinnerSide(detail.winner_side ?? 'civilians');
           setPhase('result');
         } else {
           setError('این بازی هنوز آماده‌ی رأی‌گیری نیست.');
@@ -97,8 +103,8 @@ export default function VotingPage() {
       if (result.result === 'spy_caught') {
         setPhase('spy_guess');
       } else {
-        setWinnerSide('spy');
         setResultReason('wrong_vote');
+        await hydrateFinishedDetail('spy');
         setPhase('result');
       }
     } catch {
@@ -113,9 +119,8 @@ export default function VotingPage() {
     setActionLoading(true);
     try {
       const result = await spyService.submitSpyGuess(id, isCorrect);
-      setGameLocation(result.location);
-      setWinnerSide(result.correct ? 'spy' : 'civilians');
       setResultReason(result.correct ? 'correct_guess' : 'wrong_guess');
+      await hydrateFinishedDetail(result.correct ? 'spy' : 'civilians');
       setPhase('result');
     } catch (err: unknown) {
       const status = (err as { response?: { status?: number } })?.response?.status;

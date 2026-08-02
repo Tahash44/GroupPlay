@@ -1,0 +1,19 @@
+{% extends "admin/base_site.html" %}
+{% block breadcrumbs %}<div class="breadcrumbs"><a href="{% url 'admin:index' %}">خانه</a> › <a href="{% url 'admin:accounts_user_changelist' %}">کاربران</a> › تغییر وضعیت</div>{% endblock %}
+{% block content %}
+<div class="confirmation-card">
+  <div class="confirmation-icon" aria-hidden="true">!</div>
+  <h1>{% if target_user.is_active %}تعلیق حساب{% else %}فعال‌سازی حساب{% endif %}</h1>
+  <p>این عملیات برای حساب <strong>{{ target_user.username }}</strong> انجام می‌شود و در تاریخچهٔ مدیریت ثبت خواهد شد.</p>
+  {% if target_user.is_active %}<p class="warning-copy">کاربر پس از تعلیق نمی‌تواند وارد حساب شود اما اطلاعات، دوستان و بازی‌های او حذف نمی‌شوند.</p>{% endif %}
+  <form method="post" novalidate>
+    {% csrf_token %}
+    {{ form.non_field_errors }}
+    <div class="form-row">{{ form.reason.errors }}{{ form.reason.label_tag }}{{ form.reason }}</div>
+    <div class="submit-row">
+      <a class="button cancel-link" href="{% url 'admin:accounts_user_change' target_user.pk %}">انصراف</a>
+      <button type="submit" class="default">تأیید تغییر وضعیت</button>
+    </div>
+  </form>
+</div>
+{% endblock %}

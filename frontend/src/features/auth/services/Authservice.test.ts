@@ -9,7 +9,7 @@ vi.mock('../../../shared/api/api', () => ({
 }));
 
 import api from '../../../shared/api/api';
-import { authService } from './authService';
+import { authService, resolveAdminUrl } from './authService';
 
 const mockedApi = api as unknown as {
   get: ReturnType<typeof vi.fn>;
@@ -17,6 +17,9 @@ const mockedApi = api as unknown as {
 };
 
 describe('authService', () => {
+  it('resolves the admin path against the browser-visible backend host', () => {
+    expect(resolveAdminUrl('/admin/')).toBe('http://localhost:8000/admin/');
+  });
   beforeEach(() => {
     vi.clearAllMocks();
     localStorage.clear();

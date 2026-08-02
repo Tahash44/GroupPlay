@@ -2,7 +2,7 @@ from django.test import TestCase
 from django.contrib.auth import get_user_model
 from games.models import GameSession, Player
 from games.spy.models import Location, SpyGameState, SpyPlayerState
-from games.spy.services import SpyGameService
+from games.spy.services import SpyGameService, SpyGuessService, SpyRevealService
 
 User = get_user_model()
 
@@ -94,3 +94,27 @@ class SpyGameLogicTest(TestCase):
 
         self.assertIsNotNone(session.spy_state.location)
         self.assertEqual(session.spy_state.location.name_en, "Secret Base")
+
+    def test_civilian_reveal_returns_persian_location(self):
+        self.spy_state.status = SpyGameState.Status.ROLE_REVEAL
+        self.spy_state.save(update_fields=["status"])
+        civilian = SpyPlayerState.objects.create(
+            player=Player.objects.create(session=self.session, name="بازیکن"),
+            session=self.session,
+            is_spy=False,
+            role_en=self.location.name_en,
+            role_fa=self.location.name_fa,
+        )
+
+        result = SpyRevealService.reveal_role(self.session, civilian.player_id)
+
+        self.assertEqual(result["role"], self.location.name_fa)
+        self.assertEqual(result["location"], self.location.name_fa)
+
+    def test_guess_result_returns_persian_location(self):
+        self.spy_state.status = SpyGameState.Status.SPY_GUESS
+        self.spy_state.save(update_fields=["status"])
+
+        result = SpyGuessService.guess_location(self.session, is_correct=False)
+
+        self.assertEqual(result["location"], self.location.name_fa)

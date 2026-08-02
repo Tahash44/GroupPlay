@@ -40,14 +40,17 @@ Rationale: current history requirements do not justify a second persistence mode
 Future cross-game history should aggregate generic sessions without duplicating
 session truth.
 
-## ADR-005 — Four-player frontend minimum is provisional
+## ADR-005 — Spy setup limits
 
-**Status:** Proposed
-**Date:** 2026-07-27
+**Status:** Accepted
+**Date:** 2026-08-02
 
-The frontend requires four selected players, but the backend accepts three. Until a
-product decision is made and both layers are aligned, agents must not describe
-either number as the settled product rule.
+Spy sessions require at least four players. The maximum Spy count is the floor of
+one third of the submitted player count. Timer duration is limited to 60–900 seconds.
+
+Rationale: these limits match the version-one product document and the implemented
+setup experience, remove frontend/backend disagreement, and preserve a viable
+civilian majority.
 
 ## ADR-006 — Local UI font and icon assets
 
@@ -87,3 +90,45 @@ only when the submitted set equals the complete actual Spy set.
 
 Rationale: selecting a single known Spy in a multi-Spy game must not count as a full
 civilian victory or incorrectly advance the game.
+
+## ADR-009 — Hybrid internal administration
+
+**Status:** Accepted
+**Date:** 2026-08-02
+
+Version one uses a branded, RTL Django administration site restricted to active
+superusers. User and game data are read-only except for explicit account
+suspension/reactivation. Spy locations support managed metadata, activation, soft
+archive/restore, preview-first bulk import, and audited changes. Domain services own
+the mutations so a future dedicated management frontend can reuse the same rules.
+
+Rationale: this delivers a secure operational panel without prematurely building a
+second SPA/API surface, while keeping management behavior separate from presentation.
+Permanent deletion is intentionally absent so historical sessions remain valid.
+
+## ADR-010 — Host-local recent location avoidance
+
+**Status:** Accepted
+**Date:** 2026-08-02
+
+New Spy sessions select only active, non-archived locations. The five most recent
+locations from that host's finished games are excluded when alternatives exist. The
+oldest exclusions are relaxed one at a time when the pool is too small.
+
+Rationale: repeated rounds should feel varied without making a small location pool
+unable to start a game or changing the random nature of selection.
+
+## ADR-011 — Unified public and administration login
+
+**Status:** Accepted
+**Date:** 2026-08-02
+
+The React public login form is the only credential-entry surface. Regular users
+receive JWT credentials and continue to the application. Active superusers also
+receive a Django admin session and an `admin_url`, which the frontend follows without
+persisting admin JWT credentials. Direct unauthenticated admin-login requests return
+to the shared frontend form.
+
+Rationale: users should not need to know which login page matches their role. Django
+session authentication and CSRF protection remain in force for the admin panel,
+while the application keeps its existing JWT flow.

@@ -1,0 +1,31 @@
+{% extends "admin/base_site.html" %}
+{% block breadcrumbs %}<div class="breadcrumbs"><a href="{% url 'admin:index' %}">خانه</a> › <a href="{% url 'admin:spy_location_changelist' %}">مکان‌های جاسوس</a> › ورود گروهی</div>{% endblock %}
+{% block content %}
+<div class="import-layout">
+  <section class="dashboard-panel import-help">
+    <h1>ورود گروهی مکان‌ها</h1>
+    <p>ابتدا فایل را انتخاب کنید. پیش از ثبت، همهٔ ردیف‌ها بررسی و نتیجه نمایش داده می‌شود.</p>
+    <p>ستون‌های الزامی شامل نام فارسی و نام انگلیسی هستند. دسته‌بندی و سختی در صورت خالی‌بودن با مقدار پیش‌فرض ثبت می‌شوند.</p>
+    <form method="post" enctype="multipart/form-data" novalidate>
+      {% csrf_token %}
+      {{ form.non_field_errors }}
+      <div class="form-row">{{ form.file.errors }}{{ form.file.label_tag }}{{ form.file }}<div class="help">{{ form.file.help_text }}</div></div>
+      <div class="submit-row"><button type="submit" class="default">بررسی و پیش‌نمایش</button></div>
+    </form>
+  </section>
+
+  {% if rows %}
+  <section class="dashboard-panel preview-panel">
+    <div class="panel-heading"><h2>نتیجهٔ بررسی</h2><span>{{ rows|length }} ردیف</span></div>
+    <div class="responsive-table"><table>
+      <thead><tr><th>ردیف</th><th>نام فارسی</th><th>نام انگلیسی</th><th>دسته</th><th>سختی</th><th>نتیجه</th></tr></thead>
+      <tbody>{% for row in rows %}<tr class="{% if row.errors %}invalid-row{% else %}valid-row{% endif %}">
+        <td>{{ row.line }}</td><td>{{ row.name_fa|default:"—" }}</td><td dir="ltr">{{ row.name_en|default:"—" }}</td><td>{{ row.category }}</td><td>{{ row.difficulty }}</td>
+        <td>{% if row.errors %}<ul class="errorlist">{% for error in row.errors %}<li>{{ error }}</li>{% endfor %}</ul>{% else %}<span class="success-copy">آمادهٔ ثبت</span>{% endif %}</td>
+      </tr>{% endfor %}</tbody>
+    </table></div>
+    {% if token %}<form method="post">{% csrf_token %}<input type="hidden" name="token" value="{{ token }}"><input type="hidden" name="confirm" value="1"><div class="submit-row"><button type="submit" class="default">تأیید و ثبت موارد معتبر</button></div></form>{% endif %}
+  </section>
+  {% endif %}
+</div>
+{% endblock %}

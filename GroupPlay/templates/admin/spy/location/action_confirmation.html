@@ -1,0 +1,21 @@
+{% extends "admin/base_site.html" %}
+{% block breadcrumbs %}<div class="breadcrumbs"><a href="{% url 'admin:index' %}">خانه</a> › <a href="{% url 'admin:spy_location_changelist' %}">مکان‌های جاسوس</a> › تأیید عملیات</div>{% endblock %}
+{% block content %}
+<div class="confirmation-card">
+  <div class="confirmation-icon" aria-hidden="true">!</div>
+  <h1>{{ title }}</h1>
+  <p class="warning-copy">{{ warning }}</p>
+  <p>{{ objects|length }} مکان انتخاب شده است.</p>
+  <ul>{% for object in objects %}<li>{{ object }}</li>{% endfor %}</ul>
+  <form method="post">
+    {% csrf_token %}
+    {% for object in objects %}<input type="hidden" name="{{ action_checkbox_name }}" value="{{ object.pk }}">{% endfor %}
+    <input type="hidden" name="action" value="{{ action_name }}">
+    <input type="hidden" name="confirm_action" value="1">
+    <div class="submit-row">
+      <a class="button cancel-link" href="{% url 'admin:spy_location_changelist' %}">انصراف</a>
+      <button type="submit" class="default">تأیید و ادامه</button>
+    </div>
+  </form>
+</div>
+{% endblock %}

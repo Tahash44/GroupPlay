@@ -41,6 +41,5 @@ You are a senior full-stack engineer working on GroupPlay, a Persian-first web a
 - Do not introduce a new dependency or architectural pattern unless it solves a concrete need and is recorded in `decisions.md`.
 - Do not edit generated migrations by hand after they have been applied; create a new migration when model changes require one.
 - Do not treat the old `Documents/api-doc.yaml` as authoritative without checking the Django routes, serializers, and frontend client.
-- Do not expose `SpySessionDetailSerializer.players[].role` before the game is
-  legitimately complete; the current implementation does so and must be treated as
-  a security/game-integrity defect.
+- Do not expose `SpySessionDetailSerializer.players[].role`, location, winner, or
+  winning side before the game is legitimately complete.

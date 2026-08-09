@@ -1,0 +1,388 @@
+@import '../../../../shared/styles/tokens.css';
+
+.ingame-page {
+  min-height: 100vh;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  direction: rtl;
+  background: var(--color-background);
+  color: var(--color-text);
+  transition: opacity var(--motion-normal) ease;
+}
+
+.ingame-page-paused {
+  opacity: 0.85;
+}
+
+.ingame-page-center {
+  align-items: center;
+  justify-content: center;
+}
+
+.ingame-status {
+  color: var(--color-on-surface-variant);
+  font-size: 15px;
+}
+
+.ingame-status-error {
+  color: var(--color-primary);
+}
+
+/* هدر */
+.ingame-header {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: calc(var(--space-3) + env(safe-area-inset-top)) var(--space-4) var(--space-3);
+  background: color-mix(in srgb, var(--color-background) 94%, transparent);
+  border-bottom: 1px solid var(--color-outline-variant);
+  backdrop-filter: blur(12px);
+}
+
+.ingame-header-brand {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.ingame-brand {
+  font-weight: 700;
+  font-size: 22px;
+  color: var(--color-primary);
+  margin: 0;
+}
+
+.ingame-icon-btn {
+  border: none;
+  background: transparent;
+  color: var(--color-text-secondary);
+  border-radius: 999px;
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.ingame-icon-btn:hover {
+  background: var(--color-surface-container);
+}
+
+.ingame-help { position: relative; }
+.ingame-help summary { list-style: none; }
+.ingame-help summary::-webkit-details-marker { display: none; }
+.ingame-help__popover {
+  position: absolute;
+  top: calc(100% + var(--space-2));
+  left: 0;
+  z-index: 40;
+  width: min(340px, calc(100vw - 32px));
+  padding: var(--space-4);
+  border: 1px solid var(--color-outline-variant);
+  border-radius: var(--radius-card);
+  background: var(--color-surface-bright);
+  color: var(--color-text);
+  box-shadow: var(--shadow-sheet);
+  font-size: 14px;
+  line-height: 1.8;
+  text-align: right;
+}
+@media (hover: hover) {
+  .ingame-help:not([open]) .ingame-help__popover { display: none; }
+  .ingame-help:not([open]):hover .ingame-help__popover,
+  .ingame-help:not([open]):focus-within .ingame-help__popover { display: block; }
+}
+
+/* بدنه اصلی */
+.ingame-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  gap: var(--space-6);
+  padding: var(--space-8) var(--space-4) var(--space-5);
+}
+
+.ingame-round-status {
+  margin: 0;
+  padding: 5px var(--space-3);
+  border: 1px solid var(--color-outline-variant);
+  border-radius: var(--radius-full);
+  background: var(--color-surface-container);
+  color: var(--color-text-secondary);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.ingame-round-status--running {
+  border-color: var(--color-success);
+  background: color-mix(in srgb, var(--color-success) 9%, var(--color-surface));
+  color: var(--color-success);
+}
+
+/* تایمر دایره‌ای */
+.ingame-timer-wrap {
+  position: relative;
+  width: min(288px, calc(100vw - 56px));
+  aspect-ratio: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.ingame-timer-ring {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  transform: rotate(-90deg);
+}
+
+.ingame-timer-ring-bg {
+  fill: none;
+  stroke: rgba(38, 38, 38, 0.1);
+  stroke-width: 2;
+}
+
+.ingame-timer-ring-progress {
+  fill: none;
+  stroke: var(--color-primary);
+  stroke-width: 3;
+  stroke-linecap: round;
+  transition: stroke-dashoffset 1s linear;
+}
+
+.ingame-timer-display {
+  font-family: var(--font-bricolage);
+  font-weight: 700;
+  font-size: clamp(48px, 15vw, 64px);
+  color: var(--color-text);
+  z-index: 1;
+  font-variant-numeric: tabular-nums;
+}
+
+.ingame-timer-pulse {
+  animation: ingame-soft-pulse 2s infinite ease-in-out;
+}
+
+@keyframes ingame-soft-pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.9; transform: scale(1.02); }
+}
+
+/* کنترل‌ها */
+.ingame-controls {
+  width: 100%;
+  max-width: 380px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.ingame-toggle-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 16px 24px;
+  border-radius: 4px;
+  font-family: var(--font-vazir);
+  font-weight: 700;
+  font-size: 20px;
+  color: var(--color-on-primary);
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+}
+
+.ingame-toggle-btn:active {
+  transform: translate(2px, 2px);
+  box-shadow: 2px 2px 0px 0px var(--color-ink-charcoal);
+}
+
+.ingame-toggle-btn-running {
+  background: var(--color-primary);
+}
+
+.ingame-toggle-btn-paused {
+  background: var(--color-secondary);
+}
+
+.ingame-toggle-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.ingame-early-stop-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 16px 24px;
+  background: transparent;
+  border: 2px solid rgba(38, 38, 38, 0.4);
+  border-radius: 4px;
+  color: var(--color-ink-charcoal);
+  cursor: pointer;
+  font-family: var(--font-vazir);
+  transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+}
+.ingame-early-stop-btn:active {
+  transform: translate(2px, 2px);
+  box-shadow: 2px 2px 0px 0px var(--color-ink-charcoal);
+}
+
+.ingame-early-stop-btn:hover {
+  background: rgba(203, 51, 51, 0.06);
+}
+
+.ingame-early-stop-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.ingame-early-stop-label {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  line-height: 1.4;
+}
+
+.ingame-early-stop-label > span:first-child {
+  font-family: var(--font-vazir);
+  font-weight: 700;
+  font-size: 20px;
+}
+
+.ingame-early-stop-sub {
+  font-size: 12px;
+  opacity: 0.8;
+}
+
+/* اورلی مشترک برای مودال‌ها */
+.ingame-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  background: rgba(38, 38, 38, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.ingame-modal {
+  background: var(--color-surface);
+  border-radius: 12px;
+  padding: 28px 24px;
+  max-width: 360px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  text-align: center;
+}
+
+.ingame-modal-text {
+  font-size: 17px;
+  font-weight: 600;
+  color: var(--color-on-surface);
+}
+
+.ingame-modal-actions {
+  display: flex;
+  gap: 12px;
+  width: 100%;
+}
+
+.ingame-modal-cancel,
+.ingame-modal-confirm {
+  flex: 1;
+  padding: 12px;
+  border-radius: 8px;
+  font-family: var(--font-vazir);
+  font-weight: 700;
+  cursor: pointer;
+  border: 2px solid var(--color-ink-charcoal);
+}
+
+.ingame-modal-cancel {
+  background: transparent;
+  color: var(--color-ink-charcoal);
+}
+
+.ingame-modal-confirm {
+  background: var(--color-primary);
+  color: var(--color-on-primary);
+  border-color: var(--color-primary);
+}
+
+.ingame-modal-cancel:disabled,
+.ingame-modal-confirm:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* مودال زمان تمام شد */
+.ingame-timesup-modal {
+  gap: 24px;
+}
+
+.ingame-timesup-title {
+  font-family: var(--font-bricolage);
+  font-weight: 700;
+  font-size: 26px;
+  color: var(--color-primary);
+}
+
+.ingame-timesup-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  padding: 14px 20px;
+  background: var(--color-primary);
+  color: var(--color-on-primary);
+  border: none;
+  border-radius: 8px;
+  font-family: var(--font-vazir);
+  font-weight: 700;
+  font-size: 17px;
+  cursor: pointer;
+}
+
+.ingame-timesup-btn:hover {
+  filter: brightness(1.05);
+}
+
+.ingame-spy-guess-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 12px 20px;
+  background: var(--color-surface);
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+  font-family: var(--font-vazir);
+  font-weight: 700;
+  font-size: 15px;
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.ingame-spy-guess-btn:active {
+  transform: translate(2px, 2px);
+ }
+
+.ingame-spy-guess-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}

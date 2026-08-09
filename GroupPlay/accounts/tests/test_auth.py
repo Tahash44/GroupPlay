@@ -76,6 +76,24 @@ class LoginViewTest(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertIn("access_token", response.data)
         self.assertIn("refresh_token", response.data)
+        self.assertNotIn("admin_url", response.data)
+
+    def test_superuser_login_creates_admin_session_and_returns_admin_url(self):
+        admin = User.objects.create_superuser(
+            username="owner",
+            email="owner@example.com",
+            password="strongpass123",
+        )
+        response = self.client.post(
+            self.url,
+            {"username": admin.username, "password": "strongpass123"},
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data["admin_url"], "/admin/")
+        self.assertEqual(int(self.client.session["_auth_user_id"]), admin.pk)
+        admin_response = self.client.get(reverse("admin:index"))
+        self.assertEqual(admin_response.status_code, status.HTTP_200_OK)
 
     def test_login_wrong_password_returns_401(self):
         """Wrong password should return 401."""

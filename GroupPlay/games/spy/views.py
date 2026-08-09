@@ -3,9 +3,10 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from rest_framework import status
-from django.shortcuts import get_object_or_404
 from rest_framework.generics import RetrieveAPIView
+from django.shortcuts import get_object_or_404
 from games.models import GameSession
+from rest_framework.pagination import PageNumberPagination
 from games.spy.serializers import (
     SpySessionCreateSerializer,
     SpySessionResponseSerializer,
@@ -13,11 +14,11 @@ from games.spy.serializers import (
     TimerResponseSerializer,
     TimerPauseResponseSerializer,
     TimerResumeResponseSerializer,
+    SpySessionHistorySerializer,
     TimerStopResponseSerializer,
 )
-from games.spy.services import SpyGameService,SpyVoteService, SpyGuessService,SpyTimerService
+from games.spy.services import SpyGameService, SpyVoteService, SpyGuessService, SpyTimerService
 
-from .models import SpyGameState
 from .services import SpyRevealService
 from .serializers import (
     PendingPlayerSerializer,
@@ -28,12 +29,20 @@ from .serializers import (
     GameResultResponseSerializer,
 )
 
+class SpySessionHistoryPagination(PageNumberPagination):
+    page_size = 10
+    page_size_query_param = "page_size"
+    max_page_size = 50
+
 class SpySessionCreateView(APIView):
     permission_classes = [IsAuthenticated]
 
     @transaction.atomic
     def post(self, request):
-        serializer = SpySessionCreateSerializer(data=request.data)
+        serializer = SpySessionCreateSerializer(
+            data=request.data,
+            context={"request": request},
+        )
         serializer.is_valid(raise_exception=True)
 
         session = SpyGameService.create_session(
@@ -48,26 +57,40 @@ class SpySessionCreateView(APIView):
         return Response(response_serializer.data, status=status.HTTP_201_CREATED)
 
     def get(self, request):
-        sessions = GameSession.objects.filter(
+        queryset = GameSession.objects.filter(
             host=request.user,
             game_type=GameSession.GameType.SPY
         ).order_by("-created_at")
 
-        serializer = SpySessionDetailSerializer(sessions, many=True)
-        return Response(serializer.data)
+        status_param = request.query_params.get("status")
+        if status_param:
+            queryset = queryset.filter(spy_state__status=status_param)
 
-from django.shortcuts import get_object_or_404
-from rest_framework.generics import RetrieveAPIView
+        paginator = SpySessionHistoryPagination()
+        page = paginator.paginate_queryset(queryset, request)
+        serializer = SpySessionHistorySerializer(page, many=True)
+        return paginator.get_paginated_response(serializer.data)
+
+def get_host_spy_session(request, session_id):
+    return get_object_or_404(
+        GameSession.objects.filter(
+            host=request.user,
+            game_type=GameSession.GameType.SPY,
+        ),
+        id=session_id,
+    )
+
 
 class SpySessionDetailView(RetrieveAPIView):
     permission_classes = [IsAuthenticated]
     serializer_class = SpySessionDetailSerializer
-    queryset = GameSession.objects.filter(game_type=GameSession.GameType.SPY)
     lookup_field = 'id'
 
-    def get_object(self):
-
-        return get_object_or_404(self.queryset, id=self.kwargs["id"])
+    def get_queryset(self):
+        return GameSession.objects.filter(
+            host=self.request.user,
+            game_type=GameSession.GameType.SPY,
+        )
 
 
 
@@ -79,7 +102,7 @@ class SpySessionRevealView(APIView):
 
     def get(self, request, id):
 
-        session = get_object_or_404(GameSession, id=id)
+        session = get_host_spy_session(request, id)
 
         players = SpyRevealService.get_pending_players(session)
 
@@ -92,7 +115,7 @@ class SpySessionRevealView(APIView):
 
     def post(self, request, id):
 
-        session = get_object_or_404(GameSession, id=id)
+        session = get_host_spy_session(request, id)
 
         serializer = RevealRoleRequestSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
@@ -108,10 +131,7 @@ class SpySessionTimerView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request, id):
-        session = get_object_or_404(
-            GameSession.objects.filter(game_type=GameSession.GameType.SPY),
-            id=id
-        )
+        session = get_host_spy_session(request, id)
 
         result = SpyTimerService.get_timer_status(session)
         serializer = TimerResponseSerializer(result)
@@ -122,10 +142,7 @@ class SpySessionTimerPauseView(APIView):
     permission_classes = [IsAuthenticated]
 
     def post(self, request, id):
-        session = get_object_or_404(
-            GameSession.objects.filter(game_type=GameSession.GameType.SPY),
-            id=id
-        )
+        session = get_host_spy_session(request, id)
 
         result = SpyTimerService.pause_timer(session)
         serializer = TimerPauseResponseSerializer(result)
@@ -136,10 +153,7 @@ class SpySessionTimerResumeView(APIView):
     permission_classes = [IsAuthenticated]
 
     def post(self, request, id):
-        session = get_object_or_404(
-            GameSession.objects.filter(game_type=GameSession.GameType.SPY),
-            id=id
-        )
+        session = get_host_spy_session(request, id)
 
         result = SpyTimerService.resume_timer(session)
         serializer = TimerResumeResponseSerializer(result)
@@ -150,10 +164,7 @@ class SpySessionTimerStopView(APIView):
     permission_classes = [IsAuthenticated]
 
     def post(self, request, id):
-        session = get_object_or_404(
-            GameSession.objects.filter(game_type=GameSession.GameType.SPY),
-            id=id
-        )
+        session = get_host_spy_session(request, id)
 
         result = SpyTimerService.stop_timer(session)
         serializer = TimerStopResponseSerializer(result)
@@ -161,22 +172,29 @@ class SpySessionTimerStopView(APIView):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
+class SpySessionEarlyGuessView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, id):
+        session = get_host_spy_session(request, id)
+        result = SpyTimerService.start_spy_guess(session)
+        return Response(result, status=status.HTTP_200_OK)
+
+
 
 class SpySessionVoteView(APIView):
     permission_classes = [IsAuthenticated]
 
     def post(self, request, id):
-        session = get_object_or_404(
-            GameSession.objects.filter(game_type=GameSession.GameType.SPY),
-            id=id
-        )
+        session = get_host_spy_session(request, id)
 
         serializer = VoteRequestSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
 
         result = SpyVoteService.vote(
             session=session,
-            voted_player_id=serializer.validated_data["voted_player_id"],
+            voted_player_ids=serializer.validated_data.get("voted_player_ids")
+            or [serializer.validated_data["voted_player_id"]],
         )
 
         return Response(VoteResultResponseSerializer(result).data, status=status.HTTP_200_OK)
@@ -186,24 +204,14 @@ class SpySessionGuessView(APIView):
     permission_classes = [IsAuthenticated]
 
     def post(self, request, id):
-        session = get_object_or_404(
-            GameSession.objects.filter(game_type=GameSession.GameType.SPY),
-            id=id
-        )
-
-        spy_game = SpyGameState.objects.get(session=session)
-        if spy_game.status != SpyGameState.Status.SPY_GUESS:
-            return Response(
-                {"detail": "Session is not in SPY_GUESS state."},
-                status=status.HTTP_409_CONFLICT
-            )
+        session = get_host_spy_session(request, id)
 
         serializer = SpyGuessRequestSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
 
         result = SpyGuessService.guess_location(
             session=session,
-            location_name=serializer.validated_data["location"],
+            is_correct=serializer.validated_data["is_correct"],
         )
 
         return Response(GameResultResponseSerializer(result).data, status=status.HTTP_200_OK)

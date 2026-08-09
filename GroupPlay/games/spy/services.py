@@ -3,9 +3,58 @@ from django.db import transaction
 from games.models import GameSession, Player
 from games.spy.models import SpyGameState, SpyPlayerState, Location
 from django.utils import timezone
-from rest_framework.exceptions import ValidationError
+from rest_framework.exceptions import APIException, ValidationError
+
+
+class InvalidGameState(APIException):
+    status_code = 409
+    default_detail = "Operation is not allowed in the current game state."
+    default_code = "invalid_game_state"
+
+    def __init__(self, detail=None):
+        super().__init__({
+            "detail": detail or self.default_detail,
+            "code": self.default_code,
+        })
+
+
+def get_spy_state(session, *allowed_statuses):
+    spy_game = SpyGameState.objects.get(session=session)
+    if allowed_statuses and spy_game.status not in allowed_statuses:
+        allowed = ", ".join(allowed_statuses)
+        raise InvalidGameState(
+            f"Operation requires one of these states: {allowed}."
+        )
+    return spy_game
 
 class SpyGameService:
+    RECENT_LOCATION_WINDOW = 5
+
+    @staticmethod
+    def _select_location(host):
+        active_locations = Location.objects.filter(
+            is_active=True,
+            archived_at__isnull=True,
+        )
+        recent_location_ids = list(
+            SpyGameState.objects.filter(
+                session__host=host,
+                status=SpyGameState.Status.FINISHED,
+            )
+            .order_by("-session__created_at")
+            .values_list("location_id", flat=True)[:SpyGameService.RECENT_LOCATION_WINDOW]
+        )
+
+        for excluded_count in range(len(recent_location_ids), -1, -1):
+            location = (
+                active_locations.exclude(pk__in=recent_location_ids[:excluded_count])
+                .order_by("?")
+                .first()
+            )
+            if location is not None:
+                return location
+        return None
+
     @staticmethod
     @transaction.atomic
     def create_session(host, timer_duration, spy_count, player_data):
@@ -15,9 +64,20 @@ class SpyGameService:
             game_type=GameSession.GameType.SPY
         )
 
-        location = Location.objects.order_by('?').first()
+        location = SpyGameService._select_location(host)
         if not location:
-            location = Location.objects.create(name_en="Secret Base", name_fa="پایگاه مخفی")
+            fallback_name = "Secret Base"
+            suffix = 1
+            while Location.objects.filter(name_en__iexact=fallback_name).exists():
+                suffix += 1
+                fallback_name = f"Secret Base {suffix}"
+            location = Location.objects.create(
+                name_en=fallback_name,
+                name_fa="پایگاه مخفی",
+                category=Location.Category.GENERAL,
+                difficulty=Location.Difficulty.EASY,
+                is_active=True,
+            )
 
         spy_state = SpyGameState.objects.create(
             session=session,
@@ -28,13 +88,6 @@ class SpyGameService:
         )
 
         players_list = []
-
-        host_player = Player.objects.create(
-            session=session,
-            friend_id=None,
-            name=host.name or host.username
-        )
-        players_list.append(host_player)
 
         for p in player_data:
             player = Player.objects.create(
@@ -72,6 +125,7 @@ class SpyRevealService:
 
     @staticmethod
     def get_pending_players(session):
+        get_spy_state(session, SpyGameState.Status.ROLE_REVEAL)
         states = SpyPlayerState.objects.filter(
             session=session,
             role_revealed=False
@@ -80,16 +134,22 @@ class SpyRevealService:
         return [state.player for state in states]
 
     @staticmethod
+    @transaction.atomic
     def reveal_role(session, player_id):
-        player = Player.objects.get(id=player_id, session=session)
+        spy_game = SpyGameState.objects.select_for_update().get(session=session)
+        if spy_game.status != SpyGameState.Status.ROLE_REVEAL:
+            raise InvalidGameState("Roles can only be revealed during ROLE_REVEAL.")
 
-        player_state = SpyPlayerState.objects.get(
-            player=player,
-            session=session
-        )
+        player_state = SpyPlayerState.objects.select_for_update().filter(
+            player_id=player_id,
+            player__session=session,
+            session=session,
+        ).first()
+        if player_state is None:
+            raise ValidationError("Player does not belong to this session.")
 
         if player_state.role_revealed:
-            raise ValueError("Role already revealed")
+            raise InvalidGameState("Role has already been revealed.")
 
         player_state.role_revealed = True
         player_state.save()
@@ -100,12 +160,9 @@ class SpyRevealService:
         ).exists()
 
         if all_revealed:
-            spy_game = SpyGameState.objects.get(session=session)
             spy_game.status = SpyGameState.Status.IN_PROGRESS
-            spy_game.timer_started_at = timezone.now()
+            spy_game.timer_started_at = None
             spy_game.save(update_fields=["status", "timer_started_at"])
-
-        spy_game = SpyGameState.objects.get(session=session)
 
         if player_state.is_spy:
             return {
@@ -115,36 +172,15 @@ class SpyRevealService:
             }
 
         return {
-            "role": player_state.role_en,
-            "location": spy_game.location.name_en,
+            "role": player_state.role_fa,
+            "location": spy_game.location.name_fa,
             "status": spy_game.status
         }
 
 class SpyTimerService:
     @staticmethod
     def get_timer_status(session):
-        spy_game = SpyGameState.objects.get(session=session)
-
-        elapsed = spy_game.timer_elapsed or 0
-
-        if spy_game.timer_started_at:
-            delta = timezone.now() - spy_game.timer_started_at
-            elapsed += int(delta.total_seconds())
-
-        remaining_time = max(spy_game.timer_duration - elapsed, 0)
-
-        return {
-            "timer_duration": spy_game.timer_duration,
-            "timer_elapsed": elapsed,
-            "timer_started_at": spy_game.timer_started_at,
-            "remaining_time": remaining_time,
-            "is_running": spy_game.timer_started_at is not None and remaining_time > 0,
-        }
-
-class SpyTimerService:
-    @staticmethod
-    def get_timer_status(session):
-        spy_game = SpyGameState.objects.get(session=session)
+        spy_game = get_spy_state(session, SpyGameState.Status.IN_PROGRESS)
 
         elapsed = spy_game.timer_elapsed or 0
 
@@ -164,7 +200,7 @@ class SpyTimerService:
 
     @staticmethod
     def pause_timer(session):
-        spy_game = SpyGameState.objects.get(session=session)
+        spy_game = get_spy_state(session, SpyGameState.Status.IN_PROGRESS)
 
         if spy_game.timer_started_at:
             delta = timezone.now() - spy_game.timer_started_at
@@ -185,7 +221,7 @@ class SpyTimerService:
 
     @staticmethod
     def resume_timer(session):
-        spy_game = SpyGameState.objects.get(session=session)
+        spy_game = get_spy_state(session, SpyGameState.Status.IN_PROGRESS)
 
         if spy_game.timer_started_at:
             raise ValidationError("Timer is already running.")
@@ -212,7 +248,7 @@ class SpyTimerService:
 
     @staticmethod
     def stop_timer(session):
-        spy_game = SpyGameState.objects.get(session=session)
+        spy_game = get_spy_state(session, SpyGameState.Status.IN_PROGRESS)
 
 
         if spy_game.timer_started_at:
@@ -236,39 +272,68 @@ class SpyTimerService:
             "is_running": False,
         }
 
+    @staticmethod
+    def start_spy_guess(session):
+        spy_game = get_spy_state(session, SpyGameState.Status.IN_PROGRESS)
+
+        if spy_game.timer_started_at:
+            delta = timezone.now() - spy_game.timer_started_at
+            spy_game.timer_elapsed += int(delta.total_seconds())
+
+        spy_game.timer_started_at = None
+        spy_game.status = SpyGameState.Status.SPY_GUESS
+        spy_game.save(update_fields=["timer_elapsed", "timer_started_at", "status"])
+
+        return {
+            "message": "Status changed to spy guess",
+            "status": spy_game.status,
+            "timer_duration": spy_game.timer_duration,
+            "timer_elapsed": spy_game.timer_elapsed,
+            "is_running": False,
+        }
+
 
 
 class SpyVoteService:
 
     @staticmethod
-    def vote(session, voted_player_id):
-        spy_game = SpyGameState.objects.get(session=session)
+    def vote(session, voted_player_ids):
+        spy_game = get_spy_state(session, SpyGameState.Status.VOTING)
 
-        if spy_game.status != SpyGameState.Status.VOTING:
-            raise ValidationError("Session is not in VOTING state.")
+        selected_ids = set(voted_player_ids)
+        if len(selected_ids) != spy_game.spy_count:
+            raise ValidationError(f"Exactly {spy_game.spy_count} players must be selected.")
 
-        try:
-            voted_player = Player.objects.get(id=voted_player_id, session=session)
-        except Player.DoesNotExist:
-            raise ValidationError(f"Player {voted_player_id} not found in this session.")
+        valid_ids = set(
+            Player.objects.filter(id__in=selected_ids, session=session)
+            .values_list("id", flat=True)
+        )
+        if valid_ids != selected_ids:
+            raise ValidationError("One or more selected players are not in this session.")
 
-        voted_state = SpyPlayerState.objects.get(player=voted_player, session=session)
+        spy_player_ids = set(
+            SpyPlayerState.objects.filter(session=session, is_spy=True)
+            .values_list("player_id", flat=True)
+        )
+        selected_names = list(
+            Player.objects.filter(id__in=selected_ids, session=session)
+            .order_by("id")
+            .values_list("name", flat=True)
+        )
+        voted_player_label = "، ".join(selected_names)
 
-        if voted_state.is_spy:
+        if selected_ids == spy_player_ids:
             spy_game.status = SpyGameState.Status.SPY_GUESS
             spy_game.save(update_fields=["status"])
             return {
                 "result": "spy_caught",
                 "spy_can_guess": True,
-                "voted_player": voted_player.name,
+                "voted_player": voted_player_label,
                 "status": spy_game.status,
                 "winner": [],
             }
         else:
-            spy_player_ids = list(
-                SpyPlayerState.objects.filter(session=session, is_spy=True)
-                .values_list("player_id", flat=True)
-            )
+            spy_player_ids = list(spy_player_ids)
             spy_game.status = SpyGameState.Status.FINISHED
             spy_game.save(update_fields=["status"])
             session.winner = spy_player_ids
@@ -276,7 +341,7 @@ class SpyVoteService:
             return {
                 "result": "wrong_vote",
                 "spy_can_guess": False,
-                "voted_player": voted_player.name,
+                "voted_player": voted_player_label,
                 "status": spy_game.status,
                 "winner": spy_player_ids,
             }
@@ -285,18 +350,10 @@ class SpyVoteService:
 class SpyGuessService:
 
     @staticmethod
-    def guess_location(session, location_name):
-        spy_game = SpyGameState.objects.get(session=session)
+    def guess_location(session, is_correct):
+        spy_game = get_spy_state(session, SpyGameState.Status.SPY_GUESS)
 
-        if spy_game.status != SpyGameState.Status.SPY_GUESS:
-            raise ValidationError("Session is not in SPY_GUESS state.")
-
-        correct = (
-                location_name.strip().lower() == spy_game.location.name_en.strip().lower()
-                or location_name.strip() == spy_game.location.name_fa.strip()
-        )
-
-        if correct:
+        if is_correct:
             winner_ids = list(
                 SpyPlayerState.objects.filter(session=session, is_spy=True)
                 .values_list("player_id", flat=True)
@@ -314,8 +371,8 @@ class SpyGuessService:
         session.save(update_fields=["winner"])
 
         return {
-            "correct": correct,
-            "location": spy_game.location.name_en,
+            "correct": is_correct,
+            "location": spy_game.location.name_fa,
             "winner": winner_ids,
             "status": spy_game.status,
         }

@@ -25,7 +25,7 @@
 }
 
 /* در صفحه‌ی راست‌چین، فلش برگشت باید رو به راست باشه */
-.game-detail-back-link .material-symbols-outlined {
+.game-detail-back-link svg {
   transform: scaleX(-1);
 }
 

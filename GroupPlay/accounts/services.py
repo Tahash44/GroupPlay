@@ -21,10 +21,16 @@ class AuthService:
     @staticmethod
     def login(username: str, password: str) -> dict:
         """Authenticate user and return JWT tokens. Raises ValueError on failure."""
+        _, tokens = AuthService.login_with_user(username, password)
+        return tokens
+
+    @staticmethod
+    def login_with_user(username: str, password: str):
+        """Authenticate once and return both the user and generated tokens."""
         user = authenticate(username=username, password=password)
         if user is None:
             raise ValueError("Invalid credentials.")
-        return AuthService._generate_tokens(user)
+        return user, AuthService._generate_tokens(user)
 
     @staticmethod
     def refresh(refresh_token: str) -> dict:

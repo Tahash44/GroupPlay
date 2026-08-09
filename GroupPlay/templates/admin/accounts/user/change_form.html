@@ -1,0 +1,12 @@
+{% extends "admin/change_form.html" %}
+
+{% block object-tools-items %}
+  {% if can_suspend %}
+    <li>
+      <a href="{{ suspension_url }}" class="{% if original.is_active %}suspend-link{% else %}reactivate-link{% endif %}">
+        {% if original.is_active %}تعلیق حساب{% else %}فعال‌سازی حساب{% endif %}
+      </a>
+    </li>
+  {% endif %}
+  {{ block.super }}
+{% endblock %}

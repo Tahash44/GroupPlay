@@ -1,6 +1,11 @@
 import api from '../../../shared/api/api';
 import type { LoginPayload, RegisterPayload, TokenResponse, User } from '../types/auth.types';
 
+export function resolveAdminUrl(adminUrl: string): string {
+  const backendOrigin = `${window.location.protocol}//${window.location.hostname}:8000`;
+  return new URL(adminUrl, backendOrigin).toString();
+}
+
 /*
   همه درخواست‌های مربوط به احراز هویت اینجان.
   هر تابع با بک‌اند صحبت می‌کنه.

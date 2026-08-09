@@ -4,31 +4,7 @@
   این فایل رو هر کامپوننتی که نیاز به این افکت‌ها داره import می‌کنه.
 */
 
-@import url('https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@400;600;700&family=Vazirmatn:wght@400;700&display=swap');
-
-:root {
-  --color-primary: #a9171e;
-  --color-on-primary: #ffffff;
-  --color-secondary: #3b6188;
-  --color-secondary-container: #acd2ff;
-  --color-on-secondary-container: #345a81;
-  --color-ink-charcoal: #262626;
-  --color-paper-base: #fdfcf8;
-  --color-surface: #fff8f7;
-  --color-surface-dim: #efd4d1;
-  --color-surface-container-low: #fff0ef;
-  --color-surface-container: #ffe9e7;
-  --color-surface-container-high: #fee2df;
-  --color-on-surface: #271817;
-  --color-on-surface-variant: #5a403e;
-  --color-outline: #8e706d;
-  --color-outline-variant: #e3bebb;
-  --color-pencil-highlight: #ffec8b;
-  --color-blueprint-fill: #e6f0f7;
-
-  --font-vazir: 'Vazirmatn', sans-serif;
-  --font-bricolage: 'Bricolage Grotesque', sans-serif;
-}
+@import './tokens.css';
 
 /* پس‌زمینه‌ی بافت کاغذ (نقطه‌چین کم‌رنگ) */
 .paper-texture {

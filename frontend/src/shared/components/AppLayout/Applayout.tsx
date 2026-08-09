@@ -1,188 +1,88 @@
-import { type ReactNode, useState, useRef, useEffect } from 'react';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
+import type { ReactNode } from 'react';
+import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import LogoutButton from '../../../features/auth/components/LogoutButton';
+import Icon from '../Icon/Icon';
 import './AppLayout.css';
 
-interface NavItem {
-  label: string;
-  icon: string;
-  path: string | null;
-}
+interface NavItem { label: string; mobileLabel?: string; icon: string; path: string; }
 
 const NAV_ITEMS: NavItem[] = [
-  { label: 'پیش‌خوان', icon: 'dashboard', path: '/dashboard' },
-  { label: 'دوستان', icon: 'group', path: null },
-  { label: 'تنظیمات بازی', icon: 'sports_esports', path: null },
-  { label: 'تاریخچه', icon: 'history', path: null },
+  { label: 'بازی‌ها', icon: 'dashboard', path: '/dashboard' },
+  { label: 'پروفایل', icon: 'person', path: '/profile' },
+  { label: 'دوستان', icon: 'group', path: '/friends' },
+  { label: 'تاریخچه', icon: 'history', path: '/history' },
 ];
 
-function UserMenu({
-  name,
-  username,
-  onNavigate,
-}: {
-  name?: string;
-  username?: string;
-  onNavigate: (path: string) => void;
-}) {
-  return (
-    <div className="app-user-menu">
-      <div className="app-user-menu-header">
-        <div className="app-user-menu-name">{name || username || 'کاربر'}</div>
-      </div>
-      <div className="app-user-menu-divider" />
+const MOBILE_NAV_ITEMS: NavItem[] = [
+  { label: 'پروفایل', icon: 'person', path: '/profile' },
+  { label: 'بازی‌ها', icon: 'dashboard', path: '/dashboard' },
+  { label: 'دوستان', icon: 'group', path: '/friends' },
+  { label: 'تاریخچه', icon: 'history', path: '/history' },
+];
 
-      <button
-        type="button"
-        className="app-user-menu-item"
-        onClick={() => onNavigate('/profile')}
-      >
-        <span className="material-symbols-outlined">person</span>
-        پروفایل
-      </button>
-
-      <span className="app-user-menu-item app-user-menu-item--soon">
-        <span className="material-symbols-outlined">settings</span>
-        تنظیمات
-      </span>
-
-      <span className="app-user-menu-item app-user-menu-item--soon">
-        <span className="material-symbols-outlined">notifications</span>
-        اعلان‌ها
-      </span>
-
-      <div className="app-user-menu-divider" />
-      <div className="app-user-menu-logout">
-        <LogoutButton />
-      </div>
-    </div>
-  );
+function isPathActive(pathname: string, path: string) {
+  if (path === '/dashboard') return pathname === '/dashboard' || pathname.startsWith('/games/');
+  return pathname === path || pathname.startsWith(`${path}/`);
 }
 
 export default function AppLayout({ children }: { children: ReactNode }) {
   const { user } = useAuth();
-  const location = useLocation();
-  const navigate = useNavigate();
-
-  const [desktopMenuOpen, setDesktopMenuOpen] = useState(false);
-  const desktopMenuRef = useRef<HTMLDivElement>(null);
-
+  const { pathname } = useLocation();
   const initial = (user?.name || user?.username || '؟').charAt(0);
-
-  useEffect(() => {
-    function handleClickOutside(e: MouseEvent) {
-      if (desktopMenuRef.current && !desktopMenuRef.current.contains(e.target as Node)) {
-        setDesktopMenuOpen(false);
-      }
-    }
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
-
-  function handleMenuNavigate(path: string) {
-    setDesktopMenuOpen(false);
-    navigate(path);
-  }
 
   return (
     <div className="app-layout paper-texture">
+      <a className="app-skip-link" href="#main-content">رفتن به محتوای اصلی</a>
 
-      {/* ───── نوار بالا — موبایل ───── */}
       <header className="app-topbar">
-        <div className="app-brand">بازی‌گردان</div>
-        <div className="app-topbar-actions">
-          <Link to="/profile" className="app-avatar" aria-label="پروفایل">
-            {initial}
-          </Link>
-        </div>
+        <Link to="/dashboard" className="app-brand" aria-label="بازی‌گردان، صفحهٔ بازی‌ها">
+          <Icon name="sports_esports" />
+          <span>بازی‌گردان</span>
+        </Link>
+        <Link to="/profile" className="app-avatar" aria-label="پروفایل">
+          {initial}
+        </Link>
       </header>
 
-      {/* ───── نوار کناری — دسکتاپ ───── */}
-      <nav className="app-sidenav">
-        <div className="app-host-info" ref={desktopMenuRef}>
-          <div className="app-avatar-wrapper app-avatar-wrapper--desktop">
-            <button
-              type="button"
-              className="app-avatar app-avatar--lg"
-              aria-label="منوی کاربر"
-              onClick={() => setDesktopMenuOpen(prev => !prev)}
-            >
-              {initial}
-            </button>
-            {desktopMenuOpen && (
-              <UserMenu
-                name={user?.name}
-                username={user?.username}
-                onNavigate={handleMenuNavigate}
-              />
-            )}
-          </div>
-          <div>
-            <div className="app-host-name">{user?.name || user?.username || 'میزبان بازی'}</div>
-            <div className="app-host-sub">مدیریت دورهمی</div>
-          </div>
-        </div>
+      <aside className="app-sidenav">
+        <Link to="/dashboard" className="app-sidenav-brand">
+          <span className="app-sidenav-brand__mark"><Icon name="sports_esports" /></span>
+          <span><strong>بازی‌گردان</strong><small>همراه دورهمی شما</small></span>
+        </Link>
 
-        <div className="app-nav-links">
+        <nav className="app-nav-links" aria-label="ناوبری اصلی">
           {NAV_ITEMS.map(item => {
-            const isActive = item.path === location.pathname;
-            const content = (
-              <>
-                <span className="material-symbols-outlined">{item.icon}</span>
-                {item.label}
-              </>
-            );
-            return item.path ? (
-              <Link
-                key={item.label}
-                to={item.path}
-                className={`app-nav-link ${isActive ? 'app-nav-link--active' : ''}`}
-              >
-                {content}
+            const active = isPathActive(pathname, item.path);
+            return (
+              <Link key={item.path} to={item.path} className={`app-nav-link${active ? ' app-nav-link--active' : ''}`} aria-current={active ? 'page' : undefined}>
+                <Icon name={item.icon} size={22} weight={active ? 'fill' : 'regular'} />
+                <span>{item.label}</span>
               </Link>
-            ) : (
-              <span key={item.label} className="app-nav-link app-nav-link--soon" title="به زودی">
-                {content}
-              </span>
             );
           })}
-        </div>
+        </nav>
 
-        <button type="button" className="app-new-game-btn" title="به زودی">
-          شروع بازی جدید
-        </button>
+        <Link to="/dashboard" className="app-new-game-btn">
+          <Icon name="play_arrow" />
+          <span>شروع بازی جدید</span>
+        </Link>
+        <div className="app-logout-wrap"><LogoutButton /></div>
+      </aside>
 
-        <div className="app-logout-wrap">
-          <LogoutButton />
-        </div>
+      <nav className="app-bottomnav" aria-label="ناوبری موبایل">
+        {MOBILE_NAV_ITEMS.map(item => {
+          const active = isPathActive(pathname, item.path);
+          return (
+            <Link key={item.path} to={item.path} className={`app-bottomnav-link${active ? ' app-bottomnav-link--active' : ''}`} aria-current={active ? 'page' : undefined}>
+              <span className="app-bottomnav-icon"><Icon name={item.icon} size={22} weight={active ? 'fill' : 'regular'} /></span>
+              <span>{item.mobileLabel || item.label}</span>
+            </Link>
+          );
+        })}
       </nav>
 
-      {/* ───── نوار پایین — موبایل ───── */}
-      <nav className="app-bottomnav">
-        <Link
-          to="/dashboard"
-          className={`app-bottomnav-link ${location.pathname === '/dashboard' ? 'app-bottomnav-link--active' : ''}`}
-        >
-          <span className="material-symbols-outlined">sports_esports</span>
-          بازی‌ها
-        </Link>
-
-        <span className="app-bottomnav-link app-bottomnav-link--soon">
-          <span className="material-symbols-outlined">group</span>
-          دوستان
-        </span>
-
-        <Link
-          to="/profile"
-          className={`app-bottomnav-link ${location.pathname === '/profile' ? 'app-bottomnav-link--active' : ''}`}
-        >
-          <span className="material-symbols-outlined">person</span>
-          پروفایل
-        </Link>
-      </nav>
-
-      <main className="app-content">{children}</main>
+      <main id="main-content" className="app-content" tabIndex={-1}>{children}</main>
     </div>
   );
 }

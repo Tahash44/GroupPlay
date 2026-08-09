@@ -1,0 +1,205 @@
+@import '../../../../shared/styles/tokens.css';
+
+.spy-reveal-page {
+  min-height: 100vh;
+  min-height: 100dvh;
+  padding-bottom: 104px;
+  direction: rtl;
+  background: var(--color-background);
+  color: var(--color-text);
+}
+
+.spy-reveal-header {
+  position: sticky;
+  top: 0;
+  z-index: 30;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: calc(var(--space-3) + env(safe-area-inset-top)) var(--space-4) var(--space-3);
+  border-bottom: 1px solid var(--color-outline-variant);
+  background: color-mix(in srgb, var(--color-background) 94%, transparent);
+  backdrop-filter: blur(12px);
+}
+
+.spy-reveal-header-brand {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.spy-reveal-header-brand strong {
+  color: var(--color-primary);
+  font-size: 22px;
+}
+
+.spy-reveal-back,
+.spy-reveal-help summary {
+  width: 44px;
+  height: 44px;
+  display: grid;
+  place-items: center;
+  border: 0;
+  border-radius: var(--radius-full);
+  background: transparent;
+  color: var(--color-text-secondary);
+  cursor: pointer;
+}
+
+.spy-reveal-back:hover,
+.spy-reveal-help summary:hover {
+  background: var(--color-surface-container);
+  color: var(--color-text);
+}
+
+.spy-reveal-help {
+  position: relative;
+}
+
+.spy-reveal-help summary {
+  list-style: none;
+}
+
+.spy-reveal-help summary::-webkit-details-marker {
+  display: none;
+}
+
+.spy-reveal-help__popover {
+  position: absolute;
+  top: calc(100% + var(--space-2));
+  left: 0;
+  z-index: 40;
+  width: min(320px, calc(100vw - 32px));
+  padding: var(--space-4);
+  border: 1px solid var(--color-outline-variant);
+  border-radius: var(--radius-card);
+  background: var(--color-surface-bright);
+  box-shadow: var(--shadow-sheet);
+  font-size: 14px;
+  line-height: 1.8;
+  text-align: right;
+}
+
+@media (hover: hover) {
+  .spy-reveal-help:not([open]) .spy-reveal-help__popover { display: none; }
+  .spy-reveal-help:not([open]):hover .spy-reveal-help__popover,
+  .spy-reveal-help:not([open]):focus-within .spy-reveal-help__popover { display: block; }
+}
+
+.spy-reveal-main {
+  width: min(100%, 720px);
+  margin-inline: auto;
+  padding: var(--space-8) var(--space-4);
+}
+
+.spy-reveal-title-section {
+  margin-bottom: var(--space-8);
+  text-align: center;
+}
+
+.spy-reveal-title,
+.spy-reveal-subtitle {
+  margin: 0;
+}
+
+.spy-reveal-title {
+  color: var(--color-primary);
+  font-size: clamp(28px, 7vw, 40px);
+}
+
+.spy-reveal-subtitle {
+  margin-top: var(--space-2);
+  color: var(--color-text-secondary);
+  font-size: 15px;
+}
+
+.spy-reveal-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-3);
+}
+
+.spy-reveal-card {
+  min-height: 148px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  padding: var(--space-4);
+  border: 2px solid var(--color-border);
+  border-radius: var(--radius-card);
+  background: var(--color-surface-bright);
+  color: var(--color-text);
+  box-shadow: var(--shadow-card);
+  cursor: pointer;
+  transition: background var(--motion-fast) ease, box-shadow var(--motion-fast) ease;
+}
+
+.spy-reveal-card:hover:not(:disabled) {
+  background: var(--color-highlight);
+  box-shadow: 6px 6px 0 color-mix(in srgb, var(--color-border) 18%, transparent);
+}
+
+.spy-reveal-card:disabled {
+  cursor: wait;
+  opacity: .55;
+}
+
+.spy-reveal-card > svg {
+  color: var(--color-primary);
+  font-size: 26px;
+}
+
+.spy-reveal-card-name {
+  max-width: 100%;
+  overflow-wrap: anywhere;
+  color: var(--color-primary);
+  font-size: 20px;
+  font-weight: 700;
+  text-align: center;
+}
+
+.spy-reveal-card small {
+  color: var(--color-text-secondary);
+  font-size: 13px;
+}
+
+.spy-reveal-secret {
+  min-height: 190px;
+  display: grid;
+  place-items: center;
+}
+
+.spy-reveal-role {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-2);
+  text-align: center;
+}
+
+.spy-reveal-role > svg {
+  font-size: 48px;
+}
+
+.spy-reveal-role strong {
+  color: var(--color-secondary);
+  font-size: 28px;
+}
+
+.spy-reveal-role--location > svg,
+.spy-reveal-role--location strong {
+  color: var(--color-secondary);
+}
+
+.spy-reveal-role--spy > svg,
+.spy-reveal-role--spy strong {
+  color: var(--color-primary);
+}
+
+@media (min-width: 640px) {
+  .spy-reveal-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}

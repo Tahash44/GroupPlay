@@ -1,0 +1,87 @@
+@import '../../../shared/styles/sketch.css';
+
+.friend-item {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  background: var(--color-surface);
+  border-radius: 4px 14px 6px 16px;
+  list-style: none;
+}
+
+/* ── آواتار (سمت راست) ── */
+.friend-item-avatar {
+  flex-shrink: 0;
+  width: 44px;
+  height: 44px;
+  border-radius: 9999px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-bricolage);
+  font-weight: 700;
+  font-size: 16px;
+}
+
+.friend-avatar--pink {
+  background: var(--color-avatar-rose-bg);
+  color: var(--color-avatar-rose-text);
+}
+
+.friend-avatar--green {
+  background: var(--color-avatar-green-bg);
+  color: var(--color-avatar-green-text);
+}
+
+.friend-avatar--yellow {
+  background: var(--color-avatar-yellow-bg);
+  color: var(--color-avatar-yellow-text);
+}
+
+/* ── اسم (وسط) ── */
+.friend-item-name {
+  flex: 1;
+  font-family: var(--font-vazir);
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--color-on-surface);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ── اکشن‌ها (سمت چپ) ── */
+.friend-item-actions {
+  display: flex;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.friend-item-action-btn {
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-surface);
+  border-radius: 6px 12px 6px 12px;
+  color: var(--color-ink-charcoal);
+  cursor: pointer;
+  transition: background 0.15s ease, transform 0.15s ease;
+}
+
+.friend-item-action-btn svg {
+  font-size: 19px;
+}
+
+.friend-item-action-btn:hover {
+  background: var(--color-surface-container-low);
+  transform: translate(-1px, -1px);
+}
+
+@media (max-width: 380px) {
+  .friend-item { gap: var(--space-2); padding-inline: var(--space-3); }
+  .friend-item-actions { gap: var(--space-1); }
+}

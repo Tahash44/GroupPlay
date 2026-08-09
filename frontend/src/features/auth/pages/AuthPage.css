@@ -1,421 +1,101 @@
-/* ── فونت‌ها ── */
-@import url('https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;600;700&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap');
+@import '../../../shared/styles/tokens.css';
 
-/* ── متغیرها ── */
-:root {
-  /* رنگ‌ها */
-  --bg:              #FDFCF8;
-  --surface:         #fff8f7;
-  --surface-variant: #f8dcd9;
-  --primary:         #a9171e;
-  --primary-dark:    #930012;
-  --secondary:       #3b6188;
-  --text:            #271817;
-  --text-muted:      #5a403e;
-  --text-light:      #8e706d;
-  --border:          #262626;
-  --border-light:    #e3bebb;
-  --error:           #ba1a1a;
-  --error-bg:        #ffdad6;
-  --highlight:       #FFEC8B;
-  --ink:             #262626;
-
-  /* فونت */
-  --font: 'Vazirmatn', sans-serif;
-
-  /* انیمیشن */
-  --ease: 0.18s ease;
-}
-
-/* ── ریست ── */
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-/* ── کل صفحه ── */
 .auth-root {
   min-height: 100vh;
   min-height: 100dvh;
-  background-color: var(--bg);
-  background-image:
-    linear-gradient(rgba(0,0,0,0.018) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(0,0,0,0.018) 1px, transparent 1px);
-  background-size: 20px 20px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  direction: rtl;
-  padding: 32px 20px 24px;
-  position: relative;
-  overflow: hidden;
-}
-
-/* ── المان‌های تزئینی پس‌زمینه ── */
-.auth-deco {
-  position: absolute;
-  pointer-events: none;
-  opacity: 0.18;
-}
-.auth-deco--tl { top: 40px; left: 40px; }
-.auth-deco--br { bottom: 80px; right: 40px; }
-
-/* ── بخش بالا: برند ── */
-.auth-top {
-  width: 100%;
-  max-width: 420px;
-  text-align: center;
-  margin-bottom: 28px;
-  position: relative;
-  z-index: 1;
-}
-
-.auth-brand {
-  display: inline-flex;
-  align-items: center;
-  gap: 10px;
-  margin-bottom: 16px;
-}
-
-.auth-brand-name {
-  font-size: 28px;
-  font-weight: 700;
-  color: var(--primary);
-  letter-spacing: -0.4px;
-  transform: rotate(-1.5deg);
-  display: inline-block;
-  /* واکنش جوهری */
-  text-shadow: 1px 1px 0 rgba(169,23,30,0.12);
-}
-
-/* چیپ‌های بازی */
-.auth-game-chips {
-  display: flex;
+  display: grid;
+  grid-template-columns: minmax(0, 420px);
+  align-content: center;
   justify-content: center;
-  gap: 8px;
-  flex-wrap: wrap;
-  margin-bottom: 10px;
+  gap: var(--space-6);
+  padding: max(var(--space-6), env(safe-area-inset-top)) var(--space-5) max(var(--space-6), env(safe-area-inset-bottom));
+  overflow-x: hidden;
+  background-color: var(--color-background);
+  background-image: linear-gradient(rgba(38, 38, 38, 0.025) 1px, transparent 1px), linear-gradient(90deg, rgba(38, 38, 38, 0.025) 1px, transparent 1px);
+  background-size: 20px 20px;
+  direction: rtl;
 }
 
-.chip {
-  background: var(--surface);
-  border: 1.5px solid var(--border-light);
-  /* گوشه‌های کج اسکچ */
-  border-radius: 180px 8px 160px 8px / 8px 160px 8px 180px;
-  padding: 5px 14px;
-  font-size: 13px;
-  color: var(--text-muted);
-  font-weight: 600;
-  white-space: nowrap;
-}
+.auth-intro { display: none; }
 
-.auth-tagline {
-  font-size: 14px;
-  color: var(--text-muted);
-  line-height: 1.6;
-}
-
-/* ── کارت فرم ── */
 .auth-card {
   width: 100%;
-  max-width: 420px;
-  background: var(--surface);
-  /* حاشیه اسکچ */
-  border: 2px solid var(--ink);
-  border-radius: 255px 15px 225px 15px / 15px 225px 15px 255px;
-  padding: 28px 24px;
-  /* سایه سخت کاغذی */
-  box-shadow: 8px 8px 0px 0px rgba(38,38,38,0.10);
-  position: relative;
-  z-index: 1;
+  padding: var(--space-6) var(--space-5);
+  background: var(--color-surface);
+  border: 2px solid var(--color-border);
+  border-radius: var(--radius-sheet);
+  box-shadow: var(--shadow-sheet);
 }
 
-/* نوار چسب روی کارت */
-.auth-card::before {
-  content: '';
-  position: absolute;
-  top: -14px;
-  left: 50%;
-  transform: translateX(-50%) rotate(2deg);
-  width: 72px;
-  height: 26px;
-  background: var(--surface-variant);
-  opacity: 0.85;
-  clip-path: polygon(0 10%, 100% 0, 95% 90%, 5% 100%);
+.auth-mode {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-1);
+  padding: var(--space-1);
+  margin-bottom: var(--space-6);
+  background: var(--color-surface-low);
+  border: 1px solid var(--color-outline-variant);
+  border-radius: var(--radius-control);
 }
 
-/* ── تب‌ها ── */
-.auth-tabs {
-  display: flex;
-  background: var(--bg);
-  border: 1.5px solid var(--border-light);
-  border-radius: 180px 8px 160px 8px / 8px 160px 8px 180px;
-  padding: 4px;
-  margin-bottom: 24px;
-}
-
-.auth-tab {
-  flex: 1;
-  border: none;
+.auth-mode__item {
+  min-height: 42px;
+  border: 0;
+  border-radius: var(--radius-control);
   background: transparent;
-  padding: 9px;
-  border-radius: 160px 8px 140px 8px / 8px 140px 8px 160px;
-  font-family: var(--font);
-  font-size: 14px;
+  color: var(--color-text-secondary);
   font-weight: 700;
-  color: var(--text-muted);
   cursor: pointer;
-  transition: all var(--ease);
 }
 
-.auth-tab--active {
-  background: var(--primary);
-  color: #fff;
-  box-shadow: 3px 3px 0 rgba(38,38,38,0.15);
-}
+.auth-mode__item--active { background: var(--color-primary); color: var(--color-on-primary); box-shadow: 2px 2px 0 rgba(38, 38, 38, 0.16); }
+.auth-card__header { margin-bottom: var(--space-5); }
+.auth-card__header h2 { font-size: 24px; line-height: 1.4; color: var(--color-text); }
+.auth-card__header p { margin-top: var(--space-1); font-size: 14px; color: var(--color-text-secondary); }
 
-/* ── عنوان ── */
-.auth-title {
-  font-size: 22px;
-  font-weight: 800;
-  color: var(--text);
-  margin-bottom: 4px;
-  letter-spacing: -0.3px;
-}
-
-.auth-sub {
-  font-size: 14px;
-  color: var(--text-muted);
-  margin-bottom: 22px;
-}
-
-/* ── بنر خطا ── */
 .auth-error-banner {
-  background: var(--error-bg);
-  color: var(--error);
-  border: 1.5px solid rgba(186,26,26,0.25);
-  border-radius: 8px 180px 8px 160px / 160px 8px 180px 8px;
-  padding: 10px 14px;
-  font-size: 13px;
-  margin-bottom: 16px;
-  text-align: right;
-}
-
-/* ── فیلد ── */
-.field {
-  margin-bottom: 20px;
-}
-
-.field-label {
-  display: block;
-  font-size: 13px;
-  font-weight: 700;
-  color: var(--text);
-  margin-bottom: 6px;
-}
-
-.optional {
-  color: var(--text-light);
-  font-weight: 400;
-}
-
-/* اینپوت خط‌دار اسکچ */
-.field-wrap {
-  display: flex;
-  align-items: center;
-  background: transparent;
-  border: none;
-  border-bottom: 2px solid var(--ink);
-  transition: border-color var(--ease), padding-bottom var(--ease);
-  padding-bottom: 2px;
-}
-
-.field-wrap:focus-within {
-  border-bottom: 3px solid var(--primary);
-  padding-bottom: 1px;
-}
-
-.field-wrap--err {
-  border-bottom-color: var(--error);
-}
-
-.field-icon {
-  padding: 0 0 0 10px;
-  color: var(--text-light);
-  display: flex;
-  align-items: center;
-  flex-shrink: 0;
-  /* آیکون Material Symbols */
-  font-family: 'Material Symbols Outlined';
-  font-size: 20px;
-  user-select: none;
-}
-
-.field-wrap:focus-within .field-icon {
-  color: var(--primary);
-}
-
-.field-input {
-  flex: 1;
-  border: none;
-  outline: none;
-  background: transparent;
-  font-family: var(--font);
-  font-size: 15px !important;
-  color: var(--text);
-  padding: 10px 4px 8px 0;
-  min-width: 0;
-}
-
-.field-input::placeholder {
-  color: var(--text-light);
+  margin-bottom: var(--space-4);
+  padding: var(--space-3) var(--space-4);
+  border: 1px solid var(--color-error);
+  border-radius: var(--radius-control);
+  background: var(--color-error-container);
+  color: var(--color-error);
   font-size: 14px;
-  opacity: 0.7;
 }
 
-.field-eye {
-  background: none;
-  border: none;
-  cursor: pointer;
-  padding: 0 0 0 4px;
-  color: var(--text-light);
-  display: flex;
-  align-items: center;
-  transition: color var(--ease);
-  flex-shrink: 0;
-}
-
-.field-eye:hover { color: var(--primary); }
-
-.field-err {
-  margin-top: 5px;
-  font-size: 12px;
-  color: var(--error);
-}
-
-/* ── دکمه ارسال ── */
-.btn-submit {
-  width: 100%;
-  margin-top: 10px;
-  padding: 14px;
-  background: var(--primary);
-  color: white;
-  /* حاشیه اسکچ */
-  border: 2px solid var(--ink);
-  border-radius: 255px 15px 225px 15px / 15px 225px 15px 255px;
-  font-family: var(--font);
-  font-size: 16px;
-  font-weight: 700;
-  cursor: pointer;
-  /* سایه سخت */
-  box-shadow: 4px 4px 0px 0px rgba(38,38,38,0.20);
-  transition: background var(--ease), transform var(--ease), box-shadow var(--ease), opacity var(--ease);
-  display: flex;
+.auth-form { display: grid; gap: var(--space-4); }
+.auth-form .ui-button { margin-top: var(--space-2); }
+.auth-password-toggle {
+  width: 44px;
+  height: 44px;
+  display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
-  min-height: 52px;
-  position: relative;
-  overflow: hidden;
-}
-
-/* بافت خطوط مورب روی دکمه */
-.btn-submit::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background-image: repeating-linear-gradient(45deg, transparent, transparent 5px, rgba(255,255,255,0.06) 5px, rgba(255,255,255,0.06) 10px);
-  pointer-events: none;
-}
-
-.btn-submit:hover:not(:disabled) {
-  background: var(--primary-dark);
-  box-shadow: 6px 6px 0px 0px rgba(38,38,38,0.20);
-}
-
-.btn-submit:active:not(:disabled) {
-  transform: translate(2px, 2px);
-  box-shadow: 2px 2px 0px 0px rgba(38,38,38,0.20);
-}
-
-.btn-submit:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-}
-
-/* اسپینر */
-.spinner {
-  width: 20px;
-  height: 20px;
-  border: 2.5px solid rgba(255,255,255,0.3);
-  border-top-color: white;
-  border-radius: 50%;
-  animation: spin 0.65s linear infinite;
-}
-
-@keyframes spin { to { transform: rotate(360deg); } }
-
-/* ── لینک سوئیچ ── */
-.auth-switch-text {
-  text-align: center;
-  margin-top: 20px;
-  padding-top: 16px;
-  font-size: 14px;
-  color: var(--text-muted);
-  border-top: 2px dashed rgba(38,38,38,0.15);
-}
-
-.auth-switch-btn {
-  background: none;
-  border: none;
+  flex: 0 0 44px;
+  margin-inline-end: -10px;
+  border: 0;
+  background: transparent;
+  color: var(--color-text-secondary);
   cursor: pointer;
-  color: var(--secondary);
-  font-weight: 700;
-  font-family: var(--font);
-  font-size: 14px;
-  padding: 0;
-  transition: color var(--ease);
-  position: relative;
 }
 
-/* هایلایت قلمی روی لینک */
-.auth-switch-btn::after {
-  content: '';
-  position: absolute;
-  bottom: -2px;
-  left: 0;
-  width: 100%;
-  height: 6px;
-  background: var(--highlight);
-  transform: scaleX(0);
-  transform-origin: right;
-  transition: transform var(--ease);
-  z-index: -1;
-  border-radius: 2px;
-}
+.auth-footer { text-align: center; color: var(--color-text-tertiary); font-size: 12px; }
 
-.auth-switch-btn:hover { color: var(--secondary); }
-.auth-switch-btn:hover::after { transform: scaleX(1); transform-origin: left; }
-
-/* ── فوتر ── */
-.auth-footer {
-  margin-top: 24px;
-  font-size: 12px;
-  color: var(--text-light);
-  text-align: center;
-  letter-spacing: 0.3px;
-  position: relative;
-  z-index: 1;
-}
-
-/* ── دسکتاپ ── */
-@media (min-width: 640px) {
+@media (min-width: 900px) {
   .auth-root {
-    justify-content: center;
-    padding: 40px 24px;
+    grid-template-columns: minmax(320px, 440px) minmax(380px, 460px);
+    align-content: start;
+    align-items: start;
+    gap: clamp(48px, 8vw, 112px);
+    padding-top: clamp(64px, 10vh, 96px);
   }
-  .auth-card {
-    padding: 36px 32px;
-  }
-  .auth-title {
-    font-size: 26px;
-  }
+  .auth-intro { display: block; padding: var(--space-8); }
+  .auth-intro__mark { width: 72px; height: 72px; display: grid; place-items: center; margin-bottom: var(--space-5); border: 2px solid var(--color-border); border-radius: var(--radius-sheet); background: var(--color-highlight); color: var(--color-primary); font-size: 36px; box-shadow: var(--shadow-control); }
+  .auth-intro h1 { font-size: clamp(40px, 5vw, 64px); line-height: 1.2; color: var(--color-primary); }
+  .auth-intro > p { max-width: 32rem; margin-top: var(--space-3); font-size: 18px; color: var(--color-text-secondary); }
+  .auth-benefits { display: grid; gap: var(--space-3); margin-top: var(--space-8); list-style: none; }
+  .auth-benefits li { display: flex; align-items: center; gap: var(--space-2); color: var(--color-text); font-weight: 600; }
+  .auth-benefits svg { color: var(--color-success); font-size: 22px; }
+  .auth-card { padding: var(--space-8); }
+  .auth-footer { grid-column: 1 / -1; }
 }

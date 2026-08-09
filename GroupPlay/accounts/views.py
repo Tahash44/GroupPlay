@@ -3,6 +3,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework import  permissions
+from django.contrib.auth import login as django_login
 
 
 from .serializers import (
@@ -35,9 +36,13 @@ class LoginView(APIView):
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
         try:
-            tokens = AuthService.login(**serializer.validated_data)
+            user, tokens = AuthService.login_with_user(**serializer.validated_data)
         except ValueError as e:
             return Response({"detail": str(e)}, status=status.HTTP_401_UNAUTHORIZED)
+
+        if user.is_superuser and user.is_active:
+            django_login(request, user)
+            tokens["admin_url"] = "/admin/"
 
         return Response(tokens, status=status.HTTP_200_OK)
 

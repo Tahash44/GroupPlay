@@ -15,8 +15,14 @@ class GameSession(models.Model):
     winner = models.JSONField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
+    class Meta:
+        verbose_name = "نشست بازی"
+        verbose_name_plural = "نشست‌های بازی"
+
     def __str__(self):
-        return f"Session #{self.id} ({self.game_type}) — {self.status}"
+        game_state = getattr(self, "spy_state", None)
+        status = game_state.status if game_state is not None else "UNKNOWN"
+        return f"Session #{self.id} ({self.game_type}) - {status}"
 
 
 class Player(models.Model):

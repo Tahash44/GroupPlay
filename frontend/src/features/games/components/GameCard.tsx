@@ -23,7 +23,7 @@ export default function GameCard({ game, onSelect }: GameCardProps) {
   return (
     <button
       type="button"
-      className={`game-card sketch-border sketch-shadow sketch-hover ${SIZE_CLASS[game.size]} ${available ? 'game-card--available' : ''}`}
+      className={`game-card game-card--${game.id} sketch-border sketch-shadow sketch-hover ${SIZE_CLASS[game.size]} ${available ? 'game-card--available' : ''}`}
       onClick={() => onSelect(game)}
       disabled={!available}
       aria-label={`${game.title}${available ? '، شروع بازی' : '، به‌زودی'}`}
@@ -36,12 +36,17 @@ export default function GameCard({ game, onSelect }: GameCardProps) {
       {!available && !game.badge && <span className="game-card-status">به‌زودی</span>}
 
       {showImage ? (
-        <img
-          src={game.imageUrl}
-          alt={game.title}
-          className="game-card-image"
-          onError={() => setImageFailed(true)}
-        />
+        <picture>
+          {game.desktopImageUrl && <source media="(min-width: 600px)" srcSet={game.desktopImageUrl} />}
+          <img
+            src={game.imageUrl}
+            alt={game.title}
+            className="game-card-image"
+            loading={available ? 'eager' : 'lazy'}
+            decoding="async"
+            onError={() => setImageFailed(true)}
+          />
+        </picture>
       ) : (
         <Icon className="game-card-icon" name={game.icon} weight="duotone" />
       )}

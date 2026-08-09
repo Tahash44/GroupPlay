@@ -11,6 +11,10 @@
 }
 
 @media (min-width: 1100px) {
-  .games-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-  .games-grid .game-card--available { grid-column: span 2; min-height: 360px; }
+  .games-grid { grid-template-columns: repeat(6, minmax(0, 1fr)); grid-template-rows: repeat(2, 280px); grid-auto-flow: row; gap: var(--space-4); }
+  .games-grid .game-card { min-height: 0; }
+  .games-grid .game-card--spy { grid-column: 1 / span 4; grid-row: 1; }
+  .games-grid .game-card--charades { grid-column: 5 / span 2; grid-row: 1; }
+  .games-grid .game-card--mafia { grid-column: 3 / span 4; grid-row: 2; }
+  .games-grid .game-card--truth-or-dare { grid-column: 1 / span 2; grid-row: 2; }
 }

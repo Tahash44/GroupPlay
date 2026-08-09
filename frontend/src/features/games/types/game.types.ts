@@ -13,6 +13,7 @@ export interface Game {
   icon: string;
   /* وقتی API وصل شد، این مقدار از بک‌اند می‌آد */
   imageUrl?: string;
+  desktopImageUrl?: string;
   badge?: string;
   available?: boolean;
   size: GameCardSize;

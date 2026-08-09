@@ -31,7 +31,7 @@ const MOCK_GAMES: Game[] = [
     title: 'مافیا',
     description: 'بازی نقش مخفی و استدلال گروهی',
     icon: 'theater_comedy',
-    imageUrl: '/images/games/card/mafia.png',
+    imageUrl: '/images/games/card/mobile/mafia.webp',
     size: 'large',
   },
   {
@@ -39,7 +39,7 @@ const MOCK_GAMES: Game[] = [
     title: 'اسپای',
     description: 'پیدا کردن جاسوس در مکان',
     icon: 'visibility',
-    imageUrl: '/images/games/card/spy.png',
+    imageUrl: '/images/games/card/mobile/spy.webp',
     size: 'tall',
   },
 ];
@@ -81,7 +81,7 @@ describe('GamesListPage', () => {
     expect(screen.getByText('اسپای')).toBeInTheDocument();
 
     const spyImage = screen.getByAltText('اسپای') as HTMLImageElement;
-    expect(spyImage.src).toContain('/images/games/card/spy.png');
+    expect(spyImage.src).toContain('/images/games/card/mobile/spy.webp');
   });
 
   it('navigates to the Spy New Game Setup route when the Spy card is clicked', async () => {

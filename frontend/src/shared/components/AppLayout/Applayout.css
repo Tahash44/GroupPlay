@@ -7,6 +7,33 @@
   background: var(--color-background);
   color: var(--color-text);
 }
+.app-layout[data-theme='dark'] {
+  --color-background: #191514;
+  --color-surface: #241d1c;
+  --color-surface-bright: #302523;
+  --color-surface-low: #2a2221;
+  --color-surface-container: #3a2928;
+  --color-surface-high: #44302f;
+  --color-surface-dim: #171110;
+  --color-text: #fff7f4;
+  --color-text-secondary: #d5bfbb;
+  --color-text-tertiary: #ad9490;
+  --color-border: #624946;
+  --color-outline: #92716c;
+  --color-outline-variant: #684f4b;
+  --color-primary: #e55358;
+  --color-primary-strong: #c83d45;
+  --color-on-primary: #fff7f4;
+  --color-secondary-container: #294764;
+  --color-on-secondary-container: #c6e1ff;
+  --color-highlight: #5b5130;
+  --color-blueprint-fill: #27343e;
+  --color-error-container: #572321;
+  --color-success: #7acb9a;
+  background: var(--color-background);
+  color: var(--color-text);
+}
+.app-layout[data-theme='dark'] .app-content { background: var(--color-background); }
 .app-skip-link { position: fixed; top: -80px; right: var(--space-4); z-index: 500; padding: var(--space-3) var(--space-4); background: var(--color-text); color: var(--color-on-primary); border-radius: var(--radius-control); }
 .app-skip-link:focus { top: var(--space-3); }
 
@@ -28,7 +55,13 @@
 .app-topbar > .app-brand { order: 1; }
 .app-topbar > .app-avatar { order: 2; }
 .app-brand svg { font-size: 25px; }
-.app-avatar { width: 44px; height: 44px; display: inline-flex; align-items: center; justify-content: center; flex: 0 0 44px; border: 2px solid var(--color-border); border-radius: var(--radius-full); background: var(--color-secondary-container); color: var(--color-on-secondary-container); font-weight: 700; text-decoration: none; box-shadow: 2px 2px 0 rgba(38,38,38,.12); }
+.app-profile-menu { position: relative; order: 2; }
+.app-avatar { width: 44px; height: 44px; display: inline-flex; align-items: center; justify-content: center; flex: 0 0 44px; border: 2px solid var(--color-border); border-radius: var(--radius-full); background: var(--color-secondary-container); color: var(--color-on-secondary-container); font: inherit; font-weight: 700; text-decoration: none; cursor: pointer; box-shadow: 2px 2px 0 rgba(38,38,38,.12); }
+.app-avatar:focus-visible { outline: 3px solid var(--color-highlight); outline-offset: 3px; }
+.app-profile-dropdown { position: absolute; top: calc(100% + var(--space-2)); left: 0; z-index: 70; min-width: 180px; display: flex; flex-direction: column; gap: 2px; padding: var(--space-2); border: 1px solid var(--color-outline-variant); border-radius: var(--radius-control); background: var(--color-surface); box-shadow: 0 8px 24px rgba(38,38,38,.16); direction: rtl; text-align: right; }
+.app-profile-dropdown a { min-height: 44px; display: flex; flex-direction: row; align-items: center; gap: var(--space-2); padding: 8px 12px; border-radius: calc(var(--radius-control) - 2px); color: var(--color-text); font-size: 13px; font-weight: 600; text-decoration: none; }
+.app-profile-dropdown a:hover,
+.app-profile-dropdown a:focus-visible { background: var(--color-secondary-container); color: var(--color-on-secondary-container); outline: none; }
 .app-sidenav { display: none; }
 
 .app-bottomnav {
@@ -38,7 +71,7 @@
   z-index: 60;
   min-height: 68px;
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   padding: var(--space-2) max(var(--space-2), env(safe-area-inset-right)) calc(var(--space-2) + env(safe-area-inset-bottom)) max(var(--space-2), env(safe-area-inset-left));
   background: color-mix(in srgb, var(--color-background) 96%, transparent);
   border-top: 1px solid var(--color-outline-variant);
@@ -74,5 +107,8 @@
   .app-nav-link--active { background: var(--color-secondary-container); border-color: var(--color-border); color: var(--color-on-secondary-container); box-shadow: 3px 3px 0 rgba(38,38,38,.12); }
   .app-new-game-btn { min-height: 48px; display: flex; align-items: center; justify-content: center; gap: var(--space-2); padding: var(--space-3); border: 2px solid var(--color-border); border-radius: var(--radius-control); background: var(--color-primary); color: var(--color-on-primary); font-weight: 700; text-decoration: none; box-shadow: var(--shadow-control); }
   .app-logout-wrap { padding-top: var(--space-3); border-top: 1px dashed var(--color-outline-variant); }
+  .app-sidenav-footer { display: flex; flex-direction: column; align-items: flex-start; gap: var(--space-2); padding-top: var(--space-4); border-top: 1px dashed var(--color-outline-variant); color: var(--color-text-secondary); }
+  .app-sidenav-footer__motto { margin: 0; color: var(--color-text); font-size: 12px; line-height: 1.6; }
+  .app-sidenav-footer__version { font-size: 10px; direction: ltr; }
   .app-content { padding: var(--space-10); }
 }

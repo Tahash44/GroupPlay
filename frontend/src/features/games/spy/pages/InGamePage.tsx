@@ -29,6 +29,9 @@ export default function InGamePage() {
   const [actionLoading, setActionLoading] = useState(false);
   const [timesUp, setTimesUp] = useState(false);
   const [showStopConfirm, setShowStopConfirm] = useState(false);
+  const confirmExit = () => {
+    if (window.confirm('مطمئنی می‌خواهی از بازی خارج شوی؟ روند فعلی بازی متوقف می‌شود.')) navigate('/dashboard');
+  };
 
   const pollRef = useRef<number | null>(null);
   const tickRef = useRef<number | null>(null);
@@ -194,7 +197,7 @@ export default function InGamePage() {
     <div className={`ingame-page ${!isRunning && !timesUp ? 'ingame-page-paused' : ''}`}>
       <header className="ingame-header">
         <div className="ingame-header-brand">
-          <button type="button" className="ingame-icon-btn" onClick={() => navigate('/dashboard')} aria-label="بازگشت به فهرست بازی‌ها">
+          <button type="button" className="ingame-icon-btn" onClick={confirmExit} aria-label="بازگشت به فهرست بازی‌ها">
             <Icon name="arrow_forward" />
           </button>
           <strong className="ingame-brand">بازی‌گردان</strong>

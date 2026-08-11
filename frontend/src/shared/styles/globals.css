@@ -16,6 +16,53 @@ html {
   scrollbar-gutter: stable;
 }
 
+:root[data-theme='dark'] {
+  color-scheme: dark;
+  --color-background: #191514;
+  --color-surface: #241d1c;
+  --color-surface-bright: #302523;
+  --color-surface-low: #2a2221;
+  --color-surface-container: #3a2928;
+  --color-surface-high: #44302f;
+  --color-surface-dim: #171110;
+  --color-text: #fff7f4;
+  --color-text-secondary: #d5bfbb;
+  --color-text-tertiary: #ad9490;
+  --color-border: #624946;
+  --color-outline: #92716c;
+  --color-outline-variant: #684f4b;
+  --color-primary: #e55358;
+  --color-primary-strong: #c83d45;
+  --color-on-primary: #fff7f4;
+  --color-secondary-container: #294764;
+  --color-on-secondary-container: #c6e1ff;
+  --color-highlight: #5b5130;
+  --color-blueprint-fill: #27343e;
+  --color-error-container: #572321;
+  --color-success: #7acb9a;
+}
+
+:root[data-theme='dark'] .spy-count-btn,
+:root[data-theme='dark'] .spy-count-value,
+:root[data-theme='dark'] .timer-slider-box {
+  background: var(--color-surface-bright);
+}
+
+:root[data-theme='dark'] .timer-slider-input {
+  background: color-mix(in srgb, var(--color-text) 16%, transparent);
+}
+
+:root[data-theme='dark'] .ingame-timer-ring-bg {
+  stroke: color-mix(in srgb, var(--color-text) 14%, transparent);
+}
+
+:root[data-theme='dark'] .ingame-icon-btn,
+:root[data-theme='dark'] .spy-reveal-back,
+:root[data-theme='dark'] .spy-new-game-back,
+:root[data-theme='dark'] .voting-icon-btn {
+  color: var(--color-text-secondary);
+}
+
 body {
   font-family: var(--font);
   background: var(--bg);

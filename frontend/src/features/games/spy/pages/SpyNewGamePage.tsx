@@ -63,6 +63,9 @@ export default function SpyNewGamePage() {
   const totalPlayers = players.length;
   const maxSpyCount = Math.max(1, Math.floor(totalPlayers / 3));
   const effectiveSpyCount = Math.min(spyCount, maxSpyCount);
+  const confirmExit = () => {
+    if (window.confirm('مطمئنی می‌خواهی از بازی خارج شوی؟ اطلاعات بازی فعلی حفظ نمی‌شود.')) navigate('/dashboard');
+  };
 
   const canSubmit = useMemo(
     () => totalPlayers >= MIN_PLAYERS && !submitting,
@@ -105,7 +108,7 @@ export default function SpyNewGamePage() {
           <button
             type="button"
             className="spy-new-game-back"
-            onClick={() => navigate('/dashboard')}
+            onClick={confirmExit}
             aria-label="بازگشت به فهرست بازی‌ها"
           >
             <Icon name="arrow_forward" />

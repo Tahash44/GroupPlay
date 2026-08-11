@@ -1,0 +1,36 @@
+@import '../../../shared/styles/tokens.css';
+
+.help-page { width: min(100%, 860px); margin-inline: auto; direction: rtl; }
+.help-page > .ui-page-header { text-align: right; }
+.help-section { margin-top: var(--space-8); }
+.help-section__title { margin: 0 0 var(--space-3); color: var(--color-text); font-size: 18px; line-height: 1.5; }
+.help-guide-grid { display: grid; grid-template-columns: 1fr; gap: var(--space-3); }
+.help-guide-card,
+.help-faq-card,
+.help-support-card { border: 2px solid var(--color-border); border-radius: var(--radius-card); background: var(--color-surface); box-shadow: var(--shadow-card); }
+.help-guide-card { overflow: hidden; }
+.help-guide-card__trigger,
+.help-faq-item summary { min-height: 62px; display: flex; align-items: center; gap: var(--space-3); padding: var(--space-3) var(--space-4); color: var(--color-text); font-size: 14px; font-weight: 700; cursor: pointer; list-style: none; }
+.help-guide-card__trigger { width: 100%; border: 0; background: transparent; font: inherit; text-align: right; }
+.help-faq-item summary::-webkit-details-marker { display: none; }
+.help-guide-card__trigger:focus-visible,
+.help-faq-item summary:focus-visible { outline: 3px solid var(--color-highlight); outline-offset: -3px; }
+.help-guide-card__icon,
+.help-support-card__icon { width: 42px; height: 42px; display: grid; place-items: center; flex: 0 0 42px; border-radius: var(--radius-full); background: var(--color-secondary-container); color: var(--color-on-secondary-container); }
+.help-guide-card__title { flex: 1; }
+.help-guide-card__chevron,
+.help-faq-item summary > svg { color: var(--color-primary); transition: transform var(--motion-fast) ease; }
+.help-guide-card__chevron--open,
+.help-faq-item[open] summary > svg { transform: rotate(-90deg); }
+.help-guide-card p,
+.help-faq-item p { margin: 0; padding: 0 var(--space-4) var(--space-4); color: var(--color-text-secondary); font-size: 13px; line-height: 1.9; }
+.help-faq-card { overflow: hidden; }
+.help-faq-item + .help-faq-item { border-top: 1px solid var(--color-outline-variant); }
+.help-faq-item summary span { flex: 1; }
+.help-support-card { display: flex; align-items: flex-start; gap: var(--space-3); margin-top: var(--space-8); padding: var(--space-5); background: var(--color-blueprint-fill); }
+.help-support-card h2 { margin: 0; color: var(--color-text); font-size: 17px; }
+.help-support-card p { margin: var(--space-1) 0 0; color: var(--color-text-secondary); font-size: 13px; line-height: 1.8; }
+
+@media (min-width: 600px) {
+  .help-guide-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}

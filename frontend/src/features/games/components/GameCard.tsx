@@ -26,7 +26,7 @@ export default function GameCard({ game, onSelect }: GameCardProps) {
       className={`game-card game-card--${game.id} sketch-border sketch-shadow sketch-hover ${SIZE_CLASS[game.size]} ${available ? 'game-card--available' : ''}`}
       onClick={() => onSelect(game)}
       disabled={!available}
-      aria-label={`${game.title}${available ? '، شروع بازی' : '، به‌زودی'}`}
+      aria-label={game.title}
     >
       {game.badge && (
         <span className={`game-card-badge${available ? '' : ' game-card-badge--unavailable'}`}>
@@ -54,9 +54,6 @@ export default function GameCard({ game, onSelect }: GameCardProps) {
       <div className="game-card-text">
         <h2 className="game-card-title">{game.title}</h2>
         <p className="game-card-desc">{game.description}</p>
-        <span className="game-card-action">
-          {available ? <><span>شروع بازی</span><Icon name="arrow_forward" /></> : <span>در حال آماده‌سازی</span>}
-        </span>
       </div>
     </button>
   );

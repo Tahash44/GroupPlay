@@ -14,8 +14,7 @@
   justify-content: center;
   gap: 24px;
   padding: 16px 0;
-  background: rgba(230, 240, 247, 0.3);
-  border-radius: 12px;
+  background: transparent;
 }
 
 .spy-count-btn {

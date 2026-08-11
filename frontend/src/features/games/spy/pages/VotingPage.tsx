@@ -20,7 +20,9 @@ function VotingHeader({ onExit, showExit = true }: { onExit: () => void; showExi
             <Icon name="arrow_forward" />
           </button>
         )}
-        <strong className="voting-brand">بازی‌گردان</strong>
+        <button type="button" className="voting-brand" onClick={onExit} aria-label="بازگشت به صفحهٔ بازی‌ها">
+          بازی‌گردان
+        </button>
       </div>
       <details className="voting-help">
         <summary className="voting-icon-btn" aria-label="راهنمای این مرحله"><Icon name="help" /></summary>
@@ -134,7 +136,10 @@ export default function VotingPage() {
     }
   };
 
-  const goHome = () => navigate('/dashboard');
+  const goHome = () => {
+    if (window.confirm('مطمئنی می‌خواهی از بازی خارج شوی؟')) navigate('/dashboard');
+  };
+  const goHomeDirect = () => navigate('/dashboard');
   const playAgain = () => navigate('/games/spy/new');
   const togglePlayer = (playerId: number) => {
     setSelectedPlayerIds(current => {
@@ -268,7 +273,7 @@ export default function VotingPage() {
 
   return (
     <div className="voting-page">
-      <VotingHeader onExit={goHome} showExit={false} />
+      <VotingHeader onExit={goHomeDirect} showExit={false} />
 
       <main className="voting-result-main">
         <PageHeader title="نتیجه بازی" subtitle="نتیجه و نقش بازیکنان این دور" />
@@ -336,7 +341,7 @@ export default function VotingPage() {
             <span>بازی مجدد</span>
             <Icon name="replay" />
           </button>
-          <button type="button" className="voting-result-home-btn sketch-border" onClick={goHome}>
+          <button type="button" className="voting-result-home-btn sketch-border" onClick={goHomeDirect}>
             <span>خانه</span>
             <Icon name="home" />
           </button>

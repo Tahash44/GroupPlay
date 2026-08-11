@@ -13,6 +13,8 @@ import SpyVotingPlaceholderPage from '../features/games/spy/pages/VotingPage';
 import PrivateRoute from './PrivateRoute';
 import HistoryPage from '../features/games/pages/HistoryPage';
 import HistoryDetailPage from '../features/games/pages/HistoryDetailPage';
+import HelpPage from '../features/help/pages/HelpPage';
+import SettingsPage from '../features/settings/pages/SettingsPage';
 
 
 export default function AppRouter() {
@@ -71,6 +73,24 @@ export default function AppRouter() {
                     element={
                         <PrivateRoute>
                             <FriendsPage/>
+                        </PrivateRoute>
+                    }
+                />
+
+                <Route
+                    path="/help"
+                    element={
+                        <PrivateRoute>
+                            <HelpPage/>
+                        </PrivateRoute>
+                    }
+                />
+
+                <Route
+                    path="/settings"
+                    element={
+                        <PrivateRoute>
+                            <SettingsPage/>
                         </PrivateRoute>
                     }
                 />

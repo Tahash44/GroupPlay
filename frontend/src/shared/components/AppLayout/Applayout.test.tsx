@@ -56,6 +56,16 @@ describe('AppLayout', () => {
     profileLinks.forEach(link => expect(link).toHaveAttribute('href', '/profile'));
   });
 
+  it('shows the mobile navigation in the requested order without a profile item', () => {
+    renderLayout();
+
+    const mobileNav = screen.getByRole('navigation', { name: /ناوبری موبایل/ });
+    const links = Array.from(mobileNav.querySelectorAll('a'));
+
+    expect(links.map(link => link.getAttribute('href'))).toEqual(['/friends', '/dashboard', '/history']);
+    expect(mobileNav).not.toHaveTextContent('پروفایل');
+  });
+
   it('renders history as navigation and keeps unavailable game settings hidden', () => {
     renderLayout();
 
@@ -68,8 +78,18 @@ describe('AppLayout', () => {
   });
 
   it('shows the logout control', () => {
-    renderLayout();
+    renderLayout('/games/mafia');
     expect(screen.getByRole('button', { name: /خروج/ })).toBeInTheDocument();
+  });
+
+  it('hides the new game and logout controls on the main pages', () => {
+    for (const path of ['/dashboard', '/profile', '/friends', '/history']) {
+      const { unmount } = renderLayout(path);
+
+      expect(screen.queryByRole('link', { name: /شروع بازی جدید/ })).not.toBeInTheDocument();
+      expect(screen.queryByRole('button', { name: /خروج/ })).not.toBeInTheDocument();
+      unmount();
+    }
   });
 
   it('displays the first letter of the user name as the avatar initial', () => {

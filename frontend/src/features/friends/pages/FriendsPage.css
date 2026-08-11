@@ -1,6 +1,7 @@
 @import '../../../shared/styles/tokens.css';
 
 .friends-page { width: 100%; max-width: 760px; margin-inline: auto; }
+.friends-page > .ui-page-header { direction: rtl; text-align: right; }
 .friends-page > .ui-field { margin-bottom: var(--space-4); }
 .friends-divider {
   margin-bottom: var(--space-4);

@@ -18,6 +18,9 @@ export default function SpyRoleRevealPage() {
   const [revealError, setRevealError] = useState<string | null>(null);
   const [revealLoading, setRevealLoading] = useState(false);
   const [startLoading, setStartLoading] = useState(false);
+  const confirmExit = () => {
+    if (window.confirm('مطمئنی می‌خواهی از بازی خارج شوی؟ روند فعلی بازی متوقف می‌شود.')) navigate('/dashboard');
+  };
 
   const loadPlayers = async () => {
     if (!id) return;
@@ -92,7 +95,7 @@ export default function SpyRoleRevealPage() {
     <div className="spy-reveal-page">
       <header className="spy-reveal-header">
         <div className="spy-reveal-header-brand">
-          <button type="button" className="spy-reveal-back" onClick={() => navigate('/dashboard')} aria-label="بازگشت به فهرست بازی‌ها">
+          <button type="button" className="spy-reveal-back" onClick={confirmExit} aria-label="بازگشت به فهرست بازی‌ها">
             <Icon name="arrow_forward" />
           </button>
           <strong>بازی‌گردان</strong>

@@ -45,6 +45,8 @@ import {
   Users,
   UsersThree,
   SealCheck,
+  SpeakerHigh,
+  SpeakerSlash,
   X,
 } from '@phosphor-icons/react';
 
@@ -94,6 +96,8 @@ const ICONS: Record<string, ComponentType<IconProps>> = {
   save: FloppyDisk,
   search: MagnifyingGlass,
   settings: GearSix,
+  volume_off: SpeakerSlash,
+  volume_up: SpeakerHigh,
   sports_esports: GameController,
   spy: Detective,
   theater_comedy: MaskHappy,

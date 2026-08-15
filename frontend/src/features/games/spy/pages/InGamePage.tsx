@@ -5,6 +5,8 @@ import { spyService } from '../services/spyService';
 import type { TimerStatus } from '../types/spy.types';
 import Icon from '../../../../shared/components/Icon/Icon';
 import { Button, StatePanel } from '../../../../shared/components/ui';
+import SpyAdaptiveMusic from '../audio/SpyAdaptiveMusic';
+import { getAudioSettings, saveAudioSettings } from '../../../settings/audioSettings';
 import './InGamePage.css';
 
 const POLL_INTERVAL_MS = 2000;
@@ -29,6 +31,13 @@ export default function InGamePage() {
   const [actionLoading, setActionLoading] = useState(false);
   const [timesUp, setTimesUp] = useState(false);
   const [showStopConfirm, setShowStopConfirm] = useState(false);
+  const [isMuted, setIsMuted] = useState(() => getAudioSettings().muted);
+  const toggleMute = () => {
+    const settings = getAudioSettings();
+    const muted = !settings.muted;
+    saveAudioSettings({ ...settings, muted });
+    setIsMuted(muted);
+  };
   const confirmExit = () => {
     if (window.confirm('مطمئنی می‌خواهی از بازی خارج شوی؟ روند فعلی بازی متوقف می‌شود.')) navigate('/dashboard');
   };
@@ -195,6 +204,12 @@ export default function InGamePage() {
 
   return (
     <div className={`ingame-page ${!isRunning && !timesUp ? 'ingame-page-paused' : ''}`}>
+      <SpyAdaptiveMusic
+        remainingSeconds={remainingSeconds}
+        durationSeconds={timerDuration}
+        isRunning={isRunning}
+        timesUp={timesUp}
+      />
       <header className="ingame-header">
         <div className="ingame-header-brand">
           <button type="button" className="ingame-icon-btn" onClick={confirmExit} aria-label="بازگشت به فهرست بازی‌ها">
@@ -209,9 +224,9 @@ export default function InGamePage() {
       </header>
 
       <main className="ingame-main">
-        <p className={`ingame-round-status ${isRunning ? 'ingame-round-status--running' : ''}`}>
-          {timesUp ? 'زمان تمام شده' : isRunning ? 'بازی در حال اجراست' : 'بازی متوقف شده'}
-        </p>
+        <button type="button" className={`ingame-sound-btn${isMuted ? ' ingame-sound-btn--muted' : ''}`} onClick={toggleMute} aria-pressed={isMuted} aria-label={isMuted ? 'فعال کردن صدا' : 'قطع صدا'} title={isMuted ? 'فعال کردن صدا' : 'قطع صدا'}>
+          <Icon name={isMuted ? 'volume_off' : 'volume_up'} />
+        </button>
         <div
           className="ingame-timer-wrap"
           role="progressbar"

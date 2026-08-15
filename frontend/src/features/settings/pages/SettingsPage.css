@@ -79,6 +79,32 @@
   background: var(--color-text-secondary);
 }
 
+.settings-option__switch--on {
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+}
+
+.settings-option__switch--on::after {
+  right: 21px;
+  background: var(--color-on-primary);
+}
+
+.settings-option__state {
+  margin-inline-start: auto;
+  color: var(--color-text-secondary);
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.settings-option--audio {
+  cursor: default;
+}
+
+.settings-option--audio input[type='range'] {
+  flex: 1;
+  accent-color: var(--color-primary);
+}
+
 .settings-card--theme {
   display: grid;
   grid-template-columns: 1fr;

@@ -126,6 +126,40 @@
   color: var(--color-success);
 }
 
+.ingame-sound-btn {
+  width: 48px;
+  height: 48px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: 2px solid var(--color-primary);
+  border-radius: 14px;
+  background: var(--color-primary);
+  color: var(--color-on-primary);
+  font: inherit;
+  font-size: 22px;
+  cursor: pointer;
+  box-shadow: var(--shadow-control);
+  transition: transform 0.15s ease, background 0.15s ease, color 0.15s ease;
+}
+
+.ingame-sound-btn:hover {
+  transform: translateY(-1px);
+  filter: brightness(1.05);
+}
+
+.ingame-sound-btn:active {
+  transform: translate(2px, 2px);
+  box-shadow: 2px 2px 0 var(--color-ink-charcoal);
+}
+
+.ingame-sound-btn--muted {
+  border-color: var(--color-outline);
+  background: var(--color-surface-container);
+  color: var(--color-text-secondary);
+}
+
 /* تایمر دایره‌ای */
 .ingame-timer-wrap {
   position: relative;

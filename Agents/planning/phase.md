@@ -17,7 +17,7 @@
 
 ## Phase 3 — Spy vertical slice
 
-**Status:** Implemented but not hardened
+**Status:** Implemented and usable; hardening and contract reconciliation remain
 
 - [x] Generic session/player persistence and Spy-specific state.
 - [x] Session setup, role assignment, and sequential reveal.

@@ -40,7 +40,7 @@
 ## Medium priority
 
 - [x] Decide whether the setup timer maximum is 15 or 60 minutes and align it.
-- [ ] Update root `README.md` for Django 6 and the implemented project state.
+- [x] Update root `README.md` for Django 6 and the implemented project state.
 - [ ] Replace mojibake in source comments and user-visible Persian literals.
 - [ ] Remove the stray unary `+` before the voting route and normalize formatting.
 - [x] Add tests for foreign/deleted friends, role privacy, and invalid transitions.

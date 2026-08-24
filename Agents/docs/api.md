@@ -102,9 +102,11 @@ State-changing operations are guarded by the Spy lifecycle. Requests made in the
 wrong state return HTTP 409 with the stable `invalid_game_state` error code. Invalid
 player input remains a validation error with HTTP 400.
 
-## Known contract and security gaps
+## Documentation and security gaps
 
-- `Documents/api-doc.yaml` lacks or misstates current prefixes and fields. Do not
-  generate clients from it until reconciled with code and generated schema.
+- `Documents/api-doc.yaml` is a legacy manually maintained document and lacks or
+  misstates current prefixes and fields. Do not generate clients from it until it
+  is reconciled with code and the generated schema. This file remains the current
+  human-readable API reference.
 - Production deployment must supply HTTPS, secure-cookie, trusted-origin, secret,
   host, and proxy settings before exposing `/admin/` outside a trusted environment.

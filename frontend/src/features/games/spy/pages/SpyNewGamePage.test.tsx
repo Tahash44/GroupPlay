@@ -65,6 +65,16 @@ describe('SpyNewGamePage', () => {
     (friendsService.getFriends as ReturnType<typeof vi.fn>).mockResolvedValue(mockFriends);
   });
 
+  it('returns directly to the dashboard without confirmation from setup', async () => {
+    const confirmSpy = vi.spyOn(window, 'confirm');
+    await renderPage();
+
+    await userEvent.setup().click(document.querySelector('.spy-new-game-back') as HTMLElement);
+
+    expect(confirmSpy).not.toHaveBeenCalled();
+    expect(mockNavigate).toHaveBeenCalledWith('/dashboard');
+  });
+
   it('restores the latest setup during the same browser session', async () => {
     sessionStorage.setItem('spy-last-setup-99', JSON.stringify({
       savedAt: Date.now(),

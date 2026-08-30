@@ -5,6 +5,9 @@ import { spyService } from '../services/spyService';
 import type { SessionPlayer } from '../types/spy.types';
 import Icon from '../../../../shared/components/Icon/Icon';
 import { Button, PageHeader, StatePanel } from '../../../../shared/components/ui';
+import { useAuth } from '../../../../shared/context/AuthContext';
+import { useGuest } from '../../../../shared/context/GuestContext';
+import AuthPromptModal from '../../../../shared/components/auth/AuthPromptModal';
 import './VotingPage.css';
 
 type Phase = 'loading' | 'error' | 'voting' | 'spy_guess' | 'result';
@@ -35,6 +38,8 @@ function VotingHeader({ onExit, showExit = true }: { onExit: () => void; showExi
 export default function VotingPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const { user } = useAuth();
+  const { clearActiveGame } = useGuest();
 
   const [phase, setPhase] = useState<Phase>('loading');
   const [players, setPlayers] = useState<SessionPlayer[]>([]);
@@ -46,9 +51,17 @@ export default function VotingPage() {
   const [gameLocation, setGameLocation] = useState<string | null>(null);
   const [actionLoading, setActionLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [showAuthPrompt, setShowAuthPrompt] = useState(false);
 
   // نقش‌ها فقط پس از پایان بازی از قرارداد جزئیات نشست دریافت می‌شوند.
   const spyPlayers = players.filter(player => player.role === 'جاسوس');
+
+  useEffect(() => {
+    if (phase === 'result' && !user) {
+      clearActiveGame();
+      setShowAuthPrompt(true);
+    }
+  }, [phase, user, clearActiveGame]);
 
   const hydrateFinishedDetail = async (fallbackWinner: WinnerSide) => {
     if (!id) return;
@@ -347,6 +360,7 @@ export default function VotingPage() {
           </button>
         </div>
       </main>
+      {showAuthPrompt && <AuthPromptModal variant="post-result" onClose={() => setShowAuthPrompt(false)} />}
     </div>
   );
 }

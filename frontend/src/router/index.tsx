@@ -21,13 +21,14 @@ export default function AppRouter() {
     return (
         <BrowserRouter>
             <Routes>
+                <Route path="/" element={<Navigate to="/dashboard" replace/>}/>
                 <Route path="/auth/:mode" element={<AuthPage/>}/>
                 <Route path="/auth" element={<Navigate to="/auth/login" replace/>}/>
 
                 <Route
                     path="/dashboard"
                     element={
-                        <PrivateRoute>
+                        <PrivateRoute allowGuest>
                             <GamesListPage/>
                         </PrivateRoute>
                     }
@@ -36,7 +37,7 @@ export default function AppRouter() {
                 <Route
                     path="/games/:id"
                     element={
-                        <PrivateRoute>
+                        <PrivateRoute allowGuest>
                             <GameDetailPage/>
                         </PrivateRoute>
                     }
@@ -46,7 +47,7 @@ export default function AppRouter() {
                 <Route
                     path="/profile"
                     element={
-                        <PrivateRoute>
+                        <PrivateRoute allowGuest>
                             <ProfilePage/>
                         </PrivateRoute>
                     }
@@ -54,7 +55,7 @@ export default function AppRouter() {
 <Route
                    path="/history"
                    element={
-                       <PrivateRoute>
+                       <PrivateRoute allowGuest>
                            <HistoryPage/>
                        </PrivateRoute>
                    }
@@ -71,7 +72,7 @@ export default function AppRouter() {
                 <Route
                     path="/friends"
                     element={
-                        <PrivateRoute>
+                        <PrivateRoute allowGuest>
                             <FriendsPage/>
                         </PrivateRoute>
                     }
@@ -80,7 +81,7 @@ export default function AppRouter() {
                 <Route
                     path="/help"
                     element={
-                        <PrivateRoute>
+                        <PrivateRoute allowGuest>
                             <HelpPage/>
                         </PrivateRoute>
                     }
@@ -89,7 +90,7 @@ export default function AppRouter() {
                 <Route
                     path="/settings"
                     element={
-                        <PrivateRoute>
+                        <PrivateRoute allowGuest>
                             <SettingsPage/>
                         </PrivateRoute>
                     }
@@ -98,36 +99,30 @@ export default function AppRouter() {
                 <Route
                     path="/games/spy/new"
                     element={
-                        <PrivateRoute layout={false}>
-                            <SpyNewGamePage/>
-                        </PrivateRoute>
+                        <SpyNewGamePage/>
                     }
                 />
+
+                <Route path="/games/spy" element={<Navigate to="/games/spy/new" replace/>}/>
 
                 <Route
                     path="/games/spy/sessions/:id/reveal"
                     element={
-                        <PrivateRoute layout={false}>
-                            <SpyRoleRevealPage/>
-                        </PrivateRoute>
+                        <SpyRoleRevealPage/>
                     }
                 />
 
                 <Route
                     path="/games/spy/sessions/:id/play"
                     element={
-                        <PrivateRoute layout={false}>
-                            <InGamePage/>
-                        </PrivateRoute>
+                        <InGamePage/>
                     }
                 />
 
-                +               <Route
+                <Route
                    path="/games/spy/sessions/:id/vote"
                    element={
-                       <PrivateRoute layout={false}>
-                           <SpyVotingPlaceholderPage/>
-                       </PrivateRoute>
+                       <SpyVotingPlaceholderPage/>
                    }
                />
 

@@ -57,10 +57,28 @@ class SpyGameService:
 
     @staticmethod
     @transaction.atomic
-    def create_session(host, timer_duration, spy_count, player_data):
+    def create_session(host=None, timer_duration=300, spy_count=1, player_data=None, guest=None):
+        if player_data is None:
+            player_data = []
+        if (host is None) == (guest is None):
+            raise ValueError("Exactly one session owner is required.")
+
+        if guest is not None:
+            active_guest_session = guest.game_sessions.filter(
+                game_type=GameSession.GameType.SPY,
+                spy_state__status__in=[
+                    SpyGameState.Status.ROLE_REVEAL,
+                    SpyGameState.Status.IN_PROGRESS,
+                    SpyGameState.Status.VOTING,
+                    SpyGameState.Status.SPY_GUESS,
+                ],
+            ).exists()
+            if active_guest_session:
+                raise ValidationError("Guest already has an active game.")
 
         session = GameSession.objects.create(
             host=host,
+            guest=guest,
             game_type=GameSession.GameType.SPY
         )
 

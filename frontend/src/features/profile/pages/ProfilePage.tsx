@@ -1,7 +1,8 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../../shared/context/AuthContext';
 import Icon from '../../../shared/components/Icon/Icon';
-import { Button, PageHeader, TextField } from '../../../shared/components/ui';
+import { Button, PageHeader, StatePanel, TextField } from '../../../shared/components/ui';
 import { profileService } from '../services/profileService';
 import LogoutButton from '../../../features/auth/components/LogoutButton';
 import './ProfilePage.css';
@@ -22,6 +23,7 @@ function getErrorMessage(error: unknown): string {
 }
 
 export default function ProfilePage() {
+  const navigate = useNavigate();
   const { user, setUser } = useAuth();
   const [nameValue, setNameValue] = useState(user?.name || '');
   const [usernameValue, setUsernameValue] = useState(user?.username || '');
@@ -33,6 +35,20 @@ export default function ProfilePage() {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
+
+  if (!user) {
+    return (
+      <div className="profile-page">
+        <PageHeader title="پروفایل" subtitle="اطلاعات حساب و رمز عبور خود را مدیریت کن" />
+        <StatePanel
+          icon={<Icon name="person_off" />}
+          title="برای دیدن پروفایل وارد حساب شو"
+          description="برای دسترسی به اطلاعات پروفایل ابتدا وارد حساب شو"
+          action={<Button onClick={() => navigate('/auth/login', { state: { returnTo: '/profile' } })}>ورود یا ثبت‌نام</Button>}
+        />
+      </div>
+    );
+  }
 
   const closePasswordFields = () => {
     setShowPasswordFields(false);

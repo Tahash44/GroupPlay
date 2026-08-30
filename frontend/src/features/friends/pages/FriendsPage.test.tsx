@@ -1,12 +1,19 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+
+vi.mock('react-router-dom', () => ({
+  useNavigate: () => vi.fn(),
+}));
 import FriendsPage from './FriendsPage';
 import { friendsService } from '../services/friendsService';
 
 vi.mock('../services/friendsService');
 vi.mock('react-hot-toast', () => ({
   default: { success: vi.fn(), error: vi.fn() },
+}));
+vi.mock('../../../shared/context/AuthContext', () => ({
+  useAuth: () => ({ isAuthenticated: true, user: { id: 1, username: 'host' } }),
 }));
 
 const mockedFriendsService = vi.mocked(friendsService, true);

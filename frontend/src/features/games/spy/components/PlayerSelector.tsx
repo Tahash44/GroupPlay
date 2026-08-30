@@ -3,6 +3,9 @@ import { friendsService } from '../../../friends/services/friendsService';
 import type { Friend } from '../../../friends/types/friend.types';
 import Icon from '../../../../shared/components/Icon/Icon';
 import type { SelectedPlayer } from '../types/spy.types';
+import { useAuth } from '../../../../shared/context/AuthContext';
+import { Button, Dialog } from '../../../../shared/components/ui';
+import toast from 'react-hot-toast';
 import './PlayerSelector.css';
 
 interface PlayerSelectorProps {
@@ -22,20 +25,29 @@ function createGuestKey(): string {
 }
 
 export default function PlayerSelector({ players, onChange, hostName, hostId }: PlayerSelectorProps) {
+  const { isAuthenticated } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
   const [friends, setFriends] = useState<Friend[]>([]);
-  const [friendsLoading, setFriendsLoading] = useState(true);
+  const [friendsLoading, setFriendsLoading] = useState(isAuthenticated);
   const [friendsError, setFriendsError] = useState(false);
   const [search, setSearch] = useState('');
   const [guestName, setGuestName] = useState('');
+  const [pendingGuestName, setPendingGuestName] = useState<string | null>(null);
 
   useEffect(() => {
+    if (!isAuthenticated) {
+      setFriends([]);
+      setFriendsLoading(false);
+      return;
+    }
+
+    setFriendsLoading(true);
     friendsService
       .getFriends()
       .then(setFriends)
       .catch(() => setFriendsError(true))
       .finally(() => setFriendsLoading(false));
-  }, []);
+  }, [isAuthenticated]);
 
   const selectedFriendIds = useMemo(
     () => new Set(players.filter(p => p.friendId != null).map(p => p.friendId)),
@@ -62,11 +74,37 @@ export default function PlayerSelector({ players, onChange, hostName, hostId }: 
     onChange([...players, { key: hostKey, label: hostName }]);
   };
 
-  const addGuest = () => {
+  const addGuestToGame = (name: string) => {
+    onChange([...players, { key: `guest-${createGuestKey()}`, label: name }]);
+  };
+
+  const addGuest = async () => {
     const name = guestName.trim();
     if (!name) return;
-    onChange([...players, { key: `guest-${createGuestKey()}`, label: name }]);
     setGuestName('');
+
+    if (!isAuthenticated) {
+      addGuestToGame(name);
+      return;
+    }
+
+    setPendingGuestName(name);
+  };
+
+  const confirmAddGuestToFriends = async (addToFriends: boolean) => {
+    const name = pendingGuestName;
+    setPendingGuestName(null);
+    if (!name) return;
+
+    addGuestToGame(name);
+    if (addToFriends) {
+      try {
+        await friendsService.addFriend({ name });
+        setFriends(current => [...current, { id: Date.now(), name }]);
+      } catch {
+        toast.error('مشکلی در اضافه کردن این مهمان به دوستان پیش آمد.');
+      }
+    }
   };
 
   const removePlayer = (key: string) => {
@@ -179,6 +217,22 @@ export default function PlayerSelector({ players, onChange, hostName, hostId }: 
           <span>نفر بعدی...</span>
         </div>
       </div>
+
+      {pendingGuestName && (
+        <Dialog
+          title="افزودن به دوستان"
+          description={`می‌خواهی «${pendingGuestName}» را به فهرست دوستانت اضافه کنی؟`}
+          onClose={() => confirmAddGuestToFriends(false)}
+          actions={
+            <>
+              <Button variant="secondary" onClick={() => confirmAddGuestToFriends(false)}>فقط به بازی اضافه کن</Button>
+              <Button onClick={() => confirmAddGuestToFriends(true)}>بله، به دوستانم اضافه کن</Button>
+            </>
+          }
+        >
+          <p>این بازیکن در هر صورت به بازی فعلی اضافه می‌شود.</p>
+        </Dialog>
+      )}
     </section>
   );
 }

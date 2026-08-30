@@ -8,6 +8,11 @@ authoritative. Schema endpoints are `/api/schema/` and `/api/docs/`.
 Application endpoints use `/api/v1`. Protected endpoints require a bearer access
 token.
 
+Guest Spy requests use the `X-Guest-Token` header returned by
+`POST /api/v1/games/guest/`. Guest tokens expire after eight hours and are limited
+to one active Spy session. Guest-owned sessions are accessible only with the same
+guest token and are not included in account history.
+
 The administration site is mounted at `/admin/`. It is a server-rendered,
 session-authenticated, CSRF-protected internal interface restricted to active
 superusers; it does not add a public administration API.
@@ -25,6 +30,12 @@ use `Location.name_fa` rather than the English content-management name.
 | POST | `/auth/logout/` | Blacklist `refresh_token`. |
 | GET/PATCH | `/auth/profile/` | Read or update the current profile. |
 | POST | `/auth/change-password/` | Change password. |
+
+## Guest identity
+
+| Method | Path | Purpose |
+| --- | --- | --- |
+| POST | `/games/guest/` | Issue an anonymous, expiring guest token for temporary Spy play. |
 
 ## Friends
 
@@ -66,6 +77,10 @@ parameters. Page size defaults to 10 and is capped at 50.
 
 Creation returns `id`, `status`, and `created_at`, with status currently
 `ROLE_REVEAL`.
+
+Spy session creation is available to an authenticated host or a valid guest
+token. Authenticated sessions are owned by the user; guest sessions are owned by
+the guest token and are not added to account history.
 
 Creation requires at least four players. `spy_count` must be no greater than the
 floor of one third of the player count, and `timer_duration` must be between 60 and

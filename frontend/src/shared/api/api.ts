@@ -42,8 +42,11 @@ function processQueue(error: unknown, token: string | null = null) {
 
 api.interceptors.request.use((config) => {
   const token = localStorage.getItem("access_token");
+  const guestToken = localStorage.getItem("guest_token");
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
+  } else if (guestToken) {
+    config.headers['X-Guest-Token'] = guestToken;
   }
   return config;
 });
@@ -65,7 +68,7 @@ api.interceptors.response.use(
       const refreshToken = localStorage.getItem("refresh_token");
 
       if (!refreshToken) {
-        logoutAndRedirect();
+        if (!localStorage.getItem('guest_token')) logoutAndRedirect();
         return Promise.reject(error);
       }
 

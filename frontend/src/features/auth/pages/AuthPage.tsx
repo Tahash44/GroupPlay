@@ -1,5 +1,5 @@
 import { useEffect, useState, type ChangeEvent, type FormEvent } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import { authService, resolveAdminUrl } from '../services/authService';
 import { useAuth } from '../../../shared/context/AuthContext';
@@ -27,6 +27,7 @@ function parseError(error: unknown): Record<string, string> {
 export default function AuthPage() {
   const { mode } = useParams<{ mode: string }>();
   const navigate = useNavigate();
+  const location = useLocation();
   const { setUser, isAuthenticated } = useAuth();
   const isLogin = mode !== 'register';
 
@@ -36,8 +37,8 @@ export default function AuthPage() {
   const [showPassword, setShowPassword] = useState(false);
 
   useEffect(() => {
-    if (isAuthenticated) navigate('/dashboard', { replace: true });
-  }, [isAuthenticated, navigate]);
+    if (isAuthenticated) navigate((location.state as { returnTo?: string } | null)?.returnTo ?? '/dashboard', { replace: true });
+  }, [isAuthenticated, navigate, location.state]);
 
   const update = (field: keyof AuthForm) => (event: ChangeEvent<HTMLInputElement>) => {
     const value = field === 'username' ? event.target.value.replace(/\s+/g, ' ') : event.target.value;
@@ -96,7 +97,7 @@ export default function AuthPage() {
       const user = await authService.getProfile();
       setUser(user);
       toast.success(isLogin ? `خوش آمدی ${user.name || user.username}` : 'حساب با موفقیت ساخته شد');
-      navigate('/dashboard', { replace: true });
+      navigate((location.state as { returnTo?: string } | null)?.returnTo ?? '/dashboard', { replace: true });
     } catch (error) {
       const parsed = parseError(error);
       setErrors(parsed);

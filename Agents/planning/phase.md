@@ -51,3 +51,4 @@
   Spy locations, bulk content import, auditing, and operational dashboard metrics.
 - [x] Prevent inactive/archived locations from entering new games and reduce
   host-local location repetition across recent finished sessions.
+- [x] Add optional authentication with anonymous, expiring guest Spy sessions.

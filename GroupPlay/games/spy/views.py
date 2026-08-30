@@ -1,7 +1,7 @@
 from django.db import transaction
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework import status
 from rest_framework.generics import RetrieveAPIView
 from django.shortcuts import get_object_or_404
@@ -18,6 +18,7 @@ from games.spy.serializers import (
     TimerStopResponseSerializer,
 )
 from games.spy.services import SpyGameService, SpyVoteService, SpyGuessService, SpyTimerService
+from games.services import get_guest_from_request, get_owned_spy_session
 
 from .services import SpyRevealService
 from .serializers import (
@@ -35,7 +36,7 @@ class SpySessionHistoryPagination(PageNumberPagination):
     max_page_size = 50
 
 class SpySessionCreateView(APIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [AllowAny]
 
     @transaction.atomic
     def post(self, request):
@@ -45,8 +46,13 @@ class SpySessionCreateView(APIView):
         )
         serializer.is_valid(raise_exception=True)
 
+        guest = None if request.user.is_authenticated else get_guest_from_request(request)
+        if not request.user.is_authenticated and guest is None:
+            return Response({"detail": "Guest token is required."}, status=status.HTTP_401_UNAUTHORIZED)
+
         session = SpyGameService.create_session(
-            host=request.user,
+            host=request.user if request.user.is_authenticated else None,
+            guest=guest,
             player_data=serializer.validated_data["players"],
             spy_count=serializer.validated_data["spy_count"],
             timer_duration=serializer.validated_data["timer_duration"],
@@ -57,6 +63,8 @@ class SpySessionCreateView(APIView):
         return Response(response_serializer.data, status=status.HTTP_201_CREATED)
 
     def get(self, request):
+        if not request.user.is_authenticated:
+            return Response({"detail": "Authentication is required."}, status=status.HTTP_401_UNAUTHORIZED)
         queryset = GameSession.objects.filter(
             host=request.user,
             game_type=GameSession.GameType.SPY
@@ -72,25 +80,19 @@ class SpySessionCreateView(APIView):
         return paginator.get_paginated_response(serializer.data)
 
 def get_host_spy_session(request, session_id):
-    return get_object_or_404(
-        GameSession.objects.filter(
-            host=request.user,
-            game_type=GameSession.GameType.SPY,
-        ),
-        id=session_id,
-    )
+    return get_owned_spy_session(request, session_id)
 
 
 class SpySessionDetailView(RetrieveAPIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [AllowAny]
     serializer_class = SpySessionDetailSerializer
     lookup_field = 'id'
 
     def get_queryset(self):
-        return GameSession.objects.filter(
-            host=self.request.user,
-            game_type=GameSession.GameType.SPY,
-        )
+        return GameSession.objects.filter(game_type=GameSession.GameType.SPY)
+
+    def get_object(self):
+        return get_host_spy_session(self.request, self.kwargs["id"])
 
 
 
@@ -98,7 +100,7 @@ class SpySessionDetailView(RetrieveAPIView):
 
 class SpySessionRevealView(APIView):
 
-    permission_classes = [IsAuthenticated]
+    permission_classes = [AllowAny]
 
     def get(self, request, id):
 
@@ -128,7 +130,7 @@ class SpySessionRevealView(APIView):
         return Response(result)
 
 class SpySessionTimerView(APIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [AllowAny]
 
     def get(self, request, id):
         session = get_host_spy_session(request, id)
@@ -139,7 +141,7 @@ class SpySessionTimerView(APIView):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 class SpySessionTimerPauseView(APIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [AllowAny]
 
     def post(self, request, id):
         session = get_host_spy_session(request, id)
@@ -150,7 +152,7 @@ class SpySessionTimerPauseView(APIView):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 class SpySessionTimerResumeView(APIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [AllowAny]
 
     def post(self, request, id):
         session = get_host_spy_session(request, id)
@@ -161,7 +163,7 @@ class SpySessionTimerResumeView(APIView):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 class SpySessionTimerStopView(APIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [AllowAny]
 
     def post(self, request, id):
         session = get_host_spy_session(request, id)
@@ -173,7 +175,7 @@ class SpySessionTimerStopView(APIView):
 
 
 class SpySessionEarlyGuessView(APIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [AllowAny]
 
     def post(self, request, id):
         session = get_host_spy_session(request, id)
@@ -183,7 +185,7 @@ class SpySessionEarlyGuessView(APIView):
 
 
 class SpySessionVoteView(APIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [AllowAny]
 
     def post(self, request, id):
         session = get_host_spy_session(request, id)
@@ -201,7 +203,7 @@ class SpySessionVoteView(APIView):
 
 
 class SpySessionGuessView(APIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [AllowAny]
 
     def post(self, request, id):
         session = get_host_spy_session(request, id)

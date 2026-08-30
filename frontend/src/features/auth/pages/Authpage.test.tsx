@@ -5,6 +5,7 @@ import userEvent from '@testing-library/user-event';
 vi.mock('react-router-dom', () => ({
     useParams: vi.fn(),
     useNavigate: vi.fn(),
+    useLocation: vi.fn(() => ({ state: null })),
 }));
 
 vi.mock('react-hot-toast', () => ({

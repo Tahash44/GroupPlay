@@ -52,6 +52,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 /* این hook رو در هر کامپوننت استفاده کن تا به اطلاعات user دسترسی داشته باشی */
 export function useAuth() {
   const ctx = useContext(AuthContext);
-  if (!ctx) throw new Error('useAuth must be used inside AuthProvider');
-  return ctx;
+  return ctx ?? {
+    user: null,
+    isAuthenticated: false,
+    isLoading: false,
+    setUser: () => undefined,
+    logout: async () => undefined,
+  };
 }

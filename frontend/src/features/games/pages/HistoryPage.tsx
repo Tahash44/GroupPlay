@@ -5,6 +5,7 @@ import type { SpySessionHistoryItem } from '../spy/types/spy.types';
 import Icon from '../../../shared/components/Icon/Icon';
 import { Button, PageHeader, StatePanel } from '../../../shared/components/ui';
 import './HistoryPage.css';
+import { useAuth } from '../../../shared/context/AuthContext';
 
 /*
   فعلاً فقط بازی «جاسوس» پیاده‌سازی شده، پس این صفحه مستقیم spyService رو صدا می‌زنه.
@@ -33,6 +34,7 @@ function formatPlayedAt(iso: string): string {
 
 export default function HistoryPage() {
   const navigate = useNavigate();
+  const { isAuthenticated } = useAuth();
   const [items, setItems] = useState<SpySessionHistoryItem[]>([]);
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(false);
@@ -60,6 +62,10 @@ export default function HistoryPage() {
   }, [loadPage]);
 
   useEffect(() => {
+    if (!isAuthenticated) {
+      setLoading(false);
+      return;
+    }
     let active = true;
     spyService.getFinishedSessions(1)
       .then(data => {
@@ -76,7 +82,7 @@ export default function HistoryPage() {
     return () => {
       active = false;
     };
-  }, []);
+  }, [isAuthenticated]);
 
   const handleLoadMore = async () => {
     setLoadingMore(true);
@@ -107,8 +113,9 @@ export default function HistoryPage() {
       {!loading && !error && items.length === 0 && (
         <StatePanel
           icon={<Icon name="history_edu" />}
-          title="هنوز هیچ بازی‌ای ثبت نشده"
-          action={<Button onClick={() => navigate('/dashboard')}>شروع اولین بازی</Button>}
+          title={isAuthenticated ? 'هنوز هیچ بازی‌ای ثبت نشده' : 'برای دیدن تاریخچه وارد حساب شو'}
+          description={!isAuthenticated ? 'بازی مهمان در تاریخچهٔ حساب ذخیره نمی‌شود' : undefined}
+          action={<Button onClick={() => navigate(isAuthenticated ? '/dashboard' : '/auth/login')}>{isAuthenticated ? 'شروع اولین بازی' : 'ورود یا ثبت‌نام'}</Button>}
         />
       )}
 

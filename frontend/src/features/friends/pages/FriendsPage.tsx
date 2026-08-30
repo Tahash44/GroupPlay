@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import FriendListItem from '../components/FriendListItem';
 import Icon from '../../../shared/components/Icon/Icon';
@@ -9,8 +10,11 @@ import DeleteConfirmDialog from '../components/DeleteConfirmDialog';
 import { friendsService } from '../services/friendsService';
 import type { Friend } from '../types/friend.types';
 import './FriendsPage.css';
+import { useAuth } from '../../../shared/context/AuthContext';
 
 export default function FriendsPage() {
+  const navigate = useNavigate();
+  const { isAuthenticated } = useAuth();
   const [friends, setFriends] = useState<Friend[]>([]);
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState<string | null>(null);
@@ -21,6 +25,10 @@ export default function FriendsPage() {
   const [deletingFriend, setDeletingFriend] = useState<Friend | null>(null);
 
   useEffect(() => {
+    if (!isAuthenticated) {
+      setLoading(false);
+      return;
+    }
     let cancelled = false;
     friendsService
       .getFriends()
@@ -36,7 +44,7 @@ export default function FriendsPage() {
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [isAuthenticated]);
 
   const filteredFriends = useMemo(() => {
     const q = searchInput.trim().toLowerCase();
@@ -64,7 +72,7 @@ export default function FriendsPage() {
       <PageHeader
         title="دوستان"
         actions={
-          <Button size="sm" icon={<Icon name="add" />} onClick={() => setShowAddModal(true)}>
+          <Button size="sm" icon={<Icon name="add" />} onClick={() => isAuthenticated ? setShowAddModal(true) : navigate('/auth/login', { state: { returnTo: '/friends' } })}>
             افزودن
           </Button>
         }
@@ -88,8 +96,9 @@ export default function FriendsPage() {
       ) : filteredFriends.length === 0 ? (
         <StatePanel
           icon={<Icon name="group_off" />}
-          title={searchInput ? 'دوستی با این نام پیدا نشد' : 'هنوز دوستی اضافه نکردی'}
-          description={!searchInput ? 'با دکمهٔ افزودن اولین دوستت را اضافه کن' : undefined}
+          title={!isAuthenticated ? 'برای دیدن دوستان وارد حساب شو' : (searchInput ? 'دوستی با این نام پیدا نشد' : 'هنوز دوستی اضافه نکردی')}
+          description={!isAuthenticated ? 'برای مدیریت دوستان ابتدا وارد حساب شو' : (!searchInput ? 'با دکمهٔ افزودن اولین دوستت را اضافه کن' : undefined)}
+          action={!isAuthenticated ? <Button onClick={() => navigate('/auth/login', { state: { returnTo: '/friends' } })}>ورود یا ثبت‌نام</Button> : undefined}
         />
       ) : (
         <ul className="friends-list">
@@ -98,8 +107,8 @@ export default function FriendsPage() {
               key={friend.id}
               friend={friend}
               index={index}
-              onEdit={setEditingFriend}
-              onDelete={setDeletingFriend}
+              onEdit={friend => isAuthenticated ? setEditingFriend(friend) : navigate('/auth/login', { state: { returnTo: '/friends' } })}
+              onDelete={friend => isAuthenticated ? setDeletingFriend(friend) : navigate('/auth/login', { state: { returnTo: '/friends' } })}
             />
           ))}
         </ul>

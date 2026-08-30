@@ -30,6 +30,7 @@ vi.mock('../services/spyService', () => ({
 vi.mock('../../../../shared/context/AuthContext', () => ({
   useAuth: () => ({
     user: { id: 99, username: 'host', email: 'host@example.com', name: 'Host Player' },
+    isAuthenticated: true,
   }),
 }));
 
@@ -49,6 +50,8 @@ async function addGuest(user: ReturnType<typeof userEvent.setup>, name: string) 
   await user.clear(input);
   await user.type(input, name);
   await user.click(screen.getByRole('button', { name: 'افزودن' }));
+  const onlyInGameButton = await screen.findByRole('button', { name: 'فقط به بازی اضافه کن' });
+  await user.click(onlyInGameButton);
 }
 
 async function renderPage() {

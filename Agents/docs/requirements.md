@@ -56,6 +56,10 @@ host manages the game; participants are saved friends or ad-hoc names.
 
 - Persian-first, responsive shared-device UI.
 - Secure authenticated API access and host data isolation.
+- Optional authentication: guests may browse the catalogue and complete one
+  temporary Spy session without an account.
+- Guest sessions use an opaque eight-hour token, allow one active game, and never
+  create permanent friends, profile data, or account history.
 - Expired credentials handled through a coordinated frontend refresh flow.
 - Tests for game rules, authentication, ownership, privacy, and API error handling.
 - A releasable frontend passes both Vitest and the TypeScript/Vite production build.

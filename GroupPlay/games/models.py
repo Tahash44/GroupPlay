@@ -1,5 +1,32 @@
 from django.conf import settings
 from django.db import models
+from django.utils import timezone
+from datetime import timedelta
+import secrets
+
+
+GUEST_LIFETIME = timedelta(hours=8)
+
+
+class GuestSession(models.Model):
+    token = models.CharField(max_length=128, unique=True, db_index=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    expires_at = models.DateTimeField(db_index=True)
+
+    class Meta:
+        verbose_name = "نشست مهمان"
+        verbose_name_plural = "نشست‌های مهمان"
+
+    @classmethod
+    def create(cls):
+        now = timezone.now()
+        return cls.objects.create(
+            token=secrets.token_urlsafe(48),
+            expires_at=now + GUEST_LIFETIME,
+        )
+
+    def is_valid(self, now=None):
+        return (now or timezone.now()) < self.expires_at
 
 
 class GameSession(models.Model):
@@ -10,6 +37,15 @@ class GameSession(models.Model):
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
         related_name="hosted_sessions",
+        null=True,
+        blank=True,
+    )
+    guest = models.ForeignKey(
+        GuestSession,
+        on_delete=models.CASCADE,
+        related_name="game_sessions",
+        null=True,
+        blank=True,
     )
     game_type = models.CharField(max_length=50, choices=GameType.choices)
     winner = models.JSONField(null=True, blank=True)

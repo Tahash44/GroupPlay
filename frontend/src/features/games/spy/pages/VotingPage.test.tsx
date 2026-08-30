@@ -15,6 +15,13 @@ vi.mock('react-router-dom', async () => {
   };
 });
 
+vi.mock('../../../../shared/context/AuthContext', () => ({
+  useAuth: () => ({ user: { id: 1, username: 'host' }, isAuthenticated: true }),
+}));
+vi.mock('../../../../shared/context/GuestContext', () => ({
+  useGuest: () => ({ clearActiveGame: vi.fn() }),
+}));
+
 function renderPage(sessionId = '1') {
   return render(
     <MemoryRouter initialEntries={[`/games/spy/sessions/${sessionId}/vote`]}>
@@ -43,10 +50,12 @@ describe('VotingPage', () => {
   beforeEach(() => {
     mock = new MockAdapter(api);
     mockNavigate.mockClear();
+    vi.spyOn(window, 'confirm').mockReturnValue(true);
   });
 
   afterEach(() => {
     mock.restore();
+    vi.restoreAllMocks();
   });
 
   it('shows voting form with player list when status is VOTING', async () => {

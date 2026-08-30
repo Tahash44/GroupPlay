@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import PlayerSelector from '../components/PlayerSelector';
 import SpyCountStepper from '../components/SpyCountStepper';
@@ -7,9 +7,11 @@ import { spyService } from '../services/spyService';
 import { MIN_PLAYERS } from '../types/spy.types';
 import type { PlayerInput, SelectedPlayer } from '../types/spy.types';
 import { useAuth } from '../../../../shared/context/AuthContext';
+import { useGuest } from '../../../../shared/context/GuestContext';
 import Icon from '../../../../shared/components/Icon/Icon';
 import { ActionBar, Button } from '../../../../shared/components/ui';
 import './SpyNewGamePage.css';
+import AuthPromptModal from '../../../../shared/components/auth/AuthPromptModal';
 
 const SETUP_TTL_MS = 8 * 60 * 60 * 1000;
 
@@ -50,12 +52,18 @@ function saveSetup(userId: number | undefined, setup: Omit<SavedSetup, 'savedAt'
 export default function SpyNewGamePage() {
   const navigate = useNavigate();
   const { user } = useAuth();
+  const { ensureGuest, setActiveGameId } = useGuest();
   const savedSetup = useMemo(() => readSavedSetup(user?.id), [user?.id]);
   const [players, setPlayers] = useState<SelectedPlayer[]>(() => savedSetup?.players ?? []);
   const [spyCount, setSpyCount] = useState(() => savedSetup?.spyCount ?? 1);
   const [timerMinutes, setTimerMinutes] = useState(() => savedSetup?.timerMinutes ?? 8);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [showAuthPrompt, setShowAuthPrompt] = useState(false);
+
+  useEffect(() => {
+    if (!user) setShowAuthPrompt(true);
+  }, [user]);
 
   // The signed-in host is optional: they appear in the add-player menu and are
   // only included in the request after explicitly selecting them.
@@ -82,12 +90,14 @@ export default function SpyNewGamePage() {
 
     setSubmitting(true);
     try {
+      if (!user) await ensureGuest();
       const { id } = await spyService.createSession({
         game_type: 'spy',
         timer_duration: timerMinutes * 60,
         spy_count: effectiveSpyCount,
         players: playerInputs,
       });
+      if (!user) setActiveGameId(String(id));
       saveSetup(user?.id, { players, spyCount: effectiveSpyCount, timerMinutes });
       navigate(`/games/spy/sessions/${id}/reveal`);
     } catch {
@@ -140,6 +150,7 @@ export default function SpyNewGamePage() {
           {submitting ? 'در حال ساخت بازی...' : 'شروع بازی'}
         </Button>
       </ActionBar>
+      {showAuthPrompt && <AuthPromptModal variant="pre-game" onClose={() => setShowAuthPrompt(false)} />}
     </div>
   );
 }
